@@ -6,7 +6,8 @@ Authors@R: c(person("Florian", "Schwendinger",
                     email = "FlorianSchwendinger@gmx.at") )
 Description: When exchanging data between programms it is often not possible
              to get a one to one mapping between the data types. This package
-             provides functions to set and get typehints in a structured way.
+             provides functions to set and get additional type information ("typehints") 
+             in a structured way.
 Depends:
     R (>= 2.15)
 License: GPL-3
