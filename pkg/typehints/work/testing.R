@@ -58,6 +58,7 @@ missing
 traceback
 
 
+att
 
 
 x <- list(1)
@@ -65,3 +66,6 @@ attributes(x)
 attributes(x)$srcref <- 3
 x
 attributes(x)
+
+attributes(x)$srcfile <- 3
+x

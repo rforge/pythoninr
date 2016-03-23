@@ -6,10 +6,12 @@
 ##' @description The function \code{typehint} allows to set / get
 ##'              additional type information in a structured way.
 ##' @param x
-##' @details Note typehint uses the comment field to store the additional
-##'          type information. This can be usefull when 
-##'          Comments have the addvantage that they are ignored from print, 
-##'          toJSON and other functions.
+##' @details The typehint package uses the comment field to store additional
+##'          type information. This can be useful in cases additional type 
+##'          information is needed but the class information and the print 
+##'          behavior should remain unchanged. Note it would also be possible 
+##'          to use the attributes \dQuote{srcref} or \dQuote{srcfile} but 
+##'          utilizing the \dQuote{comment} attribute seems least invasive.
 ##' @examples
 ##' x <- list(1, 2)
 ##' typehint(x) <- "tuple"
@@ -31,13 +33,9 @@ typehint <- function(x) {
 ##  tyhi
 ##  ====
 ##' @title Additional Type Information
-##' @description The function \code{typehint} allows to set / get
+##' @description The function \code{tyhi} allows to set / get
 ##'              additional type information in a structured way.
 ##' @param x
-##' @details Note typehint uses the comment field to store the additional
-##'          type information. This can be usefull when 
-##'          Comments have the addvantage that they are ignored from print, 
-##'          toJSON and other functions.
 ##' @examples
 ##' x <- list(1, 2)
 ##' tyhi(x, "tuple")
@@ -56,13 +54,12 @@ tyhi <- function(x, hint) {
 ##  th
 ##  ==
 ##' @title Additional Type Information
-##' @description The function \code{typehint} allows to set / get
+##' @description The function \code{th} allows to set
 ##'              additional type information in a structured way.
 ##' @param x
-##' @details Note typehint uses the comment field to store the additional
-##'          type information. This can be usefull when 
-##'          Comments have the addvantage that they are ignored from print, 
-##'          toJSON and other functions.
+##' @details The following example shows how typehints are used 
+##'          in the PythonInR package to provide additional type 
+##'          information.
 ##' @examples
 ##' x <- list(1, 2)
 ##' th.tuple <- function(x) tyhi(x, "tuple")
