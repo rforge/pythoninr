@@ -1,0 +1,384 @@
+<table>
+<thead>
+<tr class="header">
+<th align="left">R-type</th>
+<th align="left">length</th>
+<th align="left">typehint</th>
+<th align="left">Python-type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">NULL</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">None</td>
+</tr>
+<tr class="even">
+<td align="left">logical</td>
+<td align="left">1</td>
+<td align="left"></td>
+<td align="left">boolean</td>
+</tr>
+<tr class="odd">
+<td align="left">integer</td>
+<td align="left">1</td>
+<td align="left"></td>
+<td align="left">long</td>
+</tr>
+<tr class="even">
+<td align="left">integer</td>
+<td align="left">1</td>
+<td align="left">int</td>
+<td align="left">int</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">1</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">1</td>
+<td align="left"></td>
+<td align="left">unicode</td>
+</tr>
+<tr class="odd">
+<td align="left">character</td>
+<td align="left">1</td>
+<td align="left">string</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">1</td>
+<td align="left">bytes</td>
+<td align="left">bytes</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">logical</td>
+<td align="left">n &gt; 1</td>
+<td align="left"></td>
+<td align="left">PythonInR.vector (boolean)</td>
+</tr>
+<tr class="odd">
+<td align="left">integer</td>
+<td align="left">n &gt; 1</td>
+<td align="left"></td>
+<td align="left">PythonInR.vector (long)</td>
+</tr>
+<tr class="even">
+<td align="left">integer</td>
+<td align="left">n &gt; 1</td>
+<td align="left">int</td>
+<td align="left">PythonInR.vector (int)</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">n &gt; 1</td>
+<td align="left"></td>
+<td align="left">PythonInR.vector (double)</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left"></td>
+<td align="left">PythonInR.vector (unicode)</td>
+</tr>
+<tr class="odd">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">string</td>
+<td align="left">PythonInR.vector (string)</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">bytes</td>
+<td align="left">PythonInR.vector (bytes)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">logical</td>
+<td align="left">n &gt; 1</td>
+<td align="left">list</td>
+<td align="left">list (boolean)</td>
+</tr>
+<tr class="odd">
+<td align="left">integer</td>
+<td align="left">n &gt; 1</td>
+<td align="left">list</td>
+<td align="left">list (long)</td>
+</tr>
+<tr class="even">
+<td align="left">integer</td>
+<td align="left">n &gt; 1</td>
+<td align="left">list, int</td>
+<td align="left">list (int)</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">n &gt; 1</td>
+<td align="left">list</td>
+<td align="left">list (double)</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">list</td>
+<td align="left">list (unicode)</td>
+</tr>
+<tr class="odd">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">list, string</td>
+<td align="left">list (string)</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">list, bytes</td>
+<td align="left">list (bytes)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">logical</td>
+<td align="left">n &gt; 1</td>
+<td align="left">tuple</td>
+<td align="left">tuple (boolean)</td>
+</tr>
+<tr class="odd">
+<td align="left">integer</td>
+<td align="left">n &gt; 1</td>
+<td align="left">tuple</td>
+<td align="left">tuple (long)</td>
+</tr>
+<tr class="even">
+<td align="left">integer</td>
+<td align="left">n &gt; 1</td>
+<td align="left">tuple, int</td>
+<td align="left">tuple (int)</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">n &gt; 1</td>
+<td align="left">tuple</td>
+<td align="left">tuple (double)</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">tuple</td>
+<td align="left">tuple (unicode)</td>
+</tr>
+<tr class="odd">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">tuple, string</td>
+<td align="left">tuple (string)</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">tuple, bytes</td>
+<td align="left">tuple (bytes)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">logical</td>
+<td align="left">n &gt; 1</td>
+<td align="left">numpy</td>
+<td align="left">ndarray (boolean)</td>
+</tr>
+<tr class="odd">
+<td align="left">integer</td>
+<td align="left">n &gt; 1</td>
+<td align="left">numpy</td>
+<td align="left">ndarray (long)</td>
+</tr>
+<tr class="even">
+<td align="left">integer</td>
+<td align="left">n &gt; 1</td>
+<td align="left">numpy, int</td>
+<td align="left">ndarray (int)</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">n &gt; 1</td>
+<td align="left">numpy</td>
+<td align="left">ndarray (double)</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">numpy</td>
+<td align="left">ndarray (unicode)</td>
+</tr>
+<tr class="odd">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">numpy, string</td>
+<td align="left">ndarray (string)</td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">n &gt; 1</td>
+<td align="left">numpy, bytes</td>
+<td align="left">ndarray (bytes)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">matrix</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">PythonInR.matrix</td>
+</tr>
+<tr class="odd">
+<td align="left">matrix</td>
+<td align="left"></td>
+<td align="left">numpy</td>
+<td align="left">ndarray</td>
+</tr>
+<tr class="even">
+<td align="left">matrix</td>
+<td align="left"></td>
+<td align="left">cvxopt</td>
+<td align="left">cvxopt.matrix</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">arrray</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">ndarray</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">list</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">list</td>
+</tr>
+<tr class="odd">
+<td align="left">named list</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">dict</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">data.frame</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">dataFrame</td>
+</tr>
+<tr class="even">
+<td align="left">data.frame</td>
+<td align="left"></td>
+<td align="left">pandas</td>
+<td align="left">pandas.DataFrame</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">simple_triplet_matrix</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">simple_triplet_matrix</td>
+</tr>
+<tr class="odd">
+<td align="left">simple_triplet_matrix</td>
+<td align="left"></td>
+<td align="left">bsr</td>
+<td align="left">scipy.bsr</td>
+</tr>
+<tr class="even">
+<td align="left">simple_triplet_matrix</td>
+<td align="left"></td>
+<td align="left">coo</td>
+<td align="left">scipy.coo</td>
+</tr>
+<tr class="odd">
+<td align="left">simple_triplet_matrix</td>
+<td align="left"></td>
+<td align="left">csc</td>
+<td align="left">scipy.csc</td>
+</tr>
+<tr class="even">
+<td align="left">simple_triplet_matrix</td>
+<td align="left"></td>
+<td align="left">csr</td>
+<td align="left">scipy.csr</td>
+</tr>
+<tr class="odd">
+<td align="left">simple_triplet_matrix</td>
+<td align="left"></td>
+<td align="left">dense</td>
+<td align="left">scipy.dense</td>
+</tr>
+<tr class="even">
+<td align="left">simple_triplet_matrix</td>
+<td align="left"></td>
+<td align="left">dia</td>
+<td align="left">scipy.dia</td>
+</tr>
+<tr class="odd">
+<td align="left">simple_triplet_matrix</td>
+<td align="left"></td>
+<td align="left">lil</td>
+<td align="left">scipy.lil</td>
+</tr>
+<tr class="even">
+<td align="left">simple_triplet_matrix</td>
+<td align="left"></td>
+<td align="left">cvxopt</td>
+<td align="left">cvxopt.spmatrix</td>
+</tr>
+</tbody>
+</table>
