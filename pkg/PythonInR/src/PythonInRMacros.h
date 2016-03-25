@@ -18,6 +18,11 @@
 
 #define PY_NONE Py_BuildValue("")
 
+#define IS_INT(o)     ( IS_INTEGER(o) &  (has_typehint(o, "int") | !r_int_to_py_long_flag ) )
+#define IS_LONG(o)    ( IS_INTEGER(o) & !(has_typehint(o, "int") | !r_int_to_py_long_flag ) )
+#define IS_STRING(o)  ( IS_CHARACTER(o) &  (has_typehint(o, "string") | !r_character_to_py_unicode_flag ) )
+#define IS_UNICODE(o) ( IS_CHARACTER(o) & !(has_typehint(o, "string") | !r_character_to_py_unicode_flag ) )
+
 ////////////////////////////////////////////////////////////////////////
 // Define some makros to convert R primitives to C
 ////////////////////////////////////////////////////////////////////////

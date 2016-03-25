@@ -115,4 +115,10 @@ SEXP Test_Py_call_1_arg(SEXP fun_name, SEXP arg) {
 	return py_to_r(Py_call_1_arg(R_TO_C_STRING(fun_name), r_to_py(arg)), 0, 1);
 }
 
-
+PyObject *Py_call_2_args(const char *c_obj_name, PyObject *x, PyObject *y) {
+	PyObject *py_args = PyTuple_New(2);
+	PyTuple_SET_ITEM(py_args, 0, x);
+	PyTuple_SET_ITEM(py_args, 1, y);
+	PyObject *pval = python_call(c_obj_name, py_args, NULL);
+	return pval;
+}

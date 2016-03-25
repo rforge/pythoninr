@@ -7,69 +7,6 @@
 \  -------------------------------------------------------------------------- */
 
 #include "PythonObjects.h"
-#include "CastRObjects.h"
-#include "PyCall.h"
-#include "PythonInR.h"
-
-SEXP combine_character(SEXP x, SEXP y) {
-	SEXP r_vec;
-	int vec_len;
-	if ( isNull(y) ) return(x);
-	if ( isNull(x) ) return(y);
-	vec_len = GET_LENGTH(x) + GET_LENGTH(y);
-	// CHARSXP      9 
-	PROTECT(r_vec = allocVector(STRSXP, vec_len));
-	for (int i=0; i < GET_LENGTH(x); i++){
-		SET_STRING_ELT(r_vec, i, STRING_ELT(x, 0));
-    }
-    for (int i=0; i < GET_LENGTH(y); i++){
-		SET_STRING_ELT(r_vec, GET_LENGTH(x)+i, STRING_ELT(y, 0));
-    }
-    UNPROTECT(1);
-    return(r_vec);
-}
-
-SEXP r_get_class_name(SEXP x) {
-	SEXP klass = GET_CLASS(x);
-	if ( isNull( klass )  ) {
-		if ( IS_LOGICAL(x)   ) klass = c_to_r_string("logical");
-		if ( IS_INTEGER(x)   ) klass = c_to_r_string("integer");
-		if ( IS_NUMERIC(x)   ) klass = c_to_r_string("numeric");
-		if ( IS_CHARACTER(x) ) klass = c_to_r_string("character");
-		if ( isComplex(x)    ) klass = c_to_r_string("complex");
-	} 
-	if ( isArray(x) & !isMatrix(x) ) {
-		klass = combine_character(c_to_r_string("array"), klass);
-	} else if ( isMatrix(x) ){
-		klass = combine_character(c_to_r_string("matrix"), klass);
-	}
-	return( klass );
-}
-
-/*  ----------------------------------------------------------------------------
-
-    r_to_py_vector
-
-  ----------------------------------------------------------------------------*/
-PyObject *r_to_py_vector(SEXP names, SEXP r_object) {
-	PyObject *new_obj = py_get_py_obj("__R__.vector([], None, 'integer')");
-	
-	PyObject_SetAttrString(new_obj, "values", r_to_py_list(r_object) ); 
-	if ( GET_LENGTH(names) > 0 ) {
-		PyObject_SetAttrString(new_obj, "names", r_to_py_list(names) ); 
-	} else {
-		PyObject_SetAttrString(new_obj, "names", PY_NONE ); 
-	}
-	SEXP klass = r_get_class_name(r_object);
-	PyObject_SetAttrString(new_obj, "dtype", r_to_py(klass) ); 
-	
-	if ( has_typehint(r_object, "dict") ) {
-		PyObject *dict =  PyObject_CallMethod(new_obj, "toDict", "");
-		return(dict);
-	} 
-	
-	return(new_obj);
-}
 
 /*  ----------------------------------------------------------------------------
 

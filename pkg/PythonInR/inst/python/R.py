@@ -71,55 +71,125 @@ def removeFromNamespace(key):
     except:
         return -1
 
+## ---------------------------------------------------------
+##
+## Data Types
+##
+## ---------------------------------------------------------
+base_types = (bool, int, long, float, str, bytes, unicode, complex)
+base_types_str = '(bool, int, long, float, str, bytes, unicode, complex)'
 
-class vector(object): 
-    """A Vector Class for Python"""
-    def __init__(self, vector, names, dtype = None):
-        if (not isinstance(vector, list)):
-            raise(TypeError("'values' must be of type list"))
-        if (not (dtype in (None, "logical", "integer", "numeric", "character"))):
-            raise(ValueError("'dtype' allowed values are (None, 'logical', 'integer', 'numeric', 'character')"))
-        self.values = vector
-        self.names = names
+class tlist(list):
+    """"A Typed List Class"""
+    __slots__ = ['dtype']
+    def __init__(self, itr, dtype):
+        if (not dtype in base_types):
+            raise(ValueError(" ".join("'dtype' allowed values are", base_types_str)))
+        list.__init__(self, itr)
         self.dtype = dtype
+
+class nlist(list):
+    """A Named List Class"""
+    __slots__ = ['names', 'dtype']
+    
+class vector(nlist):    
+    """A Vector Class for Python"""
+    def __init__(self, values, dtype, names=None):
+        ## check if dtype is a basic type
+        if (not dtype in base_types):
+            raise(ValueError(" ".join("'dtype' allowed values are", base_types_str)))
+        list.__init__(self, values)
+        self.dtype = dtype
+        self.names = names
         self.__class__.__name__ = "PythonInR.vector"
         
     def __repr__(self):
-        s = "vector('values': " + str(self.values) + ", 'names': " + str(self.names)
-        s += ", 'dtype': '" + str(self.dtype) + "')"
+        s = "vector(" + str(list.__repr__(self)) + ", names: " + str(self.names)
+        s += ", dtype: " + str(self.dtype.__name__) + ")"
         return s
         
     __str__ = __repr__
-
+    
     def toR(self):
         if (self.names is None and self.dtype is None):
-            return(self.values)
+            return( self.toList() )
         else:
-            return(self.toDict())
-    
+            return( self.toDict() )
+            
     def toList(self):
-        return self.values
+        return list(self)
         
     def toDict(self):
-        return {"values": self.values, "names": self.names, "dtype": self.dtype}
-
-    def toNumpyMatrix(self):
+        return {"values": self.toList(), "names": self.names, "dtype": self.dtype}
+                        
+    def toNumpy(self):
         if PythonInR_FLAGS['useNumpy']:
-            return np.matrix(self.values)
+            return np.array(self)
         else:
             raise NameError("numpy was not found")
-                
-    def toNumpyArray(self):
-        if PythonInR_FLAGS['useNumpy']:
-            return np.array(self.values)
-        else:
-            raise NameError("numpy was not found")
+            
+def isVector(x):
+    return isinstance(x, vector)
+    
+def isVectorBool(x):
+    if isVector(x):
+        if x.dtype is bool:
+            return True
+    return False
 
+def isVectorInt(x):
+    if isVector(x):
+        if x.dtype is int:
+            return True
+    return False
 
-class matrix(object): 
+def isVectorLong(x):
+    if isVector(x):
+        if x.dtype is long:
+            return True
+    return False
+
+def isVectorFloat(x):
+    if isVector(x):
+        if x.dtype is float:
+            return True
+    return False
+
+def isVectorString(x):
+    if isVector(x):
+        if x.dtype is bytes:
+            return True
+    return False
+
+def isUnicodeVector(x):
+    if isVector(x):
+        if x.dtype is unicode:
+            return True
+    return False
+
+def vecBool(values, names=None):
+    return( vector(values, bool, names) )
+    
+def vecInt(values, names=None):
+    return( vector(values, int, names) )
+    
+def vecLong(values, names=None):
+    return( vector(values, long, names) )
+    
+def vecFloat(values, names=None):
+    return( vector(values, float, names) )
+    
+def vecString(values, names=None):
+    return( vector(values, bytes, names) )
+
+def vecUnicode(values, names=None):
+    return( vector(values, unicode, names) )
+
+class matrix(list): 
     """A Matrix Class for Python"""
+    __slots__ = ['names', 'dtype']
     def __init__(self, matrix, rownames=None, colnames=None, dim=None, dtype=None):
-        self.values = matrix 
+        list.__init__(self, matrix)
         self.rownames = rownames 
         self.colnames = colnames 
         self.dim = (0,0) if (dim is None) else tuple(dim)
@@ -129,11 +199,11 @@ class matrix(object):
     def __repr__(self):
          s = "matrix(["
          offset = len(s)
-         for i, row in enumerate(self.values):
+         for i, row in enumerate(self):
              if (i > 0):
                  s += " " * offset     
              s += str(row) 
-             if ((i+1) < len(self.values)):
+             if ((i+1) < len(self)):
                  s += ",\n"
          s += "])"
          return s
@@ -144,24 +214,18 @@ class matrix(object):
         return( self.toDict() )
 
     def flatten(self):
-        return( [rec for row in self.values for rec in row] )
+        return( [rec for row in self for rec in row] )
     
     def toList(self):
-        return(self.values)
+        return(list(self))
     
     def toDict(self):
-        return( {"values": self.values, "rownames": self.rownames, 
+        return( {"values": self.toList(), "rownames": self.rownames, 
                 "colnames": self.colnames, "dim": self.dim, "dtype": self.dtype} )
                 
-    def toNumpyMatrix(self):
+    def toNumpy(self):
         if PythonInR_FLAGS['useNumpy']:
-            return np.matrix(self.values)
-        else:
-            raise NameError("numpy was not found")
-                
-    def toNumpyArray(self):
-        if PythonInR_FLAGS['useNumpy']:
-            return np.array(self.values)
+            return np.array(self)
         else:
             raise NameError("numpy was not found")
 

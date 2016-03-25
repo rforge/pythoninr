@@ -176,6 +176,7 @@ pyConnect <- function(pythonExePath=NULL, dllDir=NULL, pythonHome=NULL){
         setwd( file.path(find.package("PythonInR"), "python") )
         pyExec("import R as __R__")
         .Call("init_PythonInR_External_References")
+        setwd(wd)
 
         packageStartupMessage(sprintf("\nInitialize Python Version %s\n", pyVersion()))            
 

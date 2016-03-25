@@ -18,6 +18,7 @@
 //#define     BUILTINSXP   8 /* builtin non-special forms */
 //#define     CHARSXP      9 /* "scalar" string type (internal only)*/
 //#define     LGLSXP      10 /* logical vectors */
+/* 11 and 12 were factors and ordered factors in the 1990s */
 //#define     INTSXP      13 /* integer vectors */
 //#define     REALSXP     14 /* real variables */
 //#define     CPLXSXP     15 /* complex variables */
@@ -136,33 +137,6 @@ SEXP py_class(PyObject *py_object){
     pyrNamespaceCounter = pyrNamespaceCounter + 1;
 	
     return r_list;
-}
-
-/*  ----------------------------------------------------------------------------
-
-    Py_GetR_Type 
-      returns the integer which is needed for R vector allocation
-
-  ----------------------------------------------------------------------------*/
-int Py_GetR_Type(PyObject *py_object){
-    int r_type = -1;
-
-    if ( PyNone_Check(py_object) ){
-        r_type = 0;
-    }else if ( PyBool_Check(py_object) ){
-        r_type = 10;
-    }else if ( PyInt_Check(py_object) ){
-        r_type = 13;
-    }else if ( PyLong_Check(py_object) ){
-        r_type = 13;
-    }else if ( PyFloat_Check(py_object) ){
-        r_type = 14;
-    }else if ( PyString_Check(py_object) ){
-        r_type = 16;
-    }else if ( PyUnicode_Check(py_object) ){
-        r_type = 16;
-    }
-    return r_type;
 }
 
 /*  ----------------------------------------------------------------------------
@@ -300,7 +274,7 @@ SEXP py_vec_to_r_vec(PyObject *py_keys, PyObject *py_values, int r_vector_type){
             // Py_XDECREF(item); Booleans never follow the api in Python!
             Py_DECREF(py_i);
         }
-    }else if (r_vector_type == 13){                                   // integer
+    }else if ( (r_vector_type == 12) | (r_vector_type == 13) ) {        // integer
         for (long i=0; i < vec_len; i++){
             py_i = PyLong_FromLong(i);
             item = PyList_GetItem(py_keys, PyLong_AsSsize_t(py_i));
@@ -318,7 +292,7 @@ SEXP py_vec_to_r_vec(PyObject *py_keys, PyObject *py_values, int r_vector_type){
             Py_XDECREF(item);
             Py_DECREF(py_i);
         }
-    }else if (r_vector_type == 14){                                   // numeric
+    }else if (r_vector_type == 14) {                                    // numeric
         for (long i=0; i < vec_len; i++){
             py_i = PyLong_FromLong(i);
             item = PyList_GetItem(py_keys, PyLong_AsSsize_t(py_i));
@@ -331,7 +305,12 @@ SEXP py_vec_to_r_vec(PyObject *py_keys, PyObject *py_values, int r_vector_type){
             Py_XDECREF(item);
             Py_DECREF(py_i);
         }
-    }else if (r_vector_type == 16){                                 // character
+    }else if ( (r_vector_type == 16) | (r_vector_type == 17) ) {        // character
+		if ( r_vector_type == 16 ) {
+			// set type hint string
+		} else {
+			r_vector_type = 16;
+		}
         for (long i=0; i < vec_len; i++){
             py_i = PyLong_FromLong(i);
             item = PyList_GetItem(py_keys, PyLong_AsSsize_t(py_i));
@@ -346,7 +325,7 @@ SEXP py_vec_to_r_vec(PyObject *py_keys, PyObject *py_values, int r_vector_type){
         }
     }else{
         UNPROTECT(2);
-        error("in py_dict_to_r_vec (ERROR CODE 0001)!\n");          // shouldn't happen!!
+        error("in py_dict_to_r_vec (ERROR CODE 0001)!\n");              // shouldn't happen!!
     }
 
     setAttrib(r_vec, R_NamesSymbol, r_vec_names);
@@ -403,7 +382,7 @@ SEXP py_dict_to_r_vec(PyObject *py_object, int r_vector_type){
             // Py_XDECREF(item); Booleans never follow the api in Python!
             Py_DECREF(py_i);
         }
-    }else if (r_vector_type == 13){                                   // integer
+    }else if ( (r_vector_type == 12) | (r_vector_type == 13) ) {        // integer
         for (long i=0; i < vec_len; i++){
             py_i = PyLong_FromLong(i);
             item = PyList_GetItem(py_keys, PyLong_AsSsize_t(py_i));
@@ -541,7 +520,7 @@ SEXP py_list_to_r_vec(PyObject *py_object, int r_vector_type){
             // Py_XDECREF(item);
             Py_DECREF(py_i);
         }
-    }else if (r_vector_type == 13){                                   // integer
+    }else if ( (r_vector_type == 12) | (r_vector_type == 13) ) {        // integer
         for (long i=0; i < vec_len; i++){
             py_i = PyLong_FromLong(i);
             item = PyList_GetItem(py_object, PyLong_AsSsize_t(py_i));
@@ -615,7 +594,7 @@ SEXP py_tuple_to_r_vec(PyObject *py_object, int r_vector_type){
             //Py_XDECREF(item);
             Py_DECREF(py_i);
         }
-    }else if (r_vector_type == 13){                                   // integer
+    }else if ( (r_vector_type == 12) | (r_vector_type == 13) ) {        // integer
         for (long i=0; i < vec_len; i++){
             py_i = PyLong_FromLong(i);
             item = PyTuple_GetItem(py_object, PyLong_AsSsize_t(py_i));
@@ -628,7 +607,7 @@ SEXP py_tuple_to_r_vec(PyObject *py_object, int r_vector_type){
             Py_XDECREF(item);
             Py_DECREF(py_i);
         }
-    }else if (r_vector_type == 14){                                   // numeric
+    }else if (r_vector_type == 14){                                     // numeric
         for (long i=0; i < vec_len; i++){
             py_i = PyLong_FromLong(i);
             item = PyTuple_GetItem(py_object, PyLong_AsSsize_t(py_i));
@@ -637,7 +616,7 @@ SEXP py_tuple_to_r_vec(PyObject *py_object, int r_vector_type){
             Py_XDECREF(item);
             Py_DECREF(py_i);
         }
-    }else if (r_vector_type == 16){                                 // character
+    }else if (r_vector_type == 16){                                     // character
         for (long i=0; i < vec_len; i++){
             py_i = PyLong_FromLong(i);
             item = PyTuple_GetItem(py_object, PyLong_AsSsize_t(py_i));

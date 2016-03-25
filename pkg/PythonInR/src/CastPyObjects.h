@@ -12,10 +12,9 @@
 #include "PythonInR.h"
 #include "R_Run_String.h"
 #include "CToR.h"
+#include "Py_Utility.h"
 
 SEXP py_class(PyObject *py_object);
-
-int Py_GetR_Type(PyObject *py_object);
 
 int PyList_AllSameType(PyObject *py_object);
 

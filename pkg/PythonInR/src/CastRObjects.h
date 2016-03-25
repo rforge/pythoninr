@@ -13,8 +13,9 @@
 #include "CToR.h"
 #include "R_Run_String.h"
 #include "PythonObjects.h"
+#include "R_Utility.h"
 
-int has_typehint(SEXP x, const char *type);
+#define R_TO_PY_ITER(r, get, py, set) { for (long i = 0; i < len; i++) { item = get(r, i); set(py, i, item); } }
 
 PyObject *r_logical_to_py_boolean(SEXP r_object);
 
@@ -26,11 +27,17 @@ PyObject *r_character_to_py_string(SEXP r_object);
 
 PyObject *r_character_to_py_unicode(SEXP r_object);
 
-PyObject *r_to_py_primitive(SEXP r_object);
+PyObject *r_to_py_scalar(SEXP r_object);
+
+PyObject *r_to_py_vector(SEXP x);
 
 PyObject *r_to_py_tuple(SEXP r_object);
 
-PyObject *r_to_py_list(SEXP r_object);
+PyObject *r_vec_to_py_list(SEXP ro);
+
+PyObject *r_list_to_py_list(SEXP ro);
+
+PyObject *r_to_py_list(SEXP ro);
 
 PyObject *r_matrix_to_py_list(SEXP r_object);
 
@@ -41,8 +48,6 @@ const char *get_class_name_vec(SEXP x, int len);
 const char *get_class_name(SEXP x);
 
 int isPyInR_PyObject(SEXP x);
-
-int compare_r_class(SEXP x, const char *className);
 
 const char *r_get_py_object_location(SEXP x);
 
