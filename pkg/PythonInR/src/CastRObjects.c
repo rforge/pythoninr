@@ -138,6 +138,29 @@ PyObject *r_to_py_vector(SEXP x) {
 	return(pyo);
 }
 
+PyObject *r_to_py_tlist(SEXP x) {
+	int r_type = r_GetR_Type(x);
+	if ( r_type < 0 ) {
+		error("ValueError: in r_to_py_tlist expected vector got something else!");
+	}
+	PyObject *pyo = Py_Tlist(r_vec_to_py_list(x), r_type);
+	// TODO: Check Reference Counts! Should I decref py_list and py_names?	
+	return(pyo);
+}
+
+PyObject *r_to_py_ttuple(SEXP x) {
+	int r_type = r_GetR_Type(x);
+	if ( r_type < 0 ) {
+		error("ValueError: in r_to_py_ttuple expected vector got something else!");
+	}
+	PyObject *pyo = Py_Ttuple(r_vec_to_py_list(x), r_type);
+	// TODO: Check Reference Counts! Should I decref py_list and py_names?	
+	return(pyo);
+}
+
+
+
+
 /*  ----------------------------------------------------------------------------
 
     r_to_py_tuple
@@ -576,14 +599,23 @@ PyObject *r_to_py(SEXP x) {
 	int container = r_GetR_Container(x);
 	
 	if ( (100 <= container) & (container < 400) ) { /** Vector - Matrix Array**/
-		/// int r_type = r_GetR_Type(x);
+		/** Vector **/
 		if ( container == 100 ) return r_to_py_vector(x);
 		if ( container == 110 ) return r_to_py_scalar(x);
-		/// if ( container == 120 ) return r_to_py_typed_list(x);
-		/// if ( container == 130 ) return r_to_py_typed_tuple(x);
+		if ( container == 120 ) return r_to_py_tlist(x);
+		if ( container == 130 ) return r_to_py_ttuple(x);
+		if ( container == 140 ) return PY_VEC_TO_NUMPY_ARRAY(r_to_py_tlist(x));
 		
+		/** Matrix **/
+		if ( container == 200 ) return r_to_py_matrix(x); // TODO: Des geht nu bessa!
+		// if ( container == 220 )
+		// if ( container == 230 )
+		
+		/** Array **/
+		// if ( container == 300 )
+		// if ( container == 310 )
+				
 		/// if ( container == 200 ) return r_to_matrix(x);
-		
 	}
 	
 	if ( container == 700 ) {

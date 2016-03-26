@@ -31,6 +31,9 @@ PyObject *r_to_py_scalar(SEXP r_object);
 
 PyObject *r_to_py_vector(SEXP x);
 
+PyObject *r_to_py_tlist(SEXP x);
+
+
 PyObject *r_to_py_tuple(SEXP r_object);
 
 PyObject *r_vec_to_py_list(SEXP ro);

@@ -122,3 +122,22 @@ PyObject *Py_call_2_args(const char *c_obj_name, PyObject *x, PyObject *y) {
 	PyObject *pval = python_call(c_obj_name, py_args, NULL);
 	return pval;
 }
+
+PyObject *Py_call_3_args(const char *c_obj_name, PyObject *x, PyObject *y, PyObject *z) {
+	PyObject *py_args = PyTuple_New(3);
+	PyTuple_SET_ITEM(py_args, 0, x);
+	PyTuple_SET_ITEM(py_args, 1, y);
+	PyTuple_SET_ITEM(py_args, 2, z);
+	PyObject *pval = python_call(c_obj_name, py_args, NULL);
+	return pval;
+}
+
+PyObject *Py_call_4_args(const char *c_obj_name, PyObject *x1, PyObject *x2, PyObject *x3, PyObject *x4) {
+	PyObject *py_args = PyTuple_New(4);
+	PyTuple_SET_ITEM(py_args, 0, x1);
+	PyTuple_SET_ITEM(py_args, 1, x2);
+	PyTuple_SET_ITEM(py_args, 2, x3);
+	PyTuple_SET_ITEM(py_args, 3, x4);
+	PyObject *pval = python_call(c_obj_name, py_args, NULL);
+	return pval;
+}

@@ -25,3 +25,7 @@ PyObject *Py_call_1_arg(const char *c_obj_name, PyObject *x);
 SEXP Test_Py_call_1_arg(SEXP fun_name, SEXP arg);
 
 PyObject *Py_call_2_args(const char *c_obj_name, PyObject *x, PyObject *y);
+
+PyObject *Py_call_3_args(const char *c_obj_name, PyObject *x, PyObject *y, PyObject *z);
+
+PyObject *Py_call_4_args(const char *c_obj_name, PyObject *x1, PyObject *x2, PyObject *x3, PyObject *x4);
