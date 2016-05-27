@@ -16,6 +16,17 @@ PyObject *Py_Vec(PyObject *py_li, PyObject *py_names, int r_type) {
 	return py_li;
 }
 
+PyObject *Py_Matrix(PyObject *py_li, PyObject *py_dim, PyObject *py_dimnames, int r_type) {
+	if ( r_type == 10 ) return PY_MATRIX_BOOL(py_li, py_dim, py_dimnames);
+	if ( r_type == 12 ) return PY_MATRIX_INT(py_li, py_dim, py_dimnames);
+	if ( r_type == 13 ) return PY_MATRIX_LONG(py_li, py_dim, py_dimnames);
+	if ( r_type == 14 ) return PY_MATRIX_FLOAT(py_li, py_dim, py_dimnames);
+	if ( r_type == 16 ) return PY_MATRIX_STRING(py_li, py_dim, py_dimnames);
+	if ( r_type == 17 ) return PY_MATRIX_UNICODE(py_li, py_dim, py_dimnames);
+	if ( r_type ==  2 ) return PY_MATRIX_LIST(py_li, py_dim, py_dimnames);
+	return py_li;
+}
+
 PyObject *Py_Tlist(PyObject *py_li, int r_type) {
 	if ( r_type == 10 ) return PY_TLIST_BOOL(py_li);
 	if ( r_type == 12 ) return PY_TLIST_INT(py_li);

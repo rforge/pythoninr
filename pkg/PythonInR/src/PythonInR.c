@@ -373,7 +373,7 @@ SEXP set_character_to_py_unicode_flag(SEXP flag){
 }
 
 SEXP init_PythonInR_External_References(void) {
-	PY_To_R_Typecast = py_get_py_obj("__R__.toR");
+	PY_To_R_Typecast = py_get_py_obj("__R__.to_r");
 	// R_TO_PY_PREPROCESSING = r_eval_py_string("PythonInR:::r_to_py_preprocessing");
 	// PY_TO_R_POSTPROCESSING = r_eval_py_string("PythonInR:::r_to_py_postprocessing");
 	use_PY_To_R_Typecast = 1;

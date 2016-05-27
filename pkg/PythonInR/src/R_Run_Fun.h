@@ -12,11 +12,11 @@ SEXP Test_R_eval_1_arg(SEXP cmd, SEXP x);
 
 SEXP R_error(const char *message, const char *domain, const char *error_type);
 
-SEXP R_fun_dim(SEXP x);
+SEXP permute_array_to_numpy(SEXP x);
 
-SEXP R_fun_rownames(SEXP x);
+SEXP Test_permute_array_to_numpy(SEXP x) ;
 
-SEXP R_fun_colnames(SEXP x);
+SEXP permute_array_from_numpy(SEXP x);
 
 #endif
 

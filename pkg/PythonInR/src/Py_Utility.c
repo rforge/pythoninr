@@ -42,8 +42,8 @@ int Py_GetContainer_Type(PyObject *o) {
 	if ( PyList_Check(o) ) {
 		if ( PyList_CheckExact(o) ) return 400; /** A Plain List **/
 		if ( PyVec_Check(o) ) return 100; /** A sub-type from List called vector **/
-		if ( PyTypedList_Check(o) ) return 120; 
-		if ( PyTypedTuple_Check(o) ) return 130; 
+		// if ( PyTypedList_Check(o) ) return 120; 
+		// if ( PyTypedTuple_Check(o) ) return 130; 
 	}
 	
 	return container;

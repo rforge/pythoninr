@@ -94,6 +94,8 @@ PyObject *r_character_to_py_unicode(SEXP r_object){
 PyObject *r_to_py_scalar(SEXP r_object){
     PyObject *py_object;
     int r_type = r_GetR_Type(r_object);
+
+    Rprintf("r_to_py_scalar\n");
     
     if( r_type == 10 ) return R_TO_PY_BOOLEAN(r_object);
     if( r_type == 12 ) return R_TO_PY_INT(r_object);
@@ -113,53 +115,126 @@ PyObject *r_to_py_scalar(SEXP r_object){
 
   ----------------------------------------------------------------------------*/
 PyObject *r_to_py_vector(SEXP x) {
-	PyObject *py_names;
-	SEXP names = GET_NAMES(x);
-	PyObject *py_list  = r_vec_to_py_list(x);
-	
-	if ( GET_LENGTH(names) > 0 ) {
-		py_names = r_vec_to_py_list(names);
-	} else {
-		py_names = PY_NONE; 
-	}
-	
-	int r_type = r_GetR_Type(x);
-	if ( r_type < 0 ) {
-		error("ValueError: in r_to_py_vector expected vector got something else!");
-	}
-	PyObject *pyo = Py_Vec(py_list, py_names, r_type);
-	// TODO: Check Reference Counts! Should I decref py_list and py_names?
-	
-	///if ( has_typehint(x, "dict") ) {
-	///	PyObject *dict =  PyObject_CallMethod(pyo, "toDict", "");
-	///	return(dict);
-	///} 
-	
-	return(pyo);
+    PyObject *py_names;
+    SEXP names = GET_NAMES(x);
+    PyObject *py_list  = r_vec_to_py_list(x);
+    
+    if ( GET_LENGTH(names) > 0 ) {
+        py_names = r_vec_to_py_list(names);
+    } else {
+        py_names = PY_NONE; 
+    }
+    
+    int r_type = r_GetR_Type(x);
+    if ( r_type < 0 ) {
+        error("ValueError: in r_to_py_vector expected vector got something else!");
+    }
+    PyObject *pyo = Py_Vec(py_list, py_names, r_type);
+    // TODO: Check Reference Counts! Should I decref py_list and py_names?
+    
+    ///if ( has_typehint(x, "dict") ) {
+    /// PyObject *dict =  PyObject_CallMethod(pyo, "to_dict", "");
+    /// return(dict);
+    ///} 
+    
+    return(pyo);
+}
+
+/*  ----------------------------------------------------------------------------
+
+    r_to_py_matrix
+
+  ----------------------------------------------------------------------------*/
+PyObject *r_to_py_matrix(SEXP x) {
+    PyObject *py_dimnames;
+    if ( GET_LENGTH(GET_DIMNAMES(x)) > 0 ) {
+        Rprintf("r_to_py_matrix: len dimnames > 0!\n");
+        py_dimnames = r_to_py(GET_DIMNAMES(x));
+    } else {
+        Rprintf("r_to_py_matrix: len dimnames == 0!\n");
+        py_dimnames = PY_NONE; 
+    }
+    PyObject *py_dim = r_to_py_tuple(GET_DIM(x));
+    
+    int r_type = IS_RAW(x) ? 24 : r_GetR_Type(x);
+    if ( r_type < 0 ) {
+        error("ValueError: in r_to_py_matrix unsupported type!");
+    }
+
+    PyObject *py_list = (r_type == 24) ? r_list_to_py_list(x) : r_vec_to_py_list(x);
+    PyObject *pyo = Py_Matrix(py_list, py_dim, py_dimnames, r_type);
+    // TODO: Check Reference Counts!
+    return(pyo);
+}
+
+/*  ----------------------------------------------------------------------------
+
+    r_to_py_array
+
+  ----------------------------------------------------------------------------*/
+PyObject *r_to_py_array(SEXP r_object) {
+    // TODO: dimnames currently not supported
+    PyObject *py_array = r_vec_to_py_list(permute_array_to_numpy(r_object));
+    PyObject *py_dim = r_to_py_tuple(GET_DIM(r_object));
+    PyObject *py_type = PyInt_FromLong(r_GetR_Type(r_object));
+    PyObject *pyo = PY_ARRAY(py_array, py_dim, PY_NONE, py_type);
+    return(pyo);
+}
+
+/*  ----------------------------------------------------------------------------
+
+    r_to_py_simple_triplet_matrix
+
+  ----------------------------------------------------------------------------*/
+PyObject *r_to_py_simple_triplet_matrix(SEXP r_object) {
+    // SEXP len = GET_LENGTH(r_object);
+    SEXP names = GET_NAMES(r_object);
+    PyObject *py_object = r_to_py_dict(names, r_object);
+    return PY_STM_FROM_DICT(py_object);
 }
 
 PyObject *r_to_py_tlist(SEXP x) {
-	int r_type = r_GetR_Type(x);
-	if ( r_type < 0 ) {
-		error("ValueError: in r_to_py_tlist expected vector got something else!");
-	}
-	PyObject *pyo = Py_Tlist(r_vec_to_py_list(x), r_type);
-	// TODO: Check Reference Counts! Should I decref py_list and py_names?	
-	return(pyo);
+    int r_type = r_GetR_Type(x);
+    if ( r_type < 0 ) {
+        error("ValueError: in r_to_py_tlist expected vector got something else!");
+    }
+    PyObject *pyo = Py_Tlist(r_vec_to_py_list(x), r_type);
+    // TODO: Check Reference Counts! Should I decref py_list and py_names?  
+    return(pyo);
 }
 
 PyObject *r_to_py_ttuple(SEXP x) {
-	int r_type = r_GetR_Type(x);
-	if ( r_type < 0 ) {
-		error("ValueError: in r_to_py_ttuple expected vector got something else!");
-	}
-	PyObject *pyo = Py_Ttuple(r_vec_to_py_list(x), r_type);
-	// TODO: Check Reference Counts! Should I decref py_list and py_names?	
-	return(pyo);
+    int r_type = r_GetR_Type(x);
+    if ( r_type < 0 ) {
+        error("ValueError: in r_to_py_ttuple expected vector got something else!");
+    }
+    PyObject *pyo = Py_Ttuple(r_vec_to_py_list(x), r_type);
+    // TODO: Check Reference Counts! Should I decref py_list and py_names?  
+    return(pyo);
 }
 
 
+/*  ----------------------------------------------------------------------------
 
+    r_to_py_data_frame
+
+  ----------------------------------------------------------------------------*/
+PyObject *r_to_py_data_frame(SEXP x) {
+    PyObject *df = r_to_py_dict(GET_NAMES(x), x);
+    PyObject *rn = HAS_ROWNAMES(x) ? r_to_py_list(GET_ROWNAMES(GET_DIMNAMES(x))) : PY_NONE;
+    PyObject *cn = HAS_COLNAMES(x) ? r_to_py_list(GET_COLNAMES(GET_DIMNAMES(x))) : PY_NONE;
+    PyObject *pyo = PY_DATA_FRAME(df, rn, cn, r_to_py(GET_DIM(x)));
+    return pyo;
+}
+
+/*  ----------------------------------------------------------------------------
+
+    r_to_py_tree
+
+  ----------------------------------------------------------------------------*/
+PyObject *r_to_py_tree(SEXP r_object) {
+    return( PY_TREE(r_to_py_dict(GET_NAMES(r_object), r_object)) );
+}
 
 /*  ----------------------------------------------------------------------------
 
@@ -181,20 +256,20 @@ PyObject *r_to_py_tuple(SEXP r_object){
             PyTuple_SET_ITEM(py_object, i, item);
         }
     }else if ( IS_INTEGER(r_object) ){
-		int tmp = r_int_to_py_long_flag;
-		if ( has_typehint(r_object, "int") ) {
-			r_int_to_py_long_flag = 0;
-			for(i = 0; i < len; i++) {
-				item = R_TO_PY_LONG_V(r_object,i);
-				PyTuple_SET_ITEM(py_object, i, item);
-			}
-			r_int_to_py_long_flag = tmp;
-		} else {
-			for(i = 0; i < len; i++) {
-				item = R_TO_PY_LONG_V(r_object,i);
-				PyTuple_SET_ITEM(py_object, i, item);
-			}
-		}
+        int tmp = r_int_to_py_long_flag;
+        if ( has_typehint(r_object, "int") ) {
+            r_int_to_py_long_flag = 0;
+            for(i = 0; i < len; i++) {
+                item = R_TO_PY_LONG_V(r_object,i);
+                PyTuple_SET_ITEM(py_object, i, item);
+            }
+            r_int_to_py_long_flag = tmp;
+        } else {
+            for(i = 0; i < len; i++) {
+                item = R_TO_PY_LONG_V(r_object,i);
+                PyTuple_SET_ITEM(py_object, i, item);
+            }
+        }
     }else if ( IS_NUMERIC(r_object) ){
         for(i = 0; i < len; i++) {
             item = R_TO_PY_DOUBLE_V(r_object,i);
@@ -228,7 +303,7 @@ PyObject *r_to_py_tuple(SEXP r_object){
 PyObject *r_vec_to_py_list(SEXP ro) {
     PyObject *pyo, *item;
     
-	int r_type = r_GetR_Type(ro);
+    int r_type = r_GetR_Type(ro);
 
     long len = GET_LENGTH(ro);
     pyo = PyList_New(len);
@@ -239,33 +314,33 @@ PyObject *r_vec_to_py_list(SEXP ro) {
     } else if ( r_type == 14 ) { R_TO_PY_ITER(ro, R_TO_PY_DOUBLE_V,  pyo, PyList_SET_ITEM);
     } else if ( r_type == 16 ) { R_TO_PY_ITER(ro, R_TO_PY_STRING_V,  pyo, PyList_SET_ITEM);
     } else if ( r_type == 17 ) { R_TO_PY_ITER(ro, R_TO_PY_UNICODE_V, pyo, PyList_SET_ITEM);
-	}
+    }
     return pyo;
 }
 
 PyObject *r_list_to_py_list(SEXP ro) {
-	PyObject *pyo, *item;
+    PyObject *pyo, *item;
     
     long len = GET_LENGTH(ro);
     pyo = PyList_New(len);
     
     for (long i = 0; i < len; i++) {
-		item = r_to_py(VECTOR_ELT(ro, i));
-		PyList_SET_ITEM(pyo, i, item);
+        item = r_to_py(VECTOR_ELT(ro, i));
+        PyList_SET_ITEM(pyo, i, item);
     }
     return pyo;
 }
 
 PyObject *r_to_py_list(SEXP ro) {
-	if ( isNull(ro) ) Py_RETURN_NONE;
-	
-	int container = r_GetR_Container(ro);
-	
-	if ( (100 <= container) & (container < 200) ) {
-		return r_vec_to_py_list(ro);
-	} else if ( (400 <= container) & (container < 500) ) {
-		return r_list_to_py_list(ro);
-	}
+    if ( isNull(ro) ) Py_RETURN_NONE;
+    
+    int container = r_GetR_Container(ro);
+    
+    if ( (100 <= container) & (container < 200) ) {
+        return r_vec_to_py_list(ro);
+    } else if ( (400 <= container) & (container < 500) ) {
+        return r_list_to_py_list(ro);
+    }
     error("TypeError: in r_to_py_list object is no list nor a vector!");
     return NULL;
 }
@@ -276,59 +351,59 @@ PyObject *r_to_py_list(SEXP ro) {
 
   ----------------------------------------------------------------------------*/
 PyObject *r_matrix_to_py_list(SEXP r_object) {
-	PyObject *py_object;
-	long k, i, j;
-	
-	int nrow = INTEGER(GET_DIM(r_object))[0];
-	int ncol = INTEGER(GET_DIM(r_object))[1];
-	   
+    PyObject *py_object;
+    long k, i, j;
+    
+    int nrow = INTEGER(GET_DIM(r_object))[0];
+    int ncol = INTEGER(GET_DIM(r_object))[1];
+       
     py_object = PyList_New(nrow);
         
     SEXP col = PROTECT(allocVector(r_GetR_Type(r_object), ncol));
-    for (i = 0; i < nrow; i++) {		
-		if( IS_LOGICAL(r_object) ) {
-			for(j = 0; j < ncol; j++) {
-				k = (j * nrow) + i;
-				LOGICAL(col)[j] = LOGICAL(r_object)[k];
-			}
-		}else if ( IS_INTEGER(r_object) ) {
-			int tmp = r_int_to_py_long_flag;
-			if ( has_typehint(r_object, "int") ) {
-				r_int_to_py_long_flag = 0;
-				for(j = 0; j < ncol; j++) {
-					k = (j * nrow) + i;
-					INTEGER(col)[j] = INTEGER(r_object)[k];
-				}
-				r_int_to_py_long_flag = tmp;
-			} else {
-				for(j = 0; j < ncol; j++) {
-					k = (j * nrow) + i;
-					INTEGER(col)[j] = INTEGER(r_object)[k];
-				}
-			}
-		}else if ( IS_NUMERIC(r_object) ) {
-			for(j = 0; j < ncol; j++) {
-				k = (j * nrow) + i;
-				REAL(col)[j] = REAL(r_object)[k];
-			}
-		}else if ( IS_CHARACTER(r_object) ) {
-			for(j = 0; j < ncol; j++) {
-				k = (j * nrow) + i;
-				SET_STRING_ELT(col, j, STRING_ELT(r_object, k));
-			}
-		}else if ( isComplex(r_object) ) {
-			for(j = 0; j < ncol; j++) {
-				k = (j * nrow) + i;
-				COMPLEX(col)[j] = COMPLEX(r_object)[k];
-			}
-		}else {
-			Py_XDECREF(py_object);
-			error("in r_to_py_list\n     unkown data type!\n\n");
-		}
-		PyList_SET_ITEM(py_object, i, r_to_py_list(col));
-	}
-	UNPROTECT(1);
-	return py_object;
+    for (i = 0; i < nrow; i++) {        
+        if( IS_LOGICAL(r_object) ) {
+            for(j = 0; j < ncol; j++) {
+                k = (j * nrow) + i;
+                LOGICAL(col)[j] = LOGICAL(r_object)[k];
+            }
+        }else if ( IS_INTEGER(r_object) ) {
+            int tmp = r_int_to_py_long_flag;
+            if ( has_typehint(r_object, "int") ) {
+                r_int_to_py_long_flag = 0;
+                for(j = 0; j < ncol; j++) {
+                    k = (j * nrow) + i;
+                    INTEGER(col)[j] = INTEGER(r_object)[k];
+                }
+                r_int_to_py_long_flag = tmp;
+            } else {
+                for(j = 0; j < ncol; j++) {
+                    k = (j * nrow) + i;
+                    INTEGER(col)[j] = INTEGER(r_object)[k];
+                }
+            }
+        }else if ( IS_NUMERIC(r_object) ) {
+            for(j = 0; j < ncol; j++) {
+                k = (j * nrow) + i;
+                REAL(col)[j] = REAL(r_object)[k];
+            }
+        }else if ( IS_CHARACTER(r_object) ) {
+            for(j = 0; j < ncol; j++) {
+                k = (j * nrow) + i;
+                SET_STRING_ELT(col, j, STRING_ELT(r_object, k));
+            }
+        }else if ( isComplex(r_object) ) {
+            for(j = 0; j < ncol; j++) {
+                k = (j * nrow) + i;
+                COMPLEX(col)[j] = COMPLEX(r_object)[k];
+            }
+        }else {
+            Py_XDECREF(py_object);
+            error("in r_to_py_list\n     unkown data type!\n\n");
+        }
+        PyList_SET_ITEM(py_object, i, r_to_py_list(col));
+    }
+    UNPROTECT(1);
+    return py_object;
 }
 
 /*  ----------------------------------------------------------------------------
@@ -350,22 +425,22 @@ PyObject *r_to_py_dict(SEXP r_keys, SEXP r_values){
             PyDict_SetItem(py_object, key, value);
         }
     }else if ( IS_INTEGER(r_values) ){
-		int tmp = r_int_to_py_long_flag;
-		if ( has_typehint(r_values, "int") ) {
-			r_int_to_py_long_flag = 0;
-			for(i = 0; i < len; i++) {
-				key = R_TO_PY_UNICODE_V(r_keys,i);
-				value = R_TO_PY_LONG_V(r_values,i);
-				PyDict_SetItem(py_object, key, value);
-			}
-			r_int_to_py_long_flag = tmp;
-		} else {
-			for(i = 0; i < len; i++) {
-				key = R_TO_PY_UNICODE_V(r_keys,i);
-				value = R_TO_PY_LONG_V(r_values,i);
-				PyDict_SetItem(py_object, key, value);
-			}
-		}
+        int tmp = r_int_to_py_long_flag;
+        if ( has_typehint(r_values, "int") ) {
+            r_int_to_py_long_flag = 0;
+            for(i = 0; i < len; i++) {
+                key = R_TO_PY_UNICODE_V(r_keys,i);
+                value = R_TO_PY_LONG_V(r_values,i);
+                PyDict_SetItem(py_object, key, value);
+            }
+            r_int_to_py_long_flag = tmp;
+        } else {
+            for(i = 0; i < len; i++) {
+                key = R_TO_PY_UNICODE_V(r_keys,i);
+                value = R_TO_PY_LONG_V(r_values,i);
+                PyDict_SetItem(py_object, key, value);
+            }
+        }
     }else if ( IS_NUMERIC(r_values) ){
         for(i = 0; i < len; i++) {
             key = R_TO_PY_UNICODE_V(r_keys,i);
@@ -441,49 +516,49 @@ SEXP test_r_flags(SEXP x){
 }
 
 const char *get_class_name_vec(SEXP x, int len) {
-	int o = (len == 1);
+    int o = (len == 1);
     if( IS_LOGICAL( x ) )
-		return (o) ? "logical" : "vector.logical";
-	else if( IS_INTEGER( x ) ) {
-		if ( has_typehint(x, "int") )
-			return (o) ? "integer" : "vector.integer";
-		else
-			return (o) ? "long" : "vector.long";
+        return (o) ? "logical" : "vector.logical";
+    else if( IS_INTEGER( x ) ) {
+        if ( has_typehint(x, "int") )
+            return (o) ? "integer" : "vector.integer";
+        else
+            return (o) ? "long" : "vector.long";
     } else if( IS_NUMERIC( x ) )
-		return (o) ? "numeric" : "vector.numeric";
-	else if ( IS_CHARACTER( x ) ) {
-		if ( has_typehint(x, "string") )
-			return (o) ? "string" : "vector.string";
-		else if ( has_typehint(x, "bytes") )
-			return (o) ? "bytes" : "vector.bytes";
-		else
-			return (o) ? "unicode" : "vector.unicode";
-	} else if ( isComplex( x ) ) 
-		return (o) ? "complex" : "vector.complex";
-	return NULL;
+        return (o) ? "numeric" : "vector.numeric";
+    else if ( IS_CHARACTER( x ) ) {
+        if ( has_typehint(x, "string") )
+            return (o) ? "string" : "vector.string";
+        else if ( has_typehint(x, "bytes") )
+            return (o) ? "bytes" : "vector.bytes";
+        else
+            return (o) ? "unicode" : "vector.unicode";
+    } else if ( isComplex( x ) ) 
+        return (o) ? "complex" : "vector.complex";
+    return NULL;
 }
 
 const char *get_class_name(SEXP x) {
-	
-	if ( x == NULL ) 
-		return "NULL";
-	else if ( isPyInR_PyObject( x ) ) {
-		return "PythonInR_Object";
-	} if ( IS_RVECTOR( x ) & !isArray( x ) ) {
-		return get_class_name_vec(x, GET_LENGTH(x));
+    
+    if ( x == NULL ) 
+        return "NULL";
+    else if ( isPyInR_PyObject( x ) ) {
+        return "PythonInR_Object";
+    } if ( IS_RVECTOR( x ) & !isArray( x ) ) {
+        return get_class_name_vec(x, GET_LENGTH(x));
     } else if ( isArray( x ) & !isMatrix( x ) ) {
-		return "array";
+        return "array";
     } else if ( isMatrix( x ) ) {
-		return "matrix";
+        return "matrix";
     } else if ( IS_LIST( x ) ) {
-		if ( isFrame( x ) ) {
-			return "data.frame";
-		} else if ( GET_LENGTH(GET_NAMES(x)) > 0 ) {
-			return "named.list";
-		} else {
-			return "list";
-		} 
-	} else if ( GET_LENGTH(x) == 0 ) {
+        if ( isFrame( x ) ) {
+            return "data.frame";
+        } else if ( GET_LENGTH(GET_NAMES(x)) > 0 ) {
+            return "named.list";
+        } else {
+            return "list";
+        } 
+    } else if ( GET_LENGTH(x) == 0 ) {
         return "unknown.len0";
     }
     return "unknown";
@@ -501,50 +576,50 @@ int isPyInR_PyObject(SEXP x) {
     if ( isS4(x) ) return(is_py_in_r_obj);
     SEXP cls = getAttrib(x, R_ClassSymbol);
     if (IS_CHARACTER(cls)){
-		int i = GET_LENGTH(cls) - 2; // -2 da letztes element R6 und von 0 weg
-		if (i >= 0){
-			is_py_in_r_obj = (strncmp(R_TO_C_STRING_V(cls, i), "PythonInR_Object", 8) == 0);
-		}
+        int i = GET_LENGTH(cls) - 2; // -2 da letztes element R6 und von 0 weg
+        if (i >= 0){
+            is_py_in_r_obj = (strncmp(R_TO_C_STRING_V(cls, i), "PythonInR_Object", 8) == 0);
+        }
     }
     return is_py_in_r_obj;
 }
 
 const char *r_get_py_object_location(SEXP x) {
-	SEXP cx, names;
-	int i, len;
-	
-	x = CAR(x);
-	names = GET_NAMES(x);
-	len = GET_LENGTH(x);
-	
-	for(i = 0; i < len; i++) {
-		if ( strcmp(R_TO_C_STRING_V(names, i), "py.variableName") == 0 ){
-			cx = nthcdr(x, (int) i);
-			x = CAR(cx);
-			return R_TO_C_STRING(x);
-		}
-	}
-	return NULL;
+    SEXP cx, names;
+    int i, len;
+    
+    x = CAR(x);
+    names = GET_NAMES(x);
+    len = GET_LENGTH(x);
+    
+    for(i = 0; i < len; i++) {
+        if ( strcmp(R_TO_C_STRING_V(names, i), "py.variableName") == 0 ){
+            cx = nthcdr(x, (int) i);
+            x = CAR(cx);
+            return R_TO_C_STRING(x);
+        }
+    }
+    return NULL;
 }
 
 SEXP r_to_py_preprocessing(SEXP x) {
-	SEXP cls = getAttrib(x, R_ClassSymbol);
-	if ( cls == NULL ) 
-		return x;
-	
-	SEXP e;
-	int hadError;
-	char c_string[MAXELTSIZE+1];
-	
-	snprintf(c_string, MAXELTSIZE + 1, 
-	         "PythonInR:::r_to_py_preprocessing[['%s']]", 
-	         CHAR(STRING_ELT(cls, 0)));
-	
-	SEXP fun = r_eval_string(c_string);
-	if ( fun == NULL ) 
-		return x;
-	
-	PROTECT(e = allocVector(LANGSXP, 2));   
+    SEXP cls = getAttrib(x, R_ClassSymbol);
+    if ( cls == NULL ) 
+        return x;
+    
+    SEXP e;
+    int hadError;
+    char c_string[MAXELTSIZE+1];
+    
+    snprintf(c_string, MAXELTSIZE + 1, 
+             "PythonInR:::r_to_py_preprocessing[['%s']]", 
+             CHAR(STRING_ELT(cls, 0)));
+    
+    SEXP fun = r_eval_string(c_string);
+    if ( fun == NULL ) 
+        return x;
+    
+    PROTECT(e = allocVector(LANGSXP, 2));   
     SETCAR(e, fun);
 
     SETCADR(e, x);
@@ -552,26 +627,26 @@ SEXP r_to_py_preprocessing(SEXP x) {
     SEXP r_obj = R_tryEval(e, NULL, &hadError);
     
     if (hadError){
-		Rprintf("an error occurred in r_to_py_preprocessing\n");
-	}
-	UNPROTECT(1);
-	return(r_obj);
+        Rprintf("an error occurred in r_to_py_preprocessing\n");
+    }
+    UNPROTECT(1);
+    return(r_obj);
 }
 
 SEXP r_to_py_preprocessing_class(SEXP x, const char *cls) {
-	SEXP e;
-	int hadError;
-	char c_string[MAXELTSIZE+1];
-	
-	snprintf(c_string, MAXELTSIZE + 1, 
-	         "PythonInR:::r_to_py_preprocessing[['%s']]", 
-	         cls);
-	
-	SEXP fun = r_eval_string(c_string);
-	if ( fun == NULL ) 
-		return x;
-	
-	PROTECT(e = allocVector(LANGSXP, 2));   
+    SEXP e;
+    int hadError;
+    char c_string[MAXELTSIZE+1];
+    
+    snprintf(c_string, MAXELTSIZE + 1, 
+             "PythonInR:::r_to_py_preprocessing[['%s']]", 
+             cls);
+    
+    SEXP fun = r_eval_string(c_string);
+    if ( fun == NULL ) 
+        return x;
+    
+    PROTECT(e = allocVector(LANGSXP, 2));   
     SETCAR(e, fun);
 
     SETCADR(e, x);
@@ -579,10 +654,10 @@ SEXP r_to_py_preprocessing_class(SEXP x, const char *cls) {
     SEXP r_obj = R_tryEval(e, NULL, &hadError);
     
     if (hadError){
-		Rprintf("an error occurred in r_to_py_preprocessing\n");
-	}
-	UNPROTECT(1);
-	return(r_obj);
+        Rprintf("an error occurred in r_to_py_preprocessing\n");
+    }
+    UNPROTECT(1);
+    return(r_obj);
 }
 
 /*  ----------------------------------------------------------------------------
@@ -593,85 +668,112 @@ SEXP r_to_py_preprocessing_class(SEXP x, const char *cls) {
     
   ----------------------------------------------------------------------------*/
 PyObject *r_to_py(SEXP x) {
-	
-	if ( isNull(x) ) Py_RETURN_NONE;
-	
-	int container = r_GetR_Container(x);
-	
-	if ( (100 <= container) & (container < 400) ) { /** Vector - Matrix Array**/
-		/** Vector **/
-		if ( container == 100 ) return r_to_py_vector(x);
-		if ( container == 110 ) return r_to_py_scalar(x);
-		if ( container == 120 ) return r_to_py_tlist(x);
-		if ( container == 130 ) return r_to_py_ttuple(x);
-		if ( container == 140 ) return PY_VEC_TO_NUMPY_ARRAY(r_to_py_tlist(x));
-		
-		/** Matrix **/
-		if ( container == 200 ) return r_to_py_matrix(x); // TODO: Des geht nu bessa!
-		// if ( container == 220 )
-		// if ( container == 230 )
-		
-		/** Array **/
-		// if ( container == 300 )
-		// if ( container == 310 )
-				
-		/// if ( container == 200 ) return r_to_matrix(x);
-	}
-	
-	if ( container == 700 ) {
-		const char *py_obj_name = r_get_py_object_location(x);
-		if ( py_obj_name == NULL) error("PythonInR object is not valid!");
-		return py_get_py_obj( py_obj_name );
-	}
-	
-	Py_RETURN_NONE; 
+    
+    if ( isNull(x) ) Py_RETURN_NONE;
+    
+    int container = r_GetR_Container(x);
+    
+    if ( (100 <= container) & (container < 400) ) { /** Vector - Matrix Array**/
+        /** Vector **/
+        if ( container == 100 ) return r_to_py_vector(x);
+        if ( container == 110 ) return r_to_py_scalar(x);
+        if ( container == 120 ) return r_to_py_tlist(x);
+        if ( container == 130 ) return r_to_py_ttuple(x);
+        if ( container == 140 ) return PY_VEC_TO_NUMPY_ARRAY(r_to_py_tlist(x));
+        
+        /** Matrix **/
+        if ( container == 200 ) return r_to_py_matrix(x);
+        if ( container == 220 ) return PY_MATRIX_TO_NUMPY(r_to_py_matrix(x));
+        if ( container == 230 ) return PY_MATRIX_TO_CVXOPT(r_to_py_matrix(x));
+        
+        /** Array **/
+        if ( container == 300 ) {
+            Rprintf("r_to_py: 300\n");
+            return r_to_py_array(x);
+        }
+        if ( container == 310 ) {
+            Rprintf("r_to_py: 310\n");
+            return PY_ARRAY_TO_NUMPY(r_to_py_array(x));
+        }
 
-/**	
+    } else if ( (400 <= container) & (container < 600) ) {
+        /** list **/
+        if ( container == 400 ) return r_list_to_py_list(x);
+        /** named list **/
+        if ( container == 430 ) return r_to_py_dict(GET_NAMES(x), x);
+
+        /** data.frame **/
+        if ( container == 500 ) return r_to_py_data_frame(x);
+
+        /** simple_triplet_matrix (sparse matrix formats) **/
+        if ( container == 420 ) return r_to_py_simple_triplet_matrix(x);
+        if ( container == 421 ) return PY_STM_TO_CVXOPT(x);
+        if ( container == 422 ) return PY_STM_TO_BSR(x);
+        if ( container == 423 ) return PY_STM_TO_COO(x);
+        if ( container == 424 ) return PY_STM_TO_CSC(x);
+        if ( container == 425 ) return PY_STM_TO_CSR(x);
+        if ( container == 426 ) return PY_STM_TO_DENSE(x);
+        if ( container == 427 ) return PY_STM_TO_DIA(x);
+        if ( container == 428 ) return PY_STM_TO_DOK(x);
+        if ( container == 429 ) return PY_STM_TO_LIL(x);
+
+        /** nlp.Tree **/
+        if ( container == 410 ) return r_to_py_tree(x);
+
+    } else if ( container == 700 ) {
+        const char *py_obj_name = r_get_py_object_location(x);
+        if ( py_obj_name == NULL) error("PythonInR object is not valid!");
+        return py_get_py_obj( py_obj_name );
+    }
+    
+    Py_RETURN_NONE; 
+
+/** 
     PyObject *py_object = PY_NONE;
     long len=-1; 
     SEXP names;
       
-	if ( isPyInR_PyObject(r_object) ){
-		const char *py_obj_name = r_get_py_object_location(r_object);
-		if ( py_obj_name == NULL) error("PythonInR object is not valid!");
-		py_object = py_get_py_obj( py_obj_name );
-		return py_object;
-	} else if ( compare_r_class(r_object, "tuple") ) {
-		py_object = r_to_py_tuple(r_object);
-		return py_object;
-	}
+    if ( isPyInR_PyObject(r_object) ){
+        const char *py_obj_name = r_get_py_object_location(r_object);
+        if ( py_obj_name == NULL) error("PythonInR object is not valid!");
+        py_object = py_get_py_obj( py_obj_name );
+        return py_object;
+    } else if ( compare_r_class(r_object, "tuple") ) {
+        py_object = r_to_py_tuple(r_object);
+        return py_object;
+    }
     
     len = GET_LENGTH(r_object);
     names = GET_NAMES(r_object);
            
     if ( IS_RVECTOR(r_object) & !isArray(r_object) ) {                  // Case 2: Convert to int, unicode, ...!
-		if ( (len == 1) & !(HAS_TH_VECTOR(r_object) | HAS_TH_LIST(r_object) | HAS_TH_TUPLE(r_object)) ) {
-			py_object = r_to_py_scalar(r_object);
-		} else {                                                        // Case 3: Convert to Vector
-			if ( r_vec_to_list_flag | has_typehint(r_object, "list") ) {
-				py_object = r_to_py_list(r_object);
-			} else if ( has_typehint(r_object, "tuple") ) {
-				py_object = r_to_py_tuple(r_object);
-			} else {
-				py_object = r_to_py_vector(names, r_object);
-			}
-		}
+        if ( (len == 1) & !(HAS_TH_VECTOR(r_object) | HAS_TH_LIST(r_object) | HAS_TH_TUPLE(r_object)) ) {
+            py_object = r_to_py_scalar(r_object);
+        } else {                                                        // Case 3: Convert to Vector
+            if ( r_vec_to_list_flag | has_typehint(r_object, "list") ) {
+                py_object = r_to_py_list(r_object);
+            } else if ( has_typehint(r_object, "tuple") ) {
+                py_object = r_to_py_tuple(r_object);
+            } else {
+                py_object = r_to_py_vector(names, r_object);
+            }
+        }
     } else if ( isArray(r_object) & !isMatrix(r_object) ) {
-		py_object = r_to_py_array(r_object);
+        py_object = r_to_py_array(r_object);
     } else if ( isMatrix(r_object) ) {
-		py_object = r_to_py_matrix(r_object);
+        py_object = r_to_py_matrix(r_object);
     } else if ( IS_LIST(r_object) ) {
-		if ( compare_r_class(r_object, "Tree") ) {
-			py_object = r_to_py_tree(r_object);
-		} else if ( compare_r_class(r_object, "simple_triplet_matrix") ) {
-			py_object = r_slam_to_py_sparse(r_object, 1);
-		} else if ( isFrame(r_object) ) {
-			py_object = r_to_py_dataFrame(r_object);
-		} else if( GET_LENGTH(names) > 0 ) {                            // Case 1: R object has names!        
-			py_object = r_to_py_dict(names, r_object);
-		} else {                                                        // Case 3: R object is a list!
-			py_object = r_to_py_list(r_object);
-		}
+        if ( compare_r_class(r_object, "Tree") ) {
+            py_object = r_to_py_tree(r_object);
+        } else if ( compare_r_class(r_object, "simple_triplet_matrix") ) {
+            py_object = r_slam_to_py_sparse(r_object, 1);
+        } else if ( isFrame(r_object) ) {
+            py_object = r_to_py_dataFrame(r_object);
+        } else if( GET_LENGTH(names) > 0 ) {                            // Case 1: R object has names!        
+            py_object = r_to_py_dict(names, r_object);
+        } else {                                                        // Case 3: R object is a list!
+            py_object = r_to_py_list(r_object);
+        }
     } else if ( len == 0 ) {                                            // Case 4: Convert R NULL or character(0), ... to Py_None
         Py_RETURN_NONE; // Return value: New reference.
     } else {

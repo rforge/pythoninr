@@ -29,7 +29,7 @@ SEXP R_eval_1_arg(const char *cmd, SEXP x) {
 }
 
 SEXP Test_R_eval_1_arg(SEXP cmd, SEXP x) {
-	const char * c_cmd = R_TO_C_STRING(x);
+	const char *c_cmd = R_TO_C_STRING(cmd);
 	return R_eval_1_arg(c_cmd, x);
 }
 
@@ -58,14 +58,14 @@ SEXP R_error(const char *message, const char *domain, const char *error_type) {
 	return r_list;
 }
 
-SEXP R_fun_dim(SEXP x) {
-	return R_eval_1_arg("dim", x);
+SEXP permute_array_to_numpy(SEXP x) {
+	return R_eval_1_arg("function(x) aperm(x, rev(seq_len(length(dim(x)))))", x);
 }
 
-SEXP R_fun_rownames(SEXP x) {
-	return R_eval_1_arg("rownames", x);
+SEXP Test_permute_array_to_numpy(SEXP x) {
+	return permute_array_to_numpy(x);
 }
 
-SEXP R_fun_colnames(SEXP x) {	
-	return R_eval_1_arg("colnames", x);
+SEXP permute_array_from_numpy(SEXP x) {
+	return R_eval_1_arg("function(x) aperm(array(x$values, rev(x$dim)), rev(seq_len(length(x$dim))))", x);
 }

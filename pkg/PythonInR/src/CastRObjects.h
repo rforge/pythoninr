@@ -12,6 +12,7 @@
 #include "PythonInR.h"
 #include "CToR.h"
 #include "R_Run_String.h"
+#include "R_Run_Fun.h"
 #include "PythonObjects.h"
 #include "R_Utility.h"
 

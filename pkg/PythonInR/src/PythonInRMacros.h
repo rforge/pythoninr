@@ -23,6 +23,9 @@
 #define IS_STRING(o)  ( IS_CHARACTER(o) &  (has_typehint(o, "string") | !r_character_to_py_unicode_flag ) )
 #define IS_UNICODE(o) ( IS_CHARACTER(o) & !(has_typehint(o, "string") | !r_character_to_py_unicode_flag ) )
 
+#define HAS_ROWNAMES(o) ( GET_LENGTH(GET_ROWNAMES(GET_DIMNAMES(o))) > 0 )
+#define HAS_COLNAMES(o) ( GET_LENGTH(GET_COLNAMES(GET_DIMNAMES(o))) > 0 )
+
 ////////////////////////////////////////////////////////////////////////
 // Define some makros to convert R primitives to C
 ////////////////////////////////////////////////////////////////////////
