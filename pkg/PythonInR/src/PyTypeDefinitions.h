@@ -86,5 +86,7 @@ PyObject *Py_Ttuple(PyObject *py_li, int r_type);
 #define PyVecFloat_Check(x)   Py_call_1_arg("__R__.is_vector_float", x)
 #define PyVecString_Check(x)  Py_call_1_arg("__R__.is_vector_string", x)
 #define PyVecUnicode_Check(x) Py_call_1_arg("__R__.is_vector_unicode", x)
+
+#define GET_CONTAINER_TYPE(x) Py_call_1_arg("__R__.get_container_type", x)
    
 #endif

@@ -11,8 +11,44 @@
 
 #include "PythonInR.h"
 #include "R_Run_String.h"
+#include "R_Run_Fun.h"
 #include "CToR.h"
 #include "Py_Utility.h"
+
+#define PY_TO_R__BOOL(o)    c_to_r_boolean(PY_TO_C_BOOLEAN(o))
+#define PY_TO_R__INT(o)     c_to_r_integer(PY_TO_C_INTEGER(o))
+#define PY_TO_R__LONG(o)    c_to_r_integer(PY_TO_C_LONG(o))
+#define PY_TO_R__DOUBLE(o)  c_to_r_double(PY_TO_C_DOUBLE(o))
+#define PY_TO_R__STRING(o)  c_to_r_string(PY_TO_C_STRING(o))
+#define PY_TO_R__UNICODE(o) c_to_r_unicode(PY_TO_C_UNICODE(o))
+#define PY_TO_R__VECTOR(o)  py_vector_to_r_vec(o)
+#define PY_TO_R__TLIST(o)   py_tlist_to_r_vector(o)
+#define PY_TO_R__TTUPLE(o)  py_ttuple_to_r_vector(o)
+#define PY_TO_R__NUMPY_VECTOR(o) py_numpy_vector_to_r_vector(o)
+#define PY_TO_R__MATRIX(o) py_matrix_to_r_matrix(o)
+#define PY_TO_R__NUMPY_MATRIX(o) R_NilValue
+#define PY_TO_R__CVXOPT_MATRIX(o) R_NilValue
+#define PY_TO_R__ARRAY(o) R_NilValue
+#define PY_TO_R__NUMPY_ARRAY(o) R_NilValue
+#define PY_TO_R__LIST(o) py_list_to_r_list(o, 0)
+#define PY_TO_R__TUPLE(o) py_tuple_to_r_list(o, 0)
+#define PY_TO_R__NLTK_TREE(o) R_NilValue
+#define PY_TO_R__SIMPLE_TRIPLET_MATRIX(o) R_NilValue
+#define PY_TO_R__CVXOPT_SPARSE_MATRIX(o) R_NilValue
+#define PY_TO_R__BSR(o) R_NilValue
+#define PY_TO_R__COO(o) R_NilValue
+#define PY_TO_R__CSC(o) R_NilValue
+#define PY_TO_R__CSR(o) R_NilValue
+#define PY_TO_R__DIA(o) R_NilValue
+#define PY_TO_R__DOK(o) R_NilValue
+#define PY_TO_R__LIL(o) R_NilValue
+#define PY_TO_R__DICT(o) py_dict_to_r_list(o, 0)
+#define PY_TO_R__DATA_FRAME(o) R_NilValue
+#define PY_TO_R__PANDAS_DATA_FRAME(o) R_NilValue
+#define PY_TO_R__OBJECT(o) R_NilValue
+#define PY_TO_R__ERROR(o) py_error_to_r_error(o)
+
+#define PY_NUMPY_VEC_TO_TLIST(x) Py_call_1_arg("__R__.numpy_vector_to_tlist", x)
 
 SEXP py_class(PyObject *py_object);
 

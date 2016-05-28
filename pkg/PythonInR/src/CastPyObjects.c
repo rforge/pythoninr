@@ -362,7 +362,8 @@ SEXP py_dict_to_r_vec(PyObject *py_object, int r_vector_type){
     py_dict_to_r_list
 
   ----------------------------------------------------------------------------*/
-SEXP py_dict_to_r_list(PyObject *py_object, int simplify){
+SEXP py_dict_to_r_list(PyObject *py_object, int simplify) {
+    Rprintf("py_dict_to_r_list\n");
     PyObject *item, *py_keys, *py_values, *py_len, *py_i;
     SEXP r_list, r_list_names;
     long list_len;
@@ -401,6 +402,7 @@ SEXP py_dict_to_r_list(PyObject *py_object, int simplify){
     setAttrib(r_list, R_NamesSymbol, r_list_names);
 
     UNPROTECT(2);
+    Rprintf("py_dict_to_r_list=end\n");
     return r_list;
 }
 
@@ -549,6 +551,17 @@ SEXP py_tuple_to_r_vec(PyObject *py_object, int r_vector_type){
     return r_vec;
 }
 
+SEXP py_ttuple_to_r_vector(PyObject *pyo) {
+    if ( pyo == NULL ) {
+        Rprintf("py_ttuple_to_r_vector is NULL!\n");
+        return( R_NilValue );
+    }
+    PyObject *py_r_type = PyObject_CallMethod(pyo, "_r_type", "");
+    int r_type = PY_TO_C_INTEGER(py_r_type);
+    Py_XDECREF(py_r_type);
+    return( py_tuple_to_r_vec(pyo, r_type) );
+}
+
 /*  ----------------------------------------------------------------------------
 
     py_list_to_r_list
@@ -639,27 +652,34 @@ SEXP py_vector_to_r_vec(PyObject *obj) {
     return(R_NilValue);
 }
 
-SEXP py_matrix_to_r_matrix(PyObject *obj) {
-    //    PyObject *x = PyObject_CallMethod(obj, "to_r", "");
-    if ( obj == NULL ) {
-        Rprintf("py_matrix_to_r_matrix is NULL!\n");
+SEXP py_tlist_to_r_vector(PyObject *pyo) {
+    if ( pyo == NULL ) {
+        Rprintf("py_list_to_r_vec is NULL!\n");
         return( R_NilValue );
     }
-    /**
-    PyObject *py_r_type = PyObject_CallMethod(obj, "_r_type", "");
+    PyObject *py_r_type = PyObject_CallMethod(pyo, "_r_type", "");
     int r_type = PY_TO_C_INTEGER(py_r_type);
+    Py_XDECREF(py_r_type);
+    return( py_list_to_r_vec(pyo, r_type) );
+}
 
-    // TODO: here would the data type come in!
-    if (r_type < 0) 
-        stop("TYPE_MISSMATCH in 'py_matrix_to_r_matrix': unkown type!");
+SEXP py_numpy_vector_to_r_vector(PyObject *pyo) {
+    Py_XINCREF(pyo);
+    PyObject *py_tlist = PY_NUMPY_VEC_TO_TLIST(pyo);
+    SEXP robj = py_tlist_to_r_vector(py_tlist);
+    Py_XDECREF(py_tlist);
+    return robj;
+}
 
-    PROTECT(ans = allocMatrix(TYPEOF(vals), nr, nc));
-    r_vec = py_list_to_r_vec(py_values, py_r_type);
-    setAttrib(r_vec, R_NamesSymbol, py_list_to_r_vec(py_keys, py_r_type));
-    
-    return r_vec;
-    **/
-    return(R_NilValue);
+SEXP py_matrix_to_r_matrix(PyObject *pyo) {
+    if ( pyo == NULL ) {
+        Rprintf("py_matrix_to_r_matrix is NULL!\n");
+        return( R_NilValue );
+    }  
+    PyObject *x = PyObject_CallMethod(pyo, "to_r", "");
+    SEXP robj = matrix_from_list(PY_TO_R__DICT(x));
+    Py_XDECREF(x);
+    return robj;
 }
 
 SEXP py_array_to_r_array(PyObject *obj) {
@@ -779,7 +799,53 @@ SEXP py_to_r_postprocessing(SEXP x, const char *cls) {
       
     in older version more python types are checked but not converted
   ----------------------------------------------------------------------------*/
-SEXP py_to_r(PyObject *py_object, int simplify, int autotype){
+SEXP py_to_r(PyObject *pyo, int simplify, int autotype) {
+  
+    if ( PyNone_Check(pyo) ) return R_NilValue;
+    else if ( PyBool_Check(pyo) & autotype )    return PY_TO_R__BOOL(pyo);
+    else if ( PyInt_Check(pyo) & autotype )     return PY_TO_R__INT(pyo);
+    else if ( PyLong_Check(pyo) & autotype )    return PY_TO_R__LONG(pyo);
+    else if ( PyFloat_Check(pyo) & autotype )   return PY_TO_R__DOUBLE(pyo);
+    else if ( PyString_Check(pyo) & autotype )  return PY_TO_R__STRING(pyo);
+    else if ( PyUnicode_Check(pyo) & autotype ) return PY_TO_R__UNICODE(pyo);
+    else if ( Py_Error_Check(pyo) )             return PY_TO_R__ERROR(pyo);
+    
+    if (!autotype) PY_TO_R__OBJECT(pyo);
+    int r_type = py_get_container_type(pyo);
+
+    Rprintf("py_to_r: type=%i\n", r_type);
+
+    switch( r_type ) {
+        case 100 : return PY_TO_R__VECTOR(pyo);
+        case 120 : return PY_TO_R__TLIST(pyo);
+        case 130 : return PY_TO_R__TTUPLE(pyo);
+        case 140 : return PY_TO_R__NUMPY_VECTOR(pyo);
+        case 200 : return PY_TO_R__MATRIX(pyo);
+        case 210 : return PY_TO_R__NUMPY_MATRIX(pyo);
+        case 220 : return PY_TO_R__CVXOPT_MATRIX(pyo);
+        case 300 : return PY_TO_R__ARRAY(pyo);
+        case 310 : return PY_TO_R__NUMPY_ARRAY(pyo);
+        case 400 : return PY_TO_R__LIST(pyo);
+        case 401 : return PY_TO_R__TUPLE(pyo);
+        case 410 : return PY_TO_R__NLTK_TREE(pyo);
+        case 420 : return PY_TO_R__SIMPLE_TRIPLET_MATRIX(pyo);
+        case 421 : return PY_TO_R__CVXOPT_SPARSE_MATRIX(pyo);
+        case 422 : return PY_TO_R__BSR(pyo);
+        case 423 : return PY_TO_R__COO(pyo);
+        case 424 : return PY_TO_R__CSC(pyo);
+        case 425 : return PY_TO_R__CSR(pyo);
+        case 426 : return PY_TO_R__DIA(pyo);
+        case 427 : return PY_TO_R__DOK(pyo);
+        case 428 : return PY_TO_R__LIL(pyo);
+        case 430 : return PY_TO_R__DICT(pyo);
+        case 500 : return PY_TO_R__DATA_FRAME(pyo);
+        case 510 : return PY_TO_R__PANDAS_DATA_FRAME(pyo);
+        default  : return PY_TO_R__OBJECT(pyo);
+    }
+    return PY_TO_R_OBJECT(pyo);
+}
+
+SEXP py_to_r__(PyObject *py_object, int simplify, int autotype) {
     SEXP r_val;
     int r_type;
        
@@ -883,4 +949,3 @@ SEXP py_to_r(PyObject *py_object, int simplify, int autotype){
     
     return r_val;
 }
-

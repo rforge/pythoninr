@@ -34,6 +34,8 @@
 #define HAS_TH_SCI_DOK(x)   has_typehint(x, "scidok")
 #define HAS_TH_SCI_LIL(x)   has_typehint(x, "scilil")
 
+#define HAS_TH_PANDAS(x)    has_typehint(x, "pandas")
+
 #define R_TYPE_CHECK(o) ( (o==10) | (o==12) | (o==13) | (o==14) | (o==16) | (o==17) )
 
 #define IS_TREE(x)          compare_r_class(x, "Tree")

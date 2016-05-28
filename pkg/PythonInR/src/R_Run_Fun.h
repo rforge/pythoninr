@@ -18,5 +18,7 @@ SEXP Test_permute_array_to_numpy(SEXP x) ;
 
 SEXP permute_array_from_numpy(SEXP x);
 
+SEXP matrix_from_list(SEXP x);
+
 #endif
 

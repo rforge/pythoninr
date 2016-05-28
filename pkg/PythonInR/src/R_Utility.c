@@ -129,22 +129,25 @@ int r_GetR_Container(SEXP x) {
             return 300; /** Array **/
             
         } else if ( isNewList(x) ) {
-            if ( isFrame(x) )  return 500; /** Data.Frame **/
+            if ( isFrame(x) ) {
+                if ( HAS_TH_PANDAS(x) ) return 510;
+                return 500; /** Data.Frame **/
+            }
             if ( IS_TREE(x) )  return 410; /** NLP.Tree **/
             if ( IS_SLAM(x) ) {
-                if ( HAS_TH_CVXOPT(x)    ) return 421;
-                if ( HAS_TH_SCI_BSR(x)   ) return 422;
-                if ( HAS_TH_SCI_COO(x)   ) return 423;
-                if ( HAS_TH_SCI_CSC(x)   ) return 424;
-                if ( HAS_TH_SCI_CSR(x)   ) return 425;
-                if ( HAS_TH_SCI_DENSE(x) ) return 426;
-                if ( HAS_TH_SCI_DIA(x)   ) return 427;
-                if ( HAS_TH_SCI_DOK(x)   ) return 428;
-                if ( HAS_TH_SCI_LIL(x)   ) return 429;
+                if ( HAS_TH_CVXOPT(x)  ) return 421;
+                if ( HAS_TH_SCI_BSR(x) ) return 422;
+                if ( HAS_TH_SCI_COO(x) ) return 423;
+                if ( HAS_TH_SCI_CSC(x) ) return 424;
+                if ( HAS_TH_SCI_CSR(x) ) return 425;
+                if ( HAS_TH_SCI_DIA(x) ) return 426;
+                if ( HAS_TH_SCI_DOK(x) ) return 427;
+                if ( HAS_TH_SCI_LIL(x) ) return 428;
                 return 420; /** simple_triplet_matrix **/
                 
             }
             if ( IS_NLIST(x) ) return 430; /** Named List **/
+            if ( HAS_TH_TUPLE(x) ) return 401;
             return 400; /** List **/
             
         } else if ( isVector(x) ) {

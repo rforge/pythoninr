@@ -687,23 +687,20 @@ PyObject *r_to_py(SEXP x) {
         if ( container == 230 ) return PY_MATRIX_TO_CVXOPT(r_to_py_matrix(x));
         
         /** Array **/
-        if ( container == 300 ) {
-            Rprintf("r_to_py: 300\n");
-            return r_to_py_array(x);
-        }
-        if ( container == 310 ) {
-            Rprintf("r_to_py: 310\n");
-            return PY_ARRAY_TO_NUMPY(r_to_py_array(x));
-        }
+        if ( container == 300 ) return r_to_py_array(x);
+        if ( container == 310 ) return PY_ARRAY_TO_NUMPY(r_to_py_array(x));
 
     } else if ( (400 <= container) & (container < 600) ) {
         /** list **/
         if ( container == 400 ) return r_list_to_py_list(x);
+        if ( container == 401 ) return r_to_py_tuple(x);
+
         /** named list **/
         if ( container == 430 ) return r_to_py_dict(GET_NAMES(x), x);
 
         /** data.frame **/
         if ( container == 500 ) return r_to_py_data_frame(x);
+        // if ( container == 510 ) return PY_DF_TO_PANDAS
 
         /** simple_triplet_matrix (sparse matrix formats) **/
         if ( container == 420 ) return r_to_py_simple_triplet_matrix(x);
@@ -712,10 +709,9 @@ PyObject *r_to_py(SEXP x) {
         if ( container == 423 ) return PY_STM_TO_COO(x);
         if ( container == 424 ) return PY_STM_TO_CSC(x);
         if ( container == 425 ) return PY_STM_TO_CSR(x);
-        if ( container == 426 ) return PY_STM_TO_DENSE(x);
-        if ( container == 427 ) return PY_STM_TO_DIA(x);
-        if ( container == 428 ) return PY_STM_TO_DOK(x);
-        if ( container == 429 ) return PY_STM_TO_LIL(x);
+        if ( container == 426 ) return PY_STM_TO_DIA(x);
+        if ( container == 427 ) return PY_STM_TO_DOK(x);
+        if ( container == 428 ) return PY_STM_TO_LIL(x);
 
         /** nlp.Tree **/
         if ( container == 410 ) return r_to_py_tree(x);

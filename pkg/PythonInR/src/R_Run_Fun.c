@@ -69,3 +69,8 @@ SEXP Test_permute_array_to_numpy(SEXP x) {
 SEXP permute_array_from_numpy(SEXP x) {
 	return R_eval_1_arg("function(x) aperm(array(x$values, rev(x$dim)), rev(seq_len(length(x$dim))))", x);
 }
+
+SEXP matrix_from_list(SEXP x) {
+	return R_eval_1_arg("function(z) matrix(z$values, nrow=z$nrow, ncol=z$ncol, dimnames=z$dimnames)", x);
+}
+
