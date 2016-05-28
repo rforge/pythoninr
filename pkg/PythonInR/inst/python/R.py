@@ -79,14 +79,125 @@ def removeFromNamespace(key):
 base_types = (bool, int, long, float, str, bytes, unicode, complex)
 base_types_str = '(bool, int, long, float, str, bytes, unicode, complex)'
 
+class ttuple(tuple):
+    """A Typed tuple Class"""
+    def __new__(self, tup, dtype):
+        if (not dtype in base_types):
+            raise(ValueError(" ".join("'dtype' allowed values are", base_types_str)))
+        self.dtype = dtype
+        return tuple.__new__(self, tup)
+
+    def _r_type(self):
+        return _get_r_type(self.dtype)
+        
+def ttuple_bool(values):
+    return( ttuple(values, bool) )
+
+def ttuple_int(values):
+    return( ttuple(values, int) )
+    
+def ttuple_long(values):
+    return( ttuple(values, long) )
+    
+def ttuple_float(values):
+    return( ttuple(values, float) )
+
+def ttuple_string(values):
+    return( ttuple(values, bytes) )
+
+def ttuple_unicode(values):
+    return( ttuple(values, unicode) )
+
+def is_ttuple(x):
+    return isinstance(x, ttuple)
+
 class tlist(list):
-    """"A Typed List Class"""
+    """A Typed List Class"""
     __slots__ = ['dtype']
     def __init__(self, itr, dtype):
         if (not dtype in base_types):
             raise(ValueError(" ".join("'dtype' allowed values are", base_types_str)))
         list.__init__(self, itr)
         self.dtype = dtype
+
+    def _r_type(self):
+        return _get_r_type(self.dtype)
+        
+def tlist_bool(values):
+    return( tlist(values, bool) )
+
+def tlist_int(values):
+    return( tlist(values, int) )
+    
+def tlist_long(values):
+    return( tlist(values, long) )
+    
+def tlist_float(values):
+    return( tlist(values, float) )
+
+def tlist_string(values):
+    return( tlist(values, bytes) )
+
+def tlist_unicode(values):
+    return( tlist(values, unicode) )
+
+def is_tlist(x):
+    return isinstance(x, tlist)
+
+def _get_r_type(o):
+    if (o is None):
+        return 0
+    if (o is bool):
+        return 10
+    if ((o is int) or (o is long)):
+        return 13
+    if (o is float):
+        return 14
+    if ((o is bytes) or (o is unicode)):
+        return 16
+    if (o is list):
+        return 2 ## since matrices can also be of type "list"
+    return -1
+
+def _get_py_type_numpy(o):
+    o = o.dtype.kind
+    if (o is 'b'):
+        return bool
+    if (o in ('i', 'u')):
+        return int
+    if (o is 'f'):
+        return float
+    if (o in ('S', 'a', 'U')):
+        return unicode
+    return -1
+
+def _get_r_type_numpy(o):
+    o = o.dtype.kind
+    if (o is 'b'):
+        return 10
+    if (o in ('i', 'u')):
+        return 13
+    if (o is 'f'):
+        return 14
+    if (o in ('S', 'a', 'U')):
+        return 16
+    return -1
+
+def _int_to_dtype(i):
+    if (i == 10):
+        return bool
+    if (i == 12):
+        return int
+    if (i == 13):
+        return long
+    if (i == 14):
+        return float
+    if (i == 16):
+        return bytes
+    if (i == 17):
+        return unicode
+    return None
+
 
 class nlist(list):
     """A Named List Class"""
@@ -109,216 +220,355 @@ class vector(nlist):
         return s
         
     __str__ = __repr__
+
+    def _r_type(self):
+        return _get_r_type(self.dtype)
+
+    def _has_names(self):
+        return not self.names is None
     
-    def toR(self):
+    def to_r(self):
         if (self.names is None and self.dtype is None):
-            return( self.toList() )
+            return( self.to_list() )
         else:
-            return( self.toDict() )
+            return( self.to_dict() )
             
-    def toList(self):
+    def to_list(self):
         return list(self)
         
-    def toDict(self):
-        return {"values": self.toList(), "names": self.names, "dtype": self.dtype}
+    def to_dict(self):
+        return {"values": self.to_list(), "names": self.names, "dtype": self.dtype}
                         
-    def toNumpy(self):
+    def to_numpy(self):
         if PythonInR_FLAGS['useNumpy']:
             return np.array(self)
         else:
             raise NameError("numpy was not found")
             
-def isVector(x):
+def is_vector(x):
     return isinstance(x, vector)
     
-def isVectorBool(x):
-    if isVector(x):
+def is_vector_bool(x):
+    if is_vector(x):
         if x.dtype is bool:
             return True
     return False
 
-def isVectorInt(x):
-    if isVector(x):
+def is_vector_int(x):
+    if is_vector(x):
         if x.dtype is int:
             return True
     return False
 
-def isVectorLong(x):
-    if isVector(x):
+def is_vector_long(x):
+    if is_vector(x):
         if x.dtype is long:
             return True
     return False
 
-def isVectorFloat(x):
-    if isVector(x):
+def is_vector_float(x):
+    if is_vector(x):
         if x.dtype is float:
             return True
     return False
 
-def isVectorString(x):
-    if isVector(x):
+def is_vector_string(x):
+    if is_vector(x):
         if x.dtype is bytes:
             return True
     return False
 
-def isUnicodeVector(x):
-    if isVector(x):
+def is_unicode_vector(x):
+    if is_vector(x):
         if x.dtype is unicode:
             return True
     return False
 
-def vecBool(values, names=None):
+def is_numpy_array(x):
+    try:
+        return isinstance(x, (np.ndarray, np.generic))
+    except:
+        return False
+
+def is_numpy_vector(x):
+    if is_numpy_array(x):
+        return ( len(x.shape) == 1 )
+    return False
+
+def vec_bool(values, names=None):
     return( vector(values, bool, names) )
     
-def vecInt(values, names=None):
+def vec_int(values, names=None):
     return( vector(values, int, names) )
     
-def vecLong(values, names=None):
+def vec_long(values, names=None):
     return( vector(values, long, names) )
     
-def vecFloat(values, names=None):
+def vec_float(values, names=None):
     return( vector(values, float, names) )
     
-def vecString(values, names=None):
+def vec_string(values, names=None):
     return( vector(values, bytes, names) )
 
-def vecUnicode(values, names=None):
+def vec_unicode(values, names=None):
     return( vector(values, unicode, names) )
+
+def numpy_array(values):
+    if ( PythonInR_FLAGS['useNumpy'] ):
+        return np.array(values)
+    return values
+    
+
+def numpy_vector_to_tlist(values):
+    return tlist(values, _get_py_type_numpy(values))
+
 
 class matrix(list): 
     """A Matrix Class for Python"""
-    __slots__ = ['names', 'dtype']
-    def __init__(self, matrix, rownames=None, colnames=None, dim=None, dtype=None):
+    __slots__ = ['dim', 'dimnames', 'dtype']
+    def __init__(self, matrix, dim, dimnames, dtype=None):
         list.__init__(self, matrix)
-        self.rownames = rownames 
-        self.colnames = colnames 
+        self.dimnames = dimnames
         self.dim = (0,0) if (dim is None) else tuple(dim)
         self.dtype = dtype
         self.__class__.__name__ = "PythonInR.matrix"
     
     def __repr__(self):
-         s = "matrix(["
-         offset = len(s)
-         for i, row in enumerate(self):
-             if (i > 0):
-                 s += " " * offset     
-             s += str(row) 
-             if ((i+1) < len(self)):
-                 s += ",\n"
-         s += "])"
+         s = "matrix(" + str(list(self)) + ")"
          return s
          
     __str__ = __repr__
-    
-    def toR(self):
-        return( self.toDict() )
 
-    def flatten(self):
-        return( [rec for row in self for rec in row] )
+    def _r_type(self):
+        return _get_r_type(self.dtype)
+
+    def nrow(self):
+        return self.dim[0]
+
+    def ncol(self):
+        return self.dim[1]
+
+    def rownames(self):
+        return self.dimnames[0] if (len(self.dimnames) > 0) else None
+
+    def colnames(self):
+        return self.dimnames[1] if (len(self.dimnames) > 1) else None
     
-    def toList(self):
+    def to_r(self):
+        return( {"values": tlist(self, self.dtype), "dimnames": self.dimnames, 
+                 "nrow": self.nrow(), "ncol": self.ncol()} )
+
+    def to_list_of_list(self):
+        lol = list()
+        for m in xrange(self.nrow()):
+            col = list()
+            for n in xrange(self.ncol()):
+                col.append(self[(n * self.nrow()) + m])
+            lol.append(col)
+        return( lol )
+    
+    def to_list(self):
         return(list(self))
     
-    def toDict(self):
-        return( {"values": self.toList(), "rownames": self.rownames, 
-                "colnames": self.colnames, "dim": self.dim, "dtype": self.dtype} )
+    def to_dict(self):
+        return( {"values": self, "dimnames": self.dimnames, 
+                 "dim": self.dim, "dtype": _get_r_type(self.dtype)} )
                 
-    def toNumpy(self):
+    def to_numpy(self):
         if PythonInR_FLAGS['useNumpy']:
-            return np.array(self)
+            return (np.array(self).reshape(tuple(reversed(self.dim))).transpose())
         else:
             raise NameError("numpy was not found")
 
-    def toSciPySparseMatrix(self):
+    def to_scipy_sparse_matrix(self):
         """Sparse matrix in COOrdinate format"""
         if PythonInR_FLAGS['useSciPy']:
-            return sp.coo_matrix(self.toNumpyArray())
+            return sp.coo_matrix(self.to_numpy())
         else:
             raise NameError("scipy.sparse was not found")
 
-    def toBsr(self):
+    def to_bsr(self):
         """Block Sparse Row matrix"""
-        return self.toSciPySparseMatrix().tobsr()
+        return self.to_scipy_sparse_matrix().tobsr()
 
-    def toCoo(self):
+    def to_coo(self):
         """Sparse matrix in COOrdinate format"""
-        return self.toSciPySparseMatrix() ## debu
+        return self.to_scipy_sparse_matrix() ## debu
 
-    def toCsc(self):
+    def to_csc(self):
         """Compressed Sparse Column matrix"""
-        return self.toSciPySparseMatrix().tocsc()
+        return self.to_scipy_sparse_matrix().tocsc()
 
-    def toCsr(self):
+    def to_csr(self):
         """Compressed Sparse Row matrix"""
-        return self.toSciPySparseMatrix().tocsr()
+        return self.to_scipy_sparse_matrix().tocsr()
 
-    def toDense(self):
-        """Dense Matrix"""
-        return self.toSciPySparseMatrix().todense()
-
-    def toDia(self):
+    def to_dia(self):
         """Sparse matrix with DIAgonal storage"""
-        return self.toSciPySparseMatrix().todia()
+        return self.to_scipy_sparse_matrix().todia()
 
-    def toDok(self):
+    def to_dok(self):
         """Dictionary Of Keys based sparse matrix"""
-        return self.toSciPySparseMatrix().todok()
+        return self.to_scipy_sparse_matrix().todok()
 
-    def toLil(self):
+    def to_lil(self):
         """Row-based linked list sparse matrix"""
-        return self.toSciPySparseMatrix().tolil()
+        return self.to_scipy_sparse_matrix().tolil()
 
-    def toCvxOptBaseMatrix(self):
+    def to_cvxopt_matrix(self):
         """CVXOPT Base Matrix """
         if PythonInR_FLAGS['useCvxOpt']:
-            return cvxopt.matrix(self.toNumpyArray())
+            return cvxopt.matrix(self, self.dim)
         else:
             raise NameError("CVXOPT was not found")
 
-    def toCvxOptSparseMatrix(self):
-        """CVXOPT Sparse Matrix """
+    def to_cvxopt_sparse_matrix(self):
+        """CVXOPT Sparse Matrix """ ##  TODO: this conversion can be done more efficent!
         if PythonInR_FLAGS['useCvxOpt']:
-            return cvxopt.sparse(self.toCvxOptBaseMatrix())
+            return cvxopt.sparse(self.to_cvxopt_matrix())
         else:
             raise NameError("CVXOPT was not found")
 
 
-class array(object): 
+def matrix_bool(values, dim, dimnames=None):
+    return( matrix(values, dim, dimnames, dtype=bool) )
+    
+def matrix_int(values, dim, dimnames=None):
+    return( matrix(values, dim, dimnames, int) )
+    
+def matrix_long(values, dim, dimnames=None):
+    return( matrix(values, dim, dimnames, long) )
+    
+def matrix_float(values, dim, dimnames=None):
+    return( matrix(values, dim, dimnames, float) )
+    
+def matrix_string(values, dim, dimnames=None):
+    return( matrix(values, dim, dimnames, bytes) )
+
+def matrix_unicode(values, dim, dimnames=None):
+    return( matrix(values, dim, dimnames, unicode) )
+
+def matrix_matrix(values, dim, dimnames=None):
+    return( matrix(values, dim, dimnames, unicode) )
+
+def matrix_to_numpy(values):
+    if ( PythonInR_FLAGS['useNumpy'] ):
+        return values.to_numpy()
+    return values
+
+def matrix_to_cvxopt(values):
+    if ( PythonInR_FLAGS['useCvxOpt'] ):
+        return values.to_cvxopt_matrix()
+    return values
+
+## is_matrix(matrix([1, 2], (2, 2), None))
+def is_matrix(x):
+    return isinstance(x, matrix)
+        
+def is_numpy_matrix(x):
+    if is_numpy_array(x):
+        return ( len(x.shape) == 2 )
+    return False
+
+def is_bsr_matrix(x):
+    try:
+        return sp.isspmatrix_bsr(x)
+    except:
+        return False
+
+def is_coo_matrix(x):
+    try:
+        return sp.isspmatrix_coo(x)
+    except:
+        return False
+        
+def is_csc_matrix(x):
+    try:
+        return sp.isspmatrix_csc(x)
+    except:
+        return False
+
+def is_csr_matrix(x):
+    try:
+        return sp.isspmatrix_csr(x)
+    except:
+        return False
+        
+def is_dia_matrix(x):
+    try:
+        return sp.isspmatrix_dia(x)
+    except:
+        return False
+
+def is_dok_matrix(x):
+    try:
+        return sp.isspmatrix_dok(x)
+    except:
+        return False
+
+def is_lil_matrix(x):
+    try:
+        return sp.isspmatrix_lil(x)
+    except:
+        return False
+
+def is_cvxopt_matrix(x):
+    try:
+        return isinstance(x, cvxopt.matrix)
+    except:
+        return False
+
+def is_cvxopt_sparse_matrix(x):
+    try:
+        return isinstance(x, cvxopt.spmatrix)
+    except:
+        return False
+
+class array(list): 
     """A array class"""
-    def __init__(self, array, dimnames=None, dim=None, dtype=None):
-        self.values = array 
-        self.dimnames = dimnames 
-        self.dim = dim
+    __slots__ = ['dim', 'dimnames', 'dtype']
+    def __init__(self, array, dim, dimnames=None, dtype=None):
+        list.__init__(self, array)
+        self.dimnames = dimnames
+        self.dim = (0,0) if (dim is None) else tuple(dim)
         self.dtype = dtype
         self.__class__.__name__ = "PythonInR.array"
     
     def __repr__(self):
-        s = "array(" + str(self.values) + ", 'dimnames': " + str(self.dimnames)
+        s = "array(" + str(list(self)) + ", 'dimnames': " + str(self.dimnames)
         s += ", 'dtype': '" + str(self.dtype) + "')"
         return s
     
     __str__ = __repr__
 
-    def toR(self):
-        return( self.toDict() )
+    def to_r(self):
+        return( self.to_dict() )
 
-    def toDict(self):
+    def to_dict(self):
         d = dict()
-        d['values'] = self.values
+        d['data'] = list(self)
         d['dimnames'] = self.dimnames
         d['dim'] = self.dim
-        d['dtype'] = self.dtype
+        d['dtype'] = _get_r_type(self.dtype)
         return(d)
     
-    def toList(self):
-        return(self.values)
+    def to_list(self):
+        return(self)
     
-    def toNumpyArray(self):
+    def to_numpy(self):
         if PythonInR_FLAGS['useNumpy']:
-            return np.array(self.values).reshape(self.dim)
+            ## return (np.array(self).reshape(tuple(reversed(self.dim))).transpose())
+            return np.array(self).reshape(self.dim)
         else:
             raise NameError("numpy was not found")
 
+## array([1,2,3], None, None, None)
+
+def new_array(data, dim, dimnames, dtype):
+    return array(data, dim, dimnames, _int_to_dtype(dtype))
+
+def is_array(x):
+    return isinstance(x, array)
 
 class simple_triplet_matrix(object):
     def __init__(self, i, j, v, nrow=None, ncol=None, dimnames=None, dtype=None): 
@@ -346,7 +596,7 @@ class simple_triplet_matrix(object):
         self.dimnames = None
         self.dtype = None
 
-    def fromDict(self, x):
+    def from_dict(self, x):
         self.i = x['i']
         self.j = x['j']
         self.v = x['v']
@@ -355,10 +605,17 @@ class simple_triplet_matrix(object):
         self.dimnames = x['dimnames']
         return self
 
-    def toR(self):
-        return( self.toDict() )
+    def to_r(self):
+        d = self.to_dict()
+        d['i'] = [(i+1) for i in d['i']]
+        d['j'] = [(j+1) for j in d['j']]
+        try: 
+            del d['dtype']
+        except:
+            pass
+        return( d )
        
-    def toDict(self):
+    def to_dict(self):
         d = dict()
         d['i'] = self.i
         d['j'] = self.j
@@ -369,14 +626,14 @@ class simple_triplet_matrix(object):
         d['dtype'] = self.dtype
         return( d )
     
-    def toNumpyMatrix(self):
+    def to_numpy_matrix(self):
         """Numpy Matrix"""
-        return np.matrix(self.toNumpyArray())
+        return np.matrix(self.to_numpy())
     
-    def toNumpyArray(self):
-        return self.toSciPySparseMatrix().toarray()
+    def to_numpy(self):
+        return self.to_scipy_sparse_matrix().toarray()
     
-    def toSciPySparseMatrix(self):
+    def to_scipy_sparse_matrix(self):
         """Sparse matrix in COOrdinate format"""
         if PythonInR_FLAGS['useSciPy']:
             return sp.coo_matrix((np.array(self.v), (np.array(self.i), np.array(self.j))),
@@ -384,94 +641,100 @@ class simple_triplet_matrix(object):
         else:
             raise NameError("scipy.sparse was not found")
 
-    def toBsr(self):
+    def to_bsr(self):
         """Block Sparse Row matrix"""
-        return self.toSciPySparseMatrix().tobsr()
+        return self.to_scipy_sparse_matrix().tobsr()
 
-    def toCoo(self):
+    def to_coo(self):
         """Sparse matrix in COOrdinate format"""
-        return self.toSciPySparseMatrix()
+        return self.to_scipy_sparse_matrix()
                                  
-    def toCsc(self):
+    def to_csc(self):
         """Compressed Sparse Column matrix"""
-        return self.toSciPySparseMatrix().tocsc()
+        return self.to_scipy_sparse_matrix().tocsc()
 
-    def toCsr(self):
+    def to_csr(self):
         """Compressed Sparse Row matrix"""
-        return self.toSciPySparseMatrix().tocsr()
+        return self.to_scipy_sparse_matrix().tocsr()
 
-    def toDense(self):
+    def to_dense(self):
         """Dense Matrix"""
-        return self.toSciPySparseMatrix().todense()
+        return self.to_scipy_sparse_matrix().todense()
 
-    def toDia(self):
+    def to_dia(self):
         """Sparse matrix with DIAgonal storage"""
-        return self.toSciPySparseMatrix().todia()
+        return self.to_scipy_sparse_matrix().todia()
 
-    def toDok(self):
+    def to_dok(self):
         """Dictionary Of Keys based sparse matrix"""
-        return self.toSciPySparseMatrix().todok()
+        return self.to_scipy_sparse_matrix().todok()
 
-    def toLil(self):
+    def to_lil(self):
         """Row-based linked list sparse matrix"""
-        return self.toSciPySparseMatrix().tolil()
+        return self.to_scipy_sparse_matrix().tolil()
 
-    def toCvxOptBaseMatrix(self):
+    def to_cvxopt_matrix(self):
         """CVXOPT Base Matrix """
         if PythonInR_FLAGS['useCvxOpt']:
-            return cvxopt.matrix(self.toNumpyArray())
+            return cvxopt.matrix(self.to_numpy())
         else:
             raise NameError("CVXOPT was not found")
 
-    def toCvxOptSparseMatrix(self):
+    def to_cvxopt_sparse_matrix(self):
         """CVXOPT Sparse Matrix """
         if PythonInR_FLAGS['useCvxOpt']:
-            return cvxopt.spmatrix(sef.v, sef.i, sef.j, size=(self.nrow, self.ncol))
+            return cvxopt.spmatrix(self.v, self.i, self.j, size=(self.nrow, self.ncol))
         else:
             raise NameError("CVXOPT was not found")
 
+
+def simple_triplet_matrix_from_dict(d):
+    i = [(i-1) for i in d['i']]
+    j = [(j-1) for j in d['j']]
+    return simple_triplet_matrix(i, j, d['v'], d['nrow'], d['ncol'], d['dimnames'], d['v'].dtype)
+
+def is_simple_triplet_matrix(x):
+    return isinstance(x, simple_triplet_matrix)
 
 ##class simple_sparse_array(sparse):
 
-
-class dataFrame(object): 
+class data_frame(dict):
     """A data.frame class"""
-    def __init__(self, dataFrame, rownames, colnames, dim, dtype): 
-        self.values = dataFrame
+    __slots__ = ['dim', 'rownames', 'colnames']
+    def __init__(self, df, rownames=None, colnames=None, dim=None):
+        dict.__init__(self, df)
+        self.dim = (0,0) if (dim is None) else tuple(dim)
         self.rownames = rownames
-        self.colnames = colnames 
-        self.dim = tuple(dim) if (len(dim) == 2) else (-1, -1)
-        self.dtype = dtype
-        self.__class__.__name__ = "PythonInR.dataFrame"
+        self.colnames = colnames
+        self.__class__.__name__ = "PythonInR.data_frame"
 
     def __repr__(self):
         try:
-            s = "'dataFrame':    %i obs. of  %i variables:\n" % tuple(self.dim)
-        except:
-            s = "'dataFrame':"
-        try:
-            offset = max([len(k) for k in self.values.keys()])
-            seq = range(0, (min(self.dim[0], 5)))
-            for key in self.values.keys():
-                s += "  " + str(key) + (offset - len(str(key))) * " " + ":"
-                for i in seq:
-                    s += " " + str(self.values[key][i])
-                s += "\n"
+            s = "'data_frame': %i rows %i columns\n" % tuple(self.dim)
         except:
             pass
         return( s )
     
     __str__ = __repr__
 
-    def toR(self):
-        return( self.toDict() )
+    def to_r(self):
+        return( dict(self) )
 
-    def toDict(self):
-        return( {"data.frame": self.values, "rownames": self.rownames, 
-                 "colnames": self.colnames, "dim": self.dim} )
+    def to_dict(self):
+        return( dict(self) )
 
-    def toPandas(self):
-        return( pd.DataFrame(self.values) )
+    def to_pandas(self):
+        if PythonInR_FLAGS['usePandas']:
+            return( pd.DataFrame(self) )
+        else:
+            raise NameError("PANDAS was not found")
+
+
+def new_data_frame(df, rownames, colnames, dim):
+    return data_frame(df, rownames, colnames, dim)
+
+def is_data_frame(x):
+    isinstance(x, data_frame)
 
 def is_nlp_tree(x):
     if isinstance(x, dict):
@@ -505,7 +768,7 @@ class PythonInR_Error(object):
         self.error_type = error_type
         self.__class__.__name__ = "PythonInR.error"
 
-    def toR(self):
+    def to_r(self):
         return( {'message': self.message, 'domain': self.domain, 'error_type': self.error_type} )
 
 
@@ -520,24 +783,33 @@ class tree(object):
 
     __str__ = __repr__
 
-    def toDict(self):
+    def to_dict(self):
         return(self.tree)
 
-    def toNltkTree(self):
+    def to_nltk_tree(self):
         if PythonInR_FLAGS['useNltkTree']:
             return( nlp_tree_to_nltk_tree(self.tree) )
         else:
             raise NameError("nltk was not found")
 
+def new_tree(x):
+    tree(x).to_nltk_tree()
+
+def is_nltk_tree(x):
+    try:
+        return isinstance(x, nltkTree)
+    except:
+        return False
+
 def new_python_object(x, type):
     if ( type == 1 ):
         if PythonInR_FLAGS['useNltkTree']:
-            return tree(x).toNltkTree()
+            return tree(x).to_nltk_tree()
         else:
             return tree(x)
 
-def toR(x, autotype):
-    print("toR")
+def to_r(x, autotype):
+    print("to_r")
     if (not autotype):
         rval = dict()
         rval['id'] = "__R__.namespace['%s']" % namespace.addToNamespace(x)
@@ -563,7 +835,7 @@ def toR(x, autotype):
             return( scipy_sparse_to_slam(x) )
     if PythonInR_FLAGS['usePandas']:
         if isinstance(x, pd.DataFrame):
-            return( dataFrame(x.to_dict(), list(x.index), list(x.keys()), df.shape, None) )
+            return( data_frame(x.to_dict(), list(x.index), list(x.keys()), df.shape, None) )
     if PythonInR_FLAGS['useCvxOpt']:
         if isinstance(x, cvxopt.spmatrix):
             return( scipy_sparse_to_slam(cvxopt_csc_matrix_to_scipy_csc_matrix(x)) )
@@ -609,3 +881,112 @@ def scipy_sparse_to_slam(x):
         return ( scipy_sparse_to_slam( x.tocoo() ) )
     return(x)
 
+## TODO: add NA, NaN, Inf
+class NA_int(int):
+    """A Typed tuple Class"""
+    def __new__(self, value):
+        self.value = value
+        return int.__new__(self, value)
+        
+## z = NA_int(3)
+## z
+
+def is_scalar(x):
+    if x is None:
+        return True
+    return isinstance(x, (bool, int, long, float, bytes, unicode))
+
+def is_pandas_data_frame(x):
+    try:
+        return isinstance(x, pd.DataFrame)
+    except:
+        return False
+
+def is_dict(x):
+    return isinstance(x, dict)
+
+def is_list(x):
+    return isinstance(x, list)
+
+def is_tuple(x):
+    return isinstance(x, tuple)
+
+"""
+100  vector
+    110  scalar
+    120  tlist
+    130  ttuple
+    140  numpy
+200  matrix
+    210  list                 #TODO! (sollte ich wegnehmen da matrix jetzt eh liste!)
+    220  numpy
+    230  cvxopt
+300  array
+    310  numpy
+400  list
+    410  tree
+    420  slam
+        421  cvxopt
+        422  bsr
+        423  coo
+        424  csc
+        425  csr
+        426  dia
+        427  dok
+        428  lil
+    430  nlist (dict)
+500  data.frame
+    510  pandas
+600  environments            #TODO! (actually I don't know if this is needed!)
+700  PythonInR Object
+"""
+def get_container_type(x):
+    if is_vector(x):
+        return 100
+    if is_tlist(x):
+        return 120
+    if is_ttuple(x):
+        return 130
+    if is_numpy_vector(x):
+        return 140
+    if is_matrix(x):
+        return 200
+    if is_numpy_matrix(x):
+        return 210
+    if is_cvxopt_matrix(x):
+        return 220
+    if is_array(x):
+        return 300
+    if is_numpy_array(x):
+        return 310
+    if is_data_frame(x):
+        return 500
+    if is_pandas_data_frame(x):
+        return 510
+    if is_nltk_tree(x):
+        return 410
+    if is_simple_triplet_matrix(x):
+        return 420
+    if is_cvxopt_sparse_matrix(x):
+        return 421
+    if is_bsr_matrix(x):
+        return 422
+    if is_coo_matrix(x):
+        return 423
+    if is_csc_matrix(x):
+        return 424
+    if is_csr_matrix(x):
+        return 425
+    if is_dia_matrix(x):
+        return 426
+    if is_dok_matrix(x):
+        return 427
+    if is_lil_matrix(x):
+        return 428
+    if is_dict(x):
+        return 430
+    if is_list(x):
+        return 400
+    if is_tuple(x):
+        return 401
+    return 700
