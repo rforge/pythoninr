@@ -61,4 +61,6 @@ SEXP r_to_py_preprocessing(SEXP x);
 
 PyObject *r_to_py(SEXP r_object);
 
+SEXP Test_r_to_py_data_frame(SEXP x);
+
 #endif

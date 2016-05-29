@@ -221,10 +221,15 @@ PyObject *r_to_py_ttuple(SEXP x) {
   ----------------------------------------------------------------------------*/
 PyObject *r_to_py_data_frame(SEXP x) {
     PyObject *df = r_to_py_dict(GET_NAMES(x), x);
-    PyObject *rn = HAS_ROWNAMES(x) ? r_to_py_list(GET_ROWNAMES(GET_DIMNAMES(x))) : PY_NONE;
-    PyObject *cn = HAS_COLNAMES(x) ? r_to_py_list(GET_COLNAMES(GET_DIMNAMES(x))) : PY_NONE;
+    PyObject *rn = r_to_py(getAttrib(x, mkString("row.names")));
+    PyObject *cn = r_to_py(GET_NAMES(x));
     PyObject *pyo = PY_DATA_FRAME(df, rn, cn, r_to_py(GET_DIM(x)));
     return pyo;
+}
+
+SEXP Test_r_to_py_data_frame(SEXP x) {
+    //return GET_NAMES(x);
+    return getAttrib(x, mkString("row.names"));
 }
 
 /*  ----------------------------------------------------------------------------

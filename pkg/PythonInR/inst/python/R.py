@@ -4,6 +4,7 @@ TODO: just import the methods needed since all is imported into the R namespace
 """
 
 import sys
+from collections import OrderedDict
 from sets import Set
 PythonInR_FLAGS = {"useNumpy": True, "useSciPy": True, "usePandas": True, 
                    "useCvxOpt": True, "useNltkTree": True}
@@ -743,12 +744,14 @@ class data_frame(dict):
     __str__ = __repr__
 
     def to_r(self):
+        """
         try:
             data = [self[k] for k in self.colnames]
             return( {'data': data, 'rownames': self.rownames, 'colnames': self.colnames} )
         except:
-            data = dict(self)
-            return( {'data': data, 'rownames': self.rownames, 'colnames': self.keys} )
+        """
+        data = dict(self)
+        return( {'data': data, 'rownames': self.rownames, 'colnames': self.keys} )
 
     def to_dict(self):
         return( dict(self) )

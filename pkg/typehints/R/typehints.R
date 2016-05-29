@@ -25,7 +25,7 @@ typehint <- function(x) {
 ##' @noRd
 ##' @export
 `typehint<-` <- function(x, value) {
-    comment(x) <- comment(x)
+    comment(x) <- value
     x
 }
 
@@ -53,18 +53,18 @@ tyhi <- function(x, hint) {
 ##  -----------------------------------------------------------
 ##  th
 ##  ==
-##' @title Additional Type Information
-##' @description The function \code{th} allows to set
-##'              additional type information in a structured way.
-##' @param x
-##' @details The following example shows how typehints are used 
-##'          in the PythonInR package to provide additional type 
-##'          information.
-##' @examples
-##' x <- list(1, 2)
-##' th.tuple <- function(x) tyhi(x, "tuple")
-##' th.tuple(x)
-##' tyhi(x)
-##' @export
+##  @title Additional Type Information
+##  @description The function \code{th} allows to set
+##               additional type information in a structured way.
+##  @param x
+##  @details The following example shows how typehints are used 
+##           in the PythonInR package to provide additional type 
+##           information.
+##  @examples
+##  x <- list(1, 2)
+##  th.tuple <- function(x) tyhi(x, "tuple")
+##  th.tuple(x)
+##  tyhi(x)
+##  @export
 ##  -----------------------------------------------------------
-th <- function(x) UseMethod( "th" )
+##  th <- function(x) UseMethod( "th" )
