@@ -170,6 +170,13 @@ def _get_py_type_numpy(o):
     if (o in ('S', 'a', 'U')):
         return unicode
     return -1
+    
+def _get_py_type_cvxopt(o):
+    if (o is 'i'):
+        return int
+    if (o is 'd'):
+        return float
+    return -1
 
 def _get_r_type_numpy(o):
     o = o.dtype.kind
@@ -355,7 +362,7 @@ class matrix(list):
         return self.dimnames[1] if (len(self.dimnames) > 1) else None
     
     def to_r(self):
-        return( {"values": tlist(self, self.dtype), "dimnames": self.dimnames, 
+        return( {"data": tlist(self, self.dtype), "dimnames": self.dimnames, 
                  "nrow": self.nrow(), "ncol": self.ncol()} )
 
     def to_list_of_list(self):
@@ -524,6 +531,16 @@ def is_cvxopt_sparse_matrix(x):
     except:
         return False
 
+def numpy_matrix_to_dict(x):
+    dim = x.shape
+    return {'data': tlist(x.flatten(), _get_py_type_numpy(x)), 'nrow': dim[0], 
+            'ncol': dim[1], 'dimnames': None}
+
+def cvxopt_matrix_to_dict(x):
+    dim = x.size
+    return {'data': tlist(list(x), _get_py_type_cvxopt(x.typecode)), 
+            'nrow': dim[0], 'ncol': dim[1], 'dimnames': None}
+
 class array(list): 
     """A array class"""
     __slots__ = ['dim', 'dimnames', 'dtype']
@@ -606,13 +623,13 @@ class simple_triplet_matrix(object):
         return self
 
     def to_r(self):
-        d = self.to_dict()
-        d['i'] = [(i+1) for i in d['i']]
-        d['j'] = [(j+1) for j in d['j']]
-        try: 
-            del d['dtype']
-        except:
-            pass
+        d = dict()
+        d['i'] = tlist([(i+1) for i in self.i], int)
+        d['j'] = tlist([(j+1) for j in self.j], int)
+        d['v'] = tlist(self.v, self.dtype)
+        d['nrow'] = self.nrow
+        d['ncol'] = self.ncol
+        d['dimnames'] = self.dimnames
         return( d )
        
     def to_dict(self):
@@ -703,7 +720,15 @@ class data_frame(dict):
     __slots__ = ['dim', 'rownames', 'colnames']
     def __init__(self, df, rownames=None, colnames=None, dim=None):
         dict.__init__(self, df)
-        self.dim = (0,0) if (dim is None) else tuple(dim)
+        if (dim is None):
+            ncol = len(self)
+            row_lens = set([len(col) for col in self.values()])
+            if (len(row_lens) != 1):
+                raise IndexError("All columns need to have the same number of rows!")
+            nrow = list(row_lens)[0]
+            self.dim = (nrow, ncol)
+        else:
+            self.dim = tuple(dim)
         self.rownames = rownames
         self.colnames = colnames
         self.__class__.__name__ = "PythonInR.data_frame"
@@ -718,7 +743,12 @@ class data_frame(dict):
     __str__ = __repr__
 
     def to_r(self):
-        return( dict(self) )
+        try:
+            data = [self[k] for k in self.colnames]
+            return( {'data': data, 'rownames': self.rownames, 'colnames': self.colnames} )
+        except:
+            data = dict(self)
+            return( {'data': data, 'rownames': self.rownames, 'colnames': self.keys} )
 
     def to_dict(self):
         return( dict(self) )
@@ -734,7 +764,7 @@ def new_data_frame(df, rownames, colnames, dim):
     return data_frame(df, rownames, colnames, dim)
 
 def is_data_frame(x):
-    isinstance(x, data_frame)
+    return isinstance(x, data_frame)
 
 def is_nlp_tree(x):
     if isinstance(x, dict):
