@@ -25,7 +25,7 @@ th.cvxopt <- function(x) {
 			return(tyhi(x, "cvxopt"))
 		}
 	}
-	stop("TYPE_ERROR in 'th.cvxopt': cvxopt matrices have to be of type 'double'!")
+	stop("TYPE_ERROR in 'th.cvxopt': cvxopt matrices have to be of type 'numeric'!")
 }
 
 th.pandas <- function(x) tyhi(x, "pandas")
