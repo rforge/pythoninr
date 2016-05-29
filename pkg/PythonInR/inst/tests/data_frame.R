@@ -17,9 +17,27 @@ class(z)
 str(z)
 str(cars)
 
+pyExecp("x.to_pandas()")
+
+
+
 expect_equal(pyType("x"), "PythonInR.data_frame")
 expect_equal(typeof(pyGet("x")), typeof(Mi))
 expect_equal(pyGet("x"), Mi)
+
+BEGIN.Python()
+import pandas as pd
+dir(pd)
+pd.DataFrame(x)[1:4]
+
+dict(x)
+dir(dict(x))
+[list(v) for v in x.values()]
+for k in x.keys():
+	print(k)
+	x[k] = list(x[k])
+
+END.Python
 
 
 args(data.frame)

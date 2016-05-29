@@ -32,7 +32,7 @@
 #define PY_TO_R__NUMPY_ARRAY(o) R_NilValue
 #define PY_TO_R__LIST(o) py_list_to_r_list(o, 0)
 #define PY_TO_R__TUPLE(o) py_tuple_to_r_list(o, 0)
-#define PY_TO_R__NLTK_TREE(o) R_NilValue
+#define PY_TO_R__NLTK_TREE(o) py_nltk_tree_to_nlp_tree(o)
 #define PY_TO_R__SIMPLE_TRIPLET_MATRIX(o) py_stm_matrix_to_r_stm_matrix(o)
 #define PY_TO_R__CVXOPT_SPARSE_MATRIX(o) R_NilValue
 #define PY_TO_R__BSR(o) R_NilValue
@@ -51,6 +51,8 @@
 #define PY_NUMPY_VEC_TO_TLIST(x) Py_call_1_arg("__R__.numpy_vector_to_tlist", x)
 #define PY_NUMPY_MATRIX_TO_DICT(x) Py_call_1_arg("__R__.numpy_matrix_to_dict", x)
 #define PY_CVXOPT_MATRIX_TO_DICT(x) Py_call_1_arg("__R__.cvxopt_matrix_to_dict", x)
+#define PY_NLTK_TREE_TO_DICT(x) Py_call_1_arg("__R__.nltk_tree_to_dict", x)
+
 
 SEXP py_class(PyObject *py_object);
 

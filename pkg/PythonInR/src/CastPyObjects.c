@@ -735,6 +735,21 @@ SEXP py_data_frame_to_r_data_frame(PyObject *pyo) {
     return robj;
 }
 
+SEXP py_nltk_tree_to_nlp_tree(PyObject *pyo) {
+    if ( pyo == NULL ) {
+        Rprintf("py_data_frame_to_r_data_frame is NULL!\n");
+        return( R_NilValue );
+    }
+    Rprintf("py_nltk_tree_to_nlp_tree: refcnt(x)=%i\n", REF_CNT(pyo));
+    Py_XINCREF(pyo);
+    Rprintf("py_nltk_tree_to_nlp_tree: refcnt(x)=%i\n", REF_CNT(pyo));
+    PyObject *x = PY_NLTK_TREE_TO_DICT(pyo);
+    Rprintf("py_nltk_tree_to_nlp_tree: refcnt(x)=%i\n", REF_CNT(pyo));
+    SEXP robj = py_to_r_postprocessing(PY_TO_R__DICT(x), "Tree");
+    Py_XDECREF(x);
+    return robj;
+}
+
 SEXP py_array_to_r_array(PyObject *obj) {
     PyObject *x = PyObject_CallMethod(obj, "to_r", "");
     if ( x == NULL ) {

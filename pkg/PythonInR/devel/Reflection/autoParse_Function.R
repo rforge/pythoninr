@@ -18,6 +18,6 @@ definePyFunction <- function(callableObj, ...) {
 
 fun <- definePyFunction("os.chdir", c("x", "string"))
 fun(".")
-
+fun
  
 

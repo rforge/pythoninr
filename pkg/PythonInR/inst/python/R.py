@@ -6,6 +6,7 @@ TODO: just import the methods needed since all is imported into the R namespace
 import sys
 from collections import OrderedDict
 from sets import Set
+from warnings import warn
 PythonInR_FLAGS = {"useNumpy": True, "useSciPy": True, "usePandas": True, 
                    "useCvxOpt": True, "useNltkTree": True}
                    
@@ -758,7 +759,7 @@ class data_frame(dict):
 
     def to_pandas(self):
         if PythonInR_FLAGS['usePandas']:
-            return( pd.DataFrame(self) )
+            return( pd.DataFrame(dict(self)) )
         else:
             raise NameError("PANDAS was not found")
 
@@ -776,17 +777,17 @@ def is_nlp_tree(x):
     return(False)
 
 def nlp_tree_to_nltk_tree(x):
-    tree = nltkTree(x['value'], [])
+    xtree = nltkTree(x['value'], [])
     for child in x['children']:
         if is_nlp_tree(child):
-            tree.append(dict_to_tree(child))
+            xtree.append(nlp_tree_to_nltk_tree(child))
         else:
-            tree.append(child)
-    return(tree)
+            xtree.append(child)
+    return(xtree)
 
-def nltk_tree_to_dict(tree):
-    tdict = {'value': tree._label, 'children': []}
-    for child in tree:
+def nltk_tree_to_dict(xtree):
+    tdict = {'value': xtree._label, 'children': []}
+    for child in xtree:
         if isinstance(child, nltkTree):
             tdict['children'].append(nltk_tree_to_dict(child))
         else:
@@ -805,28 +806,31 @@ class PythonInR_Error(object):
         return( {'message': self.message, 'domain': self.domain, 'error_type': self.error_type} )
 
 
-class tree(object):
+
+
+class tree(dict):
     """A tree class"""
     def __init__(self, tree):
-        self.tree = tree
-        self.dtype = "PythonInR.Tree"
+        dict.__init__(self, tree)
+        self.__class__.__name__ = "PythonInR.Tree"
 
     def __repr__(self):
-        return str(self.tree)
+        return str(dict(self))
 
     __str__ = __repr__
 
     def to_dict(self):
-        return(self.tree)
+        return(dict(self))
 
     def to_nltk_tree(self):
-        if PythonInR_FLAGS['useNltkTree']:
-            return( nlp_tree_to_nltk_tree(self.tree) )
-        else:
-            raise NameError("nltk was not found")
+        try:
+            return( nlp_tree_to_nltk_tree(dict(self)) )
+        except:
+            warn("nltk package coulnd't be loaded", ImportWarning)
+            return( self )
 
 def new_tree(x):
-    tree(x).to_nltk_tree()
+    return tree(x)
 
 def is_nltk_tree(x):
     try:

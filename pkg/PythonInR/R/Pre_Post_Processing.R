@@ -37,6 +37,18 @@ py_to_r_postprocessing[["data.frame"]] <- function(x) {
     x
 }
 
+py_to_r_postprocessing[['Tree']] <- function(x) {
+    fun <- function(x) {
+        x <- x[c('value', 'children')]
+        class(x) <- "Tree"
+        return(x)
+    }
+    x <- x[c('value', 'children')]
+    x[['children']] <- Tree_apply(x, fun)
+    class(x) <- "Tree"
+    return(x)
+}
+
 py_to_r_postprocessing[["simple_triplet_matrix"]] <- function(x) {
     tryCatch({simple_triplet_matrix(x$i, x$j, x$j, x$nrow, x$ncol, x$dimnames)},
               error = function(e) x)

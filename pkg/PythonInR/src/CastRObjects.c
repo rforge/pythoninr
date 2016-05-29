@@ -238,7 +238,11 @@ SEXP Test_r_to_py_data_frame(SEXP x) {
 
   ----------------------------------------------------------------------------*/
 PyObject *r_to_py_tree(SEXP r_object) {
-    return( PY_TREE(r_to_py_dict(GET_NAMES(r_object), r_object)) );
+    PyObject *pyo = PY_TREE(r_to_py_dict(GET_NAMES(r_object), r_object));
+    Rprintf("r_to_py_tree: refcnt(x)=%i\n", REF_CNT(pyo));
+    PyObject *x = PyObject_CallMethod(pyo, "to_nltk_tree", "");
+    Rprintf("r_to_py_tree: refcnt(x)=%i\n", REF_CNT(pyo));
+    return( x );
 }
 
 /*  ----------------------------------------------------------------------------
@@ -720,7 +724,7 @@ PyObject *r_to_py(SEXP x) {
 
         /** nlp.Tree **/
         if ( container == 410 ) {
-            Rprintf("r_to_py: container=400\n");
+            Rprintf("r_to_py: container=410\n");
             return r_to_py_tree(x);
         }
 
