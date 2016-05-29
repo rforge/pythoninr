@@ -714,7 +714,10 @@ PyObject *r_to_py(SEXP x) {
         if ( container == 428 ) return PY_STM_TO_LIL(x);
 
         /** nlp.Tree **/
-        if ( container == 410 ) return r_to_py_tree(x);
+        if ( container == 410 ) {
+            Rprintf("r_to_py: container=400\n");
+            return r_to_py_tree(x);
+        }
 
     } else if ( container == 700 ) {
         const char *py_obj_name = r_get_py_object_location(x);

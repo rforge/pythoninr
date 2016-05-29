@@ -26,14 +26,14 @@
 #define PY_TO_R__TTUPLE(o)  py_ttuple_to_r_vector(o)
 #define PY_TO_R__NUMPY_VECTOR(o) py_numpy_vector_to_r_vector(o)
 #define PY_TO_R__MATRIX(o) py_matrix_to_r_matrix(o)
-#define PY_TO_R__NUMPY_MATRIX(o) R_NilValue
-#define PY_TO_R__CVXOPT_MATRIX(o) R_NilValue
+#define PY_TO_R__NUMPY_MATRIX(o) py_numpy_matrix_to_r_matrix(o)
+#define PY_TO_R__CVXOPT_MATRIX(o) py_cvxopt_matrix_to_r_matrix(o)
 #define PY_TO_R__ARRAY(o) R_NilValue
 #define PY_TO_R__NUMPY_ARRAY(o) R_NilValue
 #define PY_TO_R__LIST(o) py_list_to_r_list(o, 0)
 #define PY_TO_R__TUPLE(o) py_tuple_to_r_list(o, 0)
 #define PY_TO_R__NLTK_TREE(o) R_NilValue
-#define PY_TO_R__SIMPLE_TRIPLET_MATRIX(o) R_NilValue
+#define PY_TO_R__SIMPLE_TRIPLET_MATRIX(o) py_stm_matrix_to_r_stm_matrix(o)
 #define PY_TO_R__CVXOPT_SPARSE_MATRIX(o) R_NilValue
 #define PY_TO_R__BSR(o) R_NilValue
 #define PY_TO_R__COO(o) R_NilValue
@@ -43,12 +43,14 @@
 #define PY_TO_R__DOK(o) R_NilValue
 #define PY_TO_R__LIL(o) R_NilValue
 #define PY_TO_R__DICT(o) py_dict_to_r_list(o, 0)
-#define PY_TO_R__DATA_FRAME(o) R_NilValue
+#define PY_TO_R__DATA_FRAME(o) py_data_frame_to_r_data_frame(o)
 #define PY_TO_R__PANDAS_DATA_FRAME(o) R_NilValue
 #define PY_TO_R__OBJECT(o) R_NilValue
 #define PY_TO_R__ERROR(o) py_error_to_r_error(o)
 
 #define PY_NUMPY_VEC_TO_TLIST(x) Py_call_1_arg("__R__.numpy_vector_to_tlist", x)
+#define PY_NUMPY_MATRIX_TO_DICT(x) Py_call_1_arg("__R__.numpy_matrix_to_dict", x)
+#define PY_CVXOPT_MATRIX_TO_DICT(x) Py_call_1_arg("__R__.cvxopt_matrix_to_dict", x)
 
 SEXP py_class(PyObject *py_object);
 
