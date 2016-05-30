@@ -21,6 +21,7 @@ SEXP permute_array_from_numpy(SEXP x);
 SEXP matrix_from_list_byrow(SEXP x);
 SEXP matrix_from_list_bycol(SEXP x);
 SEXP data_frame_from_list(SEXP x);
+SEXP data_frame_from_list2(SEXP x);
 
 #endif
 

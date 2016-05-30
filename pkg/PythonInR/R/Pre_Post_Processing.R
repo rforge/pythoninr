@@ -23,9 +23,8 @@ py_to_r_postprocessing[["matrix"]] <- function(x) {
 
 py_to_r_postprocessing[["array"]] <- function(x) {
     xdim <- x$dim
-    xdimnames <- x$dimnames
-    x <- array(x$values, rev(x$dim))
-    aperm(x, rev(seq_len(length(xdim))))
+    x <- array(x$data, rev(x$dim))
+    return(aperm(x, rev(seq_len(length(xdim)))))
 }
 
 py_to_r_postprocessing[["data.frame"]] <- function(x) {

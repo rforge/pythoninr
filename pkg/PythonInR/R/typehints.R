@@ -10,6 +10,7 @@ th.unicode <- function(x) tyhi(x, "unicode")
 th.vector <- function(x) tyhi(x, "vector")
 
 th.list <- function(x) tyhi(x, "list")
+th.tlist <- function(x) tyhi(x, "tlist")
 th.tuple <- function(x) tyhi(x, "tuple")
 th.tuple_int <- function(x) tyhi(x, c("tuple", "int"))
 

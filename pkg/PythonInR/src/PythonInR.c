@@ -11,7 +11,7 @@ long pyrNamespaceCounter = 0;
 // #TODO: ReThink if it would make sense to add Python like options!
 // const char *unicode_errors = "replace"; 
 int r_int_to_py_long_flag = 1;
-int r_vec_to_list_flag = 0;
+int R_VECTOR_TO_LIST_FLAG = 0;
 int r_character_to_py_unicode_flag = 1;
 int use_PY_To_R_Typecast = 0;
 PyObject* PY_To_R_Typecast = NULL;
@@ -355,11 +355,11 @@ SEXP set_int_long_flag(SEXP flag){
 }
 
 SEXP get_vec_to_list_flag(void) {
-    return c_to_r_integer(r_vec_to_list_flag);
+    return c_to_r_integer(R_VECTOR_TO_LIST_FLAG);
 }
 
 SEXP set_vec_to_list_flag(SEXP flag){
-	r_vec_to_list_flag = R_TO_C_INT(flag);
+	R_VECTOR_TO_LIST_FLAG = R_TO_C_INT(flag);
 	return R_NilValue;
 }
 

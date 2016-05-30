@@ -20,7 +20,7 @@ int Py_GetR_Type(PyObject *py_object){
     }else if ( PyBool_Check(py_object) ){
         r_type = 10; /** logical **/
     }else if ( PyInt_Check(py_object) ){
-        r_type = 12; /** integer + th.int **/ // NOTE: 12 is not used any more in R
+        r_type = 13; /** integer + th.int **/ // NOTE: 12 is not used any more in R
     }else if ( PyLong_Check(py_object) ){
         r_type = 13; /** integer **/
     }else if ( PyFloat_Check(py_object) ){
@@ -28,7 +28,7 @@ int Py_GetR_Type(PyObject *py_object){
     }else if ( PyString_Check(py_object) ){
         r_type = 16; /** character + th.string **/
     }else if ( PyUnicode_Check(py_object) ){
-        r_type = 17; /** character **/ // NOTE: 17 is the dot-dot-dot object in R
+        r_type = 16; /** character **/ // NOTE: 17 is the dot-dot-dot object in R
     }
     return r_type;
 }

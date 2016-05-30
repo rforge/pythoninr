@@ -133,6 +133,45 @@ expect_equal(pyType("x"), "PythonInR.simple_triplet_matrix")
 expect_true(pyGet("x.dtype is unicode"))
 expect_equal(as.matrix(pyGet("x")), as.matrix(SMc))
 
+th.scibsr <- function(x) tyhi(x, "scibsr")
+th.scicoo <- function(x) tyhi(x, "scicoo")
+th.scicsc <- function(x) tyhi(x, "scicsc")
+th.scicsr <- function(x) tyhi(x, "scicsr")
+th.scidia <- function(x) tyhi(x, "scidia")
+th.scidok <- function(x) tyhi(x, "scidok")
+th.scilil <- function(x) tyhi(x, "scilil")
+
+pySet("x", th.scibsr(SMi))
+expect_equal(pyType("x"), "bsr_matrix")
+expect_true(pyGet("x.dtype.kind") == "i")
+## expect_equal(pyGet("x"), SMi)
+
+pySet("x", th.scicoo(SMi))
+expect_equal(pyType("x"), "coo_matrix")
+expect_true(pyGet("x.dtype.kind") == "i")
+
+pySet("x", th.scicsc(SMi))
+expect_equal(pyType("x"), "csc_matrix")
+expect_true(pyGet("x.dtype.kind") == "i")
+
+pySet("x", th.scicsr(SMi))
+expect_equal(pyType("x"), "csr_matrix")
+expect_true(pyGet("x.dtype.kind") == "i")
+
+pySet("x", th.scidia(SMi))
+expect_equal(pyType("x"), "dia_matrix")
+expect_true(pyGet("x.dtype.kind") == "i")
+
+pySet("x", th.scidok(SMi))
+expect_equal(pyType("x"), "dok_matrix")
+expect_true(pyGet("x.dtype.kind") == "i")
+
+pySet("x", th.scilil(SMi))
+expect_equal(pyType("x"), "lil_matrix")
+expect_true(pyGet("x.dtype.kind") == "i")
+
+
+
 
 
 

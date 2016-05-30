@@ -82,3 +82,6 @@ SEXP data_frame_from_list(SEXP x) {
     return R_eval_1_arg("function(x){colnames(x$data) <- x$colnames; base::as.data.frame(x$data, x$rownames, stringsAsFactors=FALSE)}", x);
 }
 
+SEXP data_frame_from_list2(SEXP x) {
+    return R_eval_1_arg("function(x) base::as.data.frame(x$data, x$rownames, stringsAsFactors=FALSE)", x);
+}

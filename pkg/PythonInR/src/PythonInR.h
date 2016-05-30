@@ -15,7 +15,7 @@
 extern long pyrNamespaceCounter; // TODO: I del this!
 extern int r_int_to_py_long_flag;          // FLAG_INT_TO_LONG          (Default is: TRUE)
 extern int r_character_to_py_unicode_flag; // FLAG_CHARACTER_2_UNICODE  (Default is: TRUE)
-extern int r_vec_to_list_flag;             // FLAG_VECTOR_2_LIST        (Default is: FALSE)
+extern int R_VECTOR_TO_LIST_FLAG;             // FLAG_VECTOR_2_LIST        (Default is: FALSE)
 extern int use_PY_To_R_Typecast;
 
 #ifdef PYTHON_IN_R_NO_EXPLICIT_LINKING

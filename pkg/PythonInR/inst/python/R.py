@@ -561,7 +561,11 @@ class array(list):
     __str__ = __repr__
 
     def to_r(self):
-        return( self.to_dict() )
+        d = dict()
+        d['data'] = tlist(self, self.dtype)
+        d['dimnames'] = self.dimnames
+        d['dim'] = self.dim
+        return( d )
 
     def to_dict(self):
         d = dict()
@@ -581,13 +585,18 @@ class array(list):
         else:
             raise NameError("numpy was not found")
 
-## array([1,2,3], None, None, None)
-
 def new_array(data, dim, dimnames, dtype):
     return array(data, dim, dimnames, _int_to_dtype(dtype))
 
 def is_array(x):
     return isinstance(x, array)
+
+def numpy_array_to_tlist(x):
+    d = dict()
+    d['data'] = numpy_vector_to_tlist(x.flatten())
+    d['dim'] = x.shape
+    return(d)
+
 
 class simple_triplet_matrix(object):
     def __init__(self, i, j, v, nrow=None, ncol=None, dimnames=None, dtype=None): 
@@ -731,8 +740,15 @@ class data_frame(dict):
             self.dim = (nrow, ncol)
         else:
             self.dim = tuple(dim)
-        self.rownames = rownames
-        self.colnames = colnames
+        if (rownames is None):
+            self.rownames = [str(i+1) for i in range(self.dim[0])]
+        else:
+            self.rownames = rownames
+        if (colnames is None):
+            self.colnames = self.keys()
+        else:
+            self.colnames = colnames
+
         self.__class__.__name__ = "PythonInR.data_frame"
 
     def __repr__(self):
@@ -759,7 +775,13 @@ class data_frame(dict):
 
     def to_pandas(self):
         if PythonInR_FLAGS['usePandas']:
-            return( pd.DataFrame(dict(self)) )
+            x = self.copy()
+            for k in x.keys():
+                x[k] = list(x[k])
+            if ( len(self.rownames) == self.dim[0] ):
+                return( pd.DataFrame(data=x, index=list(self.rownames)) )
+            else:
+                return( pd.DataFrame(data=x) )
         else:
             raise NameError("PANDAS was not found")
 
@@ -769,6 +791,16 @@ def new_data_frame(df, rownames, colnames, dim):
 
 def is_data_frame(x):
     return isinstance(x, data_frame)
+
+def pandas_data_frame_to_dict(x):
+    try:
+        data = x.to_dict()
+        for k in data.keys():
+            if isinstance(data[k], dict):
+                data[k] = data[k].values()
+        return {'data': data, 'rownames': list(x.index), 'colnames': data.keys()}
+    except:
+        return x.to_dict()
 
 def is_nlp_tree(x):
     if isinstance(x, dict):

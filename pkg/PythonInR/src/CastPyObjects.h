@@ -28,10 +28,10 @@
 #define PY_TO_R__MATRIX(o) py_matrix_to_r_matrix(o)
 #define PY_TO_R__NUMPY_MATRIX(o) py_numpy_matrix_to_r_matrix(o)
 #define PY_TO_R__CVXOPT_MATRIX(o) py_cvxopt_matrix_to_r_matrix(o)
-#define PY_TO_R__ARRAY(o) R_NilValue
-#define PY_TO_R__NUMPY_ARRAY(o) R_NilValue
-#define PY_TO_R__LIST(o) py_list_to_r_list(o, 0)
-#define PY_TO_R__TUPLE(o) py_tuple_to_r_list(o, 0)
+#define PY_TO_R__ARRAY(o) py_array_to_r_array(o)
+#define PY_TO_R__NUMPY_ARRAY(o) py_numpy_array_to_r_array(o)
+#define PY_TO_R__LIST(o, s) (s) ? py_list_to_r_list_simplify(o) : py_list_to_r_list(o, s)
+#define PY_TO_R__TUPLE(o, s) py_tuple_to_r_list(o, s)
 #define PY_TO_R__NLTK_TREE(o) py_nltk_tree_to_nlp_tree(o)
 #define PY_TO_R__SIMPLE_TRIPLET_MATRIX(o) py_stm_matrix_to_r_stm_matrix(o)
 #define PY_TO_R__CVXOPT_SPARSE_MATRIX(o) R_NilValue
@@ -42,9 +42,9 @@
 #define PY_TO_R__DIA(o) R_NilValue
 #define PY_TO_R__DOK(o) R_NilValue
 #define PY_TO_R__LIL(o) R_NilValue
-#define PY_TO_R__DICT(o) py_dict_to_r_list(o, 0)
+#define PY_TO_R__DICT(o, s) py_dict_to_r_list(o, s)
 #define PY_TO_R__DATA_FRAME(o) py_data_frame_to_r_data_frame(o)
-#define PY_TO_R__PANDAS_DATA_FRAME(o) R_NilValue
+#define PY_TO_R__PANDAS_DATA_FRAME(o) py_pandas_data_frame_to_r_data_frame(o)
 #define PY_TO_R__OBJECT(o) R_NilValue
 #define PY_TO_R__ERROR(o) py_error_to_r_error(o)
 
@@ -53,6 +53,8 @@
 #define PY_CVXOPT_MATRIX_TO_DICT(x) Py_call_1_arg("__R__.cvxopt_matrix_to_dict", x)
 #define PY_NLTK_TREE_TO_DICT(x) Py_call_1_arg("__R__.nltk_tree_to_dict", x)
 
+#define PY_PANDAS_DF_TO_DICT(x) Py_call_1_arg("__R__.pandas_data_frame_to_dict", x)
+#define PY_NUMPY_ARRAY_TO_DICT(x) Py_call_1_arg("__R__.numpy_array_to_tlist", x)
 
 SEXP py_class(PyObject *py_object);
 
@@ -71,6 +73,7 @@ SEXP py_list_to_r_vec(PyObject *py_object, int r_vector_type);
 SEXP py_tuple_to_r_vec(PyObject *py_object, int r_vector_type);
 
 SEXP py_list_to_r_list(PyObject *py_object, int simplify);
+SEXP py_list_to_r_list_simplify(PyObject *py_object);
 
 SEXP py_tuple_to_r_list(PyObject *py_object, int simplify);
 

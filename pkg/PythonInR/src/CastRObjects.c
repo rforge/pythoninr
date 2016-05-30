@@ -220,11 +220,28 @@ PyObject *r_to_py_ttuple(SEXP x) {
 
   ----------------------------------------------------------------------------*/
 PyObject *r_to_py_data_frame(SEXP x) {
+    // int flag = R_VECTOR_TO_LIST_FLAG;
+    // R_VECTOR_TO_LIST_FLAG = 1;
     PyObject *df = r_to_py_dict(GET_NAMES(x), x);
+    Rprintf("r_to_py_data_frame: refcnt(df)=%i\n", REF_CNT(df));
     PyObject *rn = r_to_py(getAttrib(x, mkString("row.names")));
+    Rprintf("r_to_py_data_frame: refcnt(rn)=%i\n", REF_CNT(rn));
     PyObject *cn = r_to_py(GET_NAMES(x));
+    Rprintf("r_to_py_data_frame: refcnt(cn)=%i\n", REF_CNT(cn));
+    // R_VECTOR_TO_LIST_FLAG = flag;
     PyObject *pyo = PY_DATA_FRAME(df, rn, cn, r_to_py(GET_DIM(x)));
+    Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    Rprintf("r_to_py_data_frame: refcnt(df)=%i, refcnt(rn)=%i, refcnt(cn)=%i\n", REF_CNT(df), REF_CNT(rn), REF_CNT(cn));
     return pyo;
+}
+
+PyObject *r_to_py_pandas_data_frame(SEXP x) {
+    PyObject *pyo = r_to_py_data_frame(x);
+    Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    PyObject *z = PyObject_CallMethod(pyo, "to_pandas", "");
+    Py_XDECREF(pyo);
+    Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    return z;
 }
 
 SEXP Test_r_to_py_data_frame(SEXP x) {
@@ -689,6 +706,7 @@ PyObject *r_to_py(SEXP x) {
         if ( container == 120 ) return r_to_py_tlist(x);
         if ( container == 130 ) return r_to_py_ttuple(x);
         if ( container == 140 ) return PY_VEC_TO_NUMPY_ARRAY(r_to_py_tlist(x));
+        if ( container == 150 ) return r_vec_to_py_list(x);
         
         /** Matrix **/
         if ( container == 200 ) return r_to_py_matrix(x);
@@ -709,7 +727,7 @@ PyObject *r_to_py(SEXP x) {
 
         /** data.frame **/
         if ( container == 500 ) return r_to_py_data_frame(x);
-        // if ( container == 510 ) return PY_DF_TO_PANDAS
+        if ( container == 510 ) return r_to_py_pandas_data_frame(x);
 
         /** simple_triplet_matrix (sparse matrix formats) **/
         if ( container == 420 ) return r_to_py_simple_triplet_matrix(x);
