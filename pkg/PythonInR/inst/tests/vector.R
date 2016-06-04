@@ -1,15 +1,9 @@
 q("no")
 Rdevel
+
 library(PythonInR)
 library(testthat)
 library(typehints)
-
-th.int_vector <- function(x) tyhi(x, c("vector", "int"))
-th.str_vector <- function(x) tyhi(x, c("vector", "string"))
-th.int_list <- function(x) tyhi(x, c("list", "int"))
-th.str_list <- function(x) tyhi(x, c("list", "string"))
-th.int_tuple <- function(x) tyhi(x, c("tuple", "int"))
-th.str_tuple <- function(x) tyhi(x, c("tuple", "string"))
 
 ## ---------------------------
 ## NULL
@@ -74,7 +68,7 @@ expect_true(pyGet("x.dtype is bool"))
 expect_equal(pyGet("x"), TRUE)
 
 ## int ## FIXME: (TODO: ich muss noch zusätzliche type hints erstellen )
-## th.int_vector
+## th.vector_int
 ## pySet("x", th.vector(th.int(0L)))
 pySet("x", tyhi(0L, c("vector", "int")))
 expect_equal(pyType("x"), "PythonInR.vector")
@@ -152,16 +146,16 @@ expect_true(pyGet("x.dtype is unicode"))
 expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
 
 ## ---------------------------
-## list (N=1)
+## tlist (N=1) (FIXME)
 ## ---------------------------
 ## logical
-pySet("x", th.list(TRUE))
+pySet("x", th.tlist(TRUE))
 expect_equal(pyType("x"), "tlist")
 expect_true(pyGet("x.dtype is bool"))
 expect_equal(pyGet("x"), TRUE)
 
 ## int
-pySet("x", th.int_list(0L))
+pySet("x", th.list_int(0L))
 expect_equal(pyType("x"), "tlist")
 pyExecp("x")
 expect_true(pyGet("x.dtype is int"))
@@ -180,7 +174,94 @@ expect_true(pyGet("x.dtype is float"))
 expect_equal(pyGet("x"), 0)
 
 ## string
-pySet("x", th.str_list(""))
+pySet("x", th.list_str(""))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is str"))
+expect_equal(pyGet("x"), "")
+
+## unicode
+pySet("x", th.list("äöü"))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is unicode"))
+expect_equal(pyGet("x"), "äöü")
+
+## ---------------------------
+## tlist (N>1) (FIXME)
+## ---------------------------
+## logical
+pySet("x", th.list(c(TRUE, FALSE, TRUE)))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is bool"))
+expect_equal(pyGet("x"), c(TRUE, FALSE, TRUE))
+
+## int
+pySet("x", th.list_int(-3:3))
+expect_equal(pyType("x"), "tlist")
+pyExecp("x")
+expect_true(pyGet("x.dtype is int"))
+expect_equal(pyGet("x"), -3:3)
+
+## long
+pySet("x", th.list(-3:3))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is long"))
+expect_equal(pyGet("x"), -3:3)
+
+## double
+pySet("x", th.list(as.double(-3:3)))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is float"))
+expect_equal(pyGet("x"), as.double(-3:3))
+
+## string (empty)
+pySet("x", th.list_str(rep("", 30)))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is str"))
+expect_equal(pyGet("x"), rep("", 30))
+
+## string (latin1)
+pySet("x", th.list_str(rep("Hällö Wörld!", 100)))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is str"))
+expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
+
+## unicode
+pySet("x", th.list(rep("Hällö Wörld!", 100)))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is unicode"))
+expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
+
+
+## ---------------------------
+## list (N=1)
+## ---------------------------
+## logical
+pySet("x", th.list(TRUE))
+expect_equal(pyType("x"), "list")
+expect_equal(pyGet("x", simplify=TRUE), TRUE)
+expect_equal(pyGet("x", simplify=FALSE), list(TRUE))
+
+## int
+pySet("x", th.list_int(0L))
+expect_equal(pyType("x"), "list")
+pyExecp("x")
+expect_true(pyGet("x.dtype is int"))
+expect_equal(pyGet("x"), 0L)
+
+## long
+pySet("x", th.list(0L))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is long"))
+expect_equal(pyGet("x"), 0L)
+
+## double
+pySet("x", th.list(0))
+expect_equal(pyType("x"), "tlist")
+expect_true(pyGet("x.dtype is float"))
+expect_equal(pyGet("x"), 0)
+
+## string
+pySet("x", th.list_str(""))
 expect_equal(pyType("x"), "tlist")
 expect_true(pyGet("x.dtype is str"))
 expect_equal(pyGet("x"), "")
@@ -201,7 +282,7 @@ expect_true(pyGet("x.dtype is bool"))
 expect_equal(pyGet("x"), c(TRUE, FALSE, TRUE))
 
 ## int
-pySet("x", th.int_list(-3:3))
+pySet("x", th.list_int(-3:3))
 expect_equal(pyType("x"), "tlist")
 pyExecp("x")
 expect_true(pyGet("x.dtype is int"))
@@ -220,13 +301,13 @@ expect_true(pyGet("x.dtype is float"))
 expect_equal(pyGet("x"), as.double(-3:3))
 
 ## string (empty)
-pySet("x", th.str_list(rep("", 30)))
+pySet("x", th.list_str(rep("", 30)))
 expect_equal(pyType("x"), "tlist")
 expect_true(pyGet("x.dtype is str"))
 expect_equal(pyGet("x"), rep("", 30))
 
 ## string (latin1)
-pySet("x", th.str_list(rep("Hällö Wörld!", 100)))
+pySet("x", th.list_str(rep("Hällö Wörld!", 100)))
 expect_equal(pyType("x"), "tlist")
 expect_true(pyGet("x.dtype is str"))
 expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
@@ -247,7 +328,7 @@ expect_true(pyGet("x.dtype is bool"))
 expect_equal(pyGet("x"), TRUE)
 
 ## int
-pySet("x", th.int_tuple(0L))
+pySet("x", th.tuple_int(0L))
 expect_equal(pyType("x"), "ttuple")
 pyExecp("x")
 expect_true(pyGet("x.dtype is int"))
@@ -266,7 +347,7 @@ expect_true(pyGet("x.dtype is float"))
 expect_equal(pyGet("x"), 0)
 
 ## string
-pySet("x", th.str_tuple(""))
+pySet("x", th.tuple_str(""))
 expect_equal(pyType("x"), "ttuple")
 expect_true(pyGet("x.dtype is str"))
 expect_equal(pyGet("x"), "")
@@ -287,7 +368,7 @@ expect_true(pyGet("x.dtype is bool"))
 expect_equal(pyGet("x"), c(TRUE, FALSE, TRUE))
 
 ## int
-pySet("x", th.int_tuple(-3:3))
+pySet("x", th.tuple_int(-3:3))
 expect_equal(pyType("x"), "ttuple")
 pyExecp("x")
 expect_true(pyGet("x.dtype is int"))
@@ -306,13 +387,13 @@ expect_true(pyGet("x.dtype is float"))
 expect_equal(pyGet("x"), as.double(-3:3))
 
 ## string (empty)
-pySet("x", th.str_tuple(rep("", 30)))
+pySet("x", th.tuple_str(rep("", 30)))
 expect_equal(pyType("x"), "ttuple")
 expect_true(pyGet("x.dtype is str"))
 expect_equal(pyGet("x"), rep("", 30))
 
 ## string (latin1)
-pySet("x", th.str_tuple(rep("Hällö Wörld!", 100)))
+pySet("x", th.tuple_str(rep("Hällö Wörld!", 100)))
 expect_equal(pyType("x"), "ttuple")
 expect_true(pyGet("x.dtype is str"))
 expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))

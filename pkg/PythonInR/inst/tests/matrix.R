@@ -16,11 +16,6 @@ Mc <- matrix(LETTERS[1:12], 3)
 colnames(Mc) <- LETTERS[1:4]
 rownames(Mc) <- LETTERS[5:7]
 
-th.int_numpy <- function(x) tyhi(x, c("numpy", "int"))
-th.str_numpy <- function(x) tyhi(x, c("numpy", "string"))
-th.int_cvxopt <- function(x) tyhi(x, c("cvxopt", "int"))
-th.str_cvxopt <- function(x) tyhi(x, c("cvxopt", "string"))
-
 ## ---------------------------
 ## Matrix
 ## ---------------------------
@@ -71,7 +66,7 @@ expect_equal(pyGet("x.dtype.kind"), "f")
 expect_equal(typeof(pyGet("x")), typeof(Md))
 expect_equal(pyGet("x"), unname(Md))
 
-pySet("x", th.str_numpy(Mc))
+pySet("x", th.numpy_str(Mc))
 expect_equal(pyType("x"), "ndarray")
 expect_true(grepl("S", pyGet("str(x.dtype)")))
 expect_equal(pyGet("x.dtype.kind"), "S")
@@ -133,43 +128,60 @@ expect_equal(pyType("x"), "PythonInR.simple_triplet_matrix")
 expect_true(pyGet("x.dtype is unicode"))
 expect_equal(as.matrix(pyGet("x")), as.matrix(SMc))
 
-th.scibsr <- function(x) tyhi(x, "scibsr")
-th.scicoo <- function(x) tyhi(x, "scicoo")
-th.scicsc <- function(x) tyhi(x, "scicsc")
-th.scicsr <- function(x) tyhi(x, "scicsr")
-th.scidia <- function(x) tyhi(x, "scidia")
-th.scidok <- function(x) tyhi(x, "scidok")
-th.scilil <- function(x) tyhi(x, "scilil")
+## ---------------------------
+## CvxOpt Matrix
+## ---------------------------
+## CvxOpt typecodes:
+## "d": int and float
+## "z": complex
+## source: http://cvxopt.org/userguide/matrices.html
+pySet("x", th.cvxopt(SMi))
+expect_equal(pyType("x"), "spmatrix")
+expect_true(pyGet("x.typecode") == "d")
+expect_equal(as.matrix(pyGet("x")), unname(as.matrix(SMi)))
 
+pySet("x", th.cvxopt(SMd))
+expect_equal(pyType("x"), "spmatrix")
+expect_true(pyGet("x.typecode") == "d")
+expect_equal(as.matrix(pyGet("x")), unname(as.matrix(SMi)))
+
+## ---------------------------
+## Scipy Matrices
+## ---------------------------
 pySet("x", th.scibsr(SMi))
 expect_equal(pyType("x"), "bsr_matrix")
 expect_true(pyGet("x.dtype.kind") == "i")
-## expect_equal(pyGet("x"), SMi)
+expect_equal(as.matrix(pyGet("x")), unname(as.matrix(SMi)))
 
 pySet("x", th.scicoo(SMi))
 expect_equal(pyType("x"), "coo_matrix")
 expect_true(pyGet("x.dtype.kind") == "i")
+expect_equal(as.matrix(pyGet("x")), unname(as.matrix(SMi)))
 
 pySet("x", th.scicsc(SMi))
 expect_equal(pyType("x"), "csc_matrix")
 expect_true(pyGet("x.dtype.kind") == "i")
+expect_equal(as.matrix(pyGet("x")), unname(as.matrix(SMi)))
 
 pySet("x", th.scicsr(SMi))
 expect_equal(pyType("x"), "csr_matrix")
 expect_true(pyGet("x.dtype.kind") == "i")
+expect_equal(as.matrix(pyGet("x")), unname(as.matrix(SMi)))
 
 pySet("x", th.scidia(SMi))
 expect_equal(pyType("x"), "dia_matrix")
 expect_true(pyGet("x.dtype.kind") == "i")
+expect_equal(as.matrix(pyGet("x")), unname(as.matrix(SMi)))
 
 pySet("x", th.scidok(SMi))
 expect_equal(pyType("x"), "dok_matrix")
 expect_true(pyGet("x.dtype.kind") == "i")
+expect_equal(as.matrix(pyGet("x")), unname(as.matrix(SMi)))
 
 pySet("x", th.scilil(SMi))
 expect_equal(pyType("x"), "lil_matrix")
 expect_true(pyGet("x.dtype.kind") == "i")
-
+expect_equal(as.matrix(pyGet("x")), unname(as.matrix(SMi)))
 
 
 
