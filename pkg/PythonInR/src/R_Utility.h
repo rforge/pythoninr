@@ -17,7 +17,7 @@
 #define HAS_TH_STRING(x)    has_typehint(x, "string")
 #define HAS_TH_UNICODE(x)   has_typehint(x, "unicode")
 
-#define HAS_TH_CONTAINER(x) ( HAS_TH_VECTOR(x) | HAS_TH_LIST(x) | HAS_TH_TUPLE(x) | HAS_TH_NUMPY(x) )
+#define HAS_TH_CONTAINER(x) ( HAS_TH_VECTOR(x) | HAS_TH_LIST(x) | HAS_TH_TLIST(x) | HAS_TH_TUPLE(x) | HAS_TH_NUMPY(x) )
 #define HAS_TH_VECTOR(x)    has_typehint(x, "vector")
 #define HAS_TH_LIST(x)      has_typehint(x, "list")
 #define HAS_TH_TLIST(x)     has_typehint(x, "tlist")

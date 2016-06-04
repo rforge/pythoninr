@@ -292,7 +292,7 @@ SEXP py_dict_to_r_vec(PyObject *py_object, int r_vector_type){
             Py_XINCREF(item);
             // to handle NA variables of type None are transformed to NA
             if ( Py_GetR_Type(item) == 0 ){
-                LOGICAL(r_vec)[i] = INT_MIN;
+                LOGICAL(r_vec)[i] = NA_INTEGER; // INT_MIN;
             }else{
                 LOGICAL(r_vec)[i] = PY_TO_C_BOOLEAN(item);
             }
@@ -309,8 +309,8 @@ SEXP py_dict_to_r_vec(PyObject *py_object, int r_vector_type){
             item = PyList_GetItem(py_values, PyLong_AsSsize_t(py_i));
             Py_XINCREF(item);
             // to handle NA variables of type None are transformed to NA
-            if ( Py_GetR_Type(item) == 0 ){
-                INTEGER(r_vec)[i] = INT_MIN;
+            if ( Py_GetR_Type(item) == 0 ) {
+                INTEGER(r_vec)[i] = NA_INTEGER; // INTEGER(r_vec)[i] = INT_MIN;
             }else{
                 INTEGER(r_vec)[i] = py_to_c_integer(item);
             }
@@ -430,7 +430,7 @@ SEXP py_list_to_r_vec(PyObject *py_object, int r_vector_type){
             Py_XINCREF(item);
             // to handle NA variables of type None are transformed to NA
             if ( Py_GetR_Type(item) == 0 ){
-                LOGICAL(r_vec)[i] = INT_MIN;
+                LOGICAL(r_vec)[i] = NA_INTEGER; // INT_MIN;
             }else{
                 LOGICAL(r_vec)[i] = PY_TO_C_BOOLEAN(item);
             }
@@ -444,7 +444,7 @@ SEXP py_list_to_r_vec(PyObject *py_object, int r_vector_type){
             Py_XINCREF(item);
             // to handle NA variables of type None are transformed to NA
             if ( Py_GetR_Type(item) == 0 ){
-                INTEGER(r_vec)[i] = INT_MIN;
+                INTEGER(r_vec)[i] = NA_INTEGER; // INT_MIN;
             }else{
                 INTEGER(r_vec)[i] = py_to_c_integer(item);
             }
@@ -504,7 +504,7 @@ SEXP py_tuple_to_r_vec(PyObject *py_object, int r_vector_type){
             item = PyTuple_GetItem(py_object, PyLong_AsSsize_t(py_i));
             Py_XINCREF(item);
             if ( Py_GetR_Type(item) == 0 ){
-                LOGICAL(r_vec)[i] = INT_MIN;
+                LOGICAL(r_vec)[i] = NA_INTEGER; // INT_MIN;
             }else{
                 LOGICAL(r_vec)[i] = PY_TO_C_BOOLEAN(item);
             }
@@ -517,7 +517,7 @@ SEXP py_tuple_to_r_vec(PyObject *py_object, int r_vector_type){
             item = PyTuple_GetItem(py_object, PyLong_AsSsize_t(py_i));
             Py_XINCREF(item);
             if ( Py_GetR_Type(item) == 0 ){
-                INTEGER(r_vec)[i] = INT_MIN;
+                INTEGER(r_vec)[i] = NA_INTEGER; // INT_MIN;
             }else{
                 INTEGER(r_vec)[i] = py_to_c_integer(item);
             }
@@ -735,6 +735,28 @@ SEXP py_stm_matrix_to_r_stm_matrix(PyObject *pyo) {
     return robj;
 }
 
+SEXP py_cvxopt_sparse_matrix_to_r_stm_matrix(PyObject *pyo) {
+    Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    Py_XINCREF(pyo);
+    PyObject *x = PY_CVXOPT_SPARSE_MATRIX_TO_DICT(pyo);
+    Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    SEXP robj = PY_TO_R__DICT(x, 0);
+    Py_XDECREF(x);
+    classgets(robj, c_to_r_string("simple_triplet_matrix"));
+    return robj;
+}
+
+SEXP py_scipy_sparse_matrix_to_r_stm_matrix(PyObject *pyo) {
+    Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    Py_XINCREF(pyo);
+    PyObject *x = PY_SCIPY_SPARSE_MATRIX_TO_DICT(pyo);
+    Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    SEXP robj = PY_TO_R__DICT(x, 0);
+    Py_XDECREF(x);
+    classgets(robj, c_to_r_string("simple_triplet_matrix"));
+    return robj;
+}
+
 SEXP py_data_frame_to_r_data_frame(PyObject *pyo) {
     if ( pyo == NULL ) {
         Rprintf("py_data_frame_to_r_data_frame is NULL!\n");
@@ -829,14 +851,29 @@ SEXP py_error_to_r_error(PyObject *obj) {
     return(rval);
 }
 
-int py_to_c_integer(PyObject *py_object){
+int py_to_c_integer(PyObject *py_object) { 
+// FIXME: make this consistent! (Now I use different versions, I should only use this!)
+//        and I have to fix the different cases!
     long c_long;
-    if(PyInt_Check(py_object)){
+    if ( PyInt_Check(py_object) ) {
         c_long = PY_TO_C_INTEGER(py_object);
-    }else if(PyLong_Check(py_object)){
+    } else if ( PyLong_Check(py_object) ) {
         c_long = PY_TO_C_LONG(py_object);
-    }else{
+    } else if ( PyFloat_Check(py_object) ){
+        double c_double = PY_TO_C_DOUBLE(py_object);
+        if ( INT_OVERFLOW(c_double) ) {
+            warning("NAs introduced by coercion to integer range");
+            c_long = NA_INTEGER;
+        } else {
+            c_long = (long)c_double;
+        }
+        return (int)c_long;
+    } else {
         error("in py_to_r_integer!\n");
+    }
+    if ( INT_OVERFLOW(c_long) ) {
+        warning("NAs introduced by coercion to integer range");
+        c_long = NA_INTEGER;
     }
     return (int)c_long;
 }

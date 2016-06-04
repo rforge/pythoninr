@@ -724,8 +724,28 @@ def simple_triplet_matrix_from_dict(d):
 def is_simple_triplet_matrix(x):
     return isinstance(x, simple_triplet_matrix)
 
-##class simple_sparse_array(sparse):
+def cvxopt_sparse_matrix_to_dict(x):
+    d = dict()
+    d['i'] = tlist(1 + x.I, int)
+    d['j'] = tlist(1 + x.J, int)
+    d['v'] = tlist(x.V, float)
+    d['nrow'] = x.size[0]
+    d['ncol'] = x.size[1]
+    return(d)
 
+def coo_sparse_matrix_to_dict(x):
+    d = dict()
+    d['i'] = tlist((1 + x.row).tolist(), int)
+    d['j'] = tlist((1 + x.col).tolist(), int)
+    d['v'] = tlist(x.data.tolist(), _get_py_type_numpy(x.data))
+    d['nrow'] = x.shape[0]
+    d['ncol'] = x.shape[1]
+    return(d)
+
+def scipy_sparse_matrix_to_dict(x):
+    return(coo_sparse_matrix_to_dict(x.tocoo()))
+
+## class simple_sparse_array(sparse):
 class data_frame(dict):
     """A data.frame class"""
     __slots__ = ['dim', 'rownames', 'colnames']

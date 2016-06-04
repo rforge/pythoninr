@@ -16,7 +16,7 @@ SEXP c_to_r_boolean(int c_boolean){
     return r_val;
 }
 
-SEXP c_to_r_integer(long c_long){
+SEXP c_to_r_integer(long c_long) {
     SEXP r_val;
     PROTECT(r_val = allocVector(INTSXP, 1));
     INTEGER(r_val)[0] = (int)c_long;

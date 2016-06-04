@@ -91,10 +91,12 @@
 #define PY_TO_C_STRING(s)   PyString_AsString(s)
 #define PY_TO_C_UNICODE(s)  PyBytes_AsString(PyUnicode_AsUTF8String(s))
 
+#define INT_OVERFLOW(n) ( (n <= PIR_INT_MIN) | (PIR_INT_MAX < n) ) ? TRUE : FALSE
+
 #if (PY_MAJOR_VERSION >= 3  || (!defined(PYTHON_IN_R_NO_EXPLICIT_LINKING)))
-    #define PY_TO_C_INTEGER(n)  PyLong_AsLong(n)
+    #define PY_TO_C_INTEGER(n) PyLong_AsLong(n)
 #else
-    #define PY_TO_C_INTEGER(n)  PyInt_AS_LONG(n)
+    #define PY_TO_C_INTEGER(n) PyInt_AS_LONG(n)
 #endif
 
 #define PY_TO_C_LONG(n)     PyLong_AsLong(n)

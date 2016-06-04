@@ -189,7 +189,10 @@ PyObject *r_to_py_array(SEXP r_object) {
 PyObject *r_to_py_simple_triplet_matrix(SEXP r_object) {
     // SEXP len = GET_LENGTH(r_object);
     SEXP names = GET_NAMES(r_object);
+    int tmp = r_int_to_py_long_flag;
+    r_int_to_py_long_flag = 0;
     PyObject *py_object = r_to_py_dict(names, r_object);
+    r_int_to_py_long_flag = tmp;
     return PY_STM_FROM_DICT(py_object);
 }
 

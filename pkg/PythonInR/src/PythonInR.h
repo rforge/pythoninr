@@ -37,6 +37,7 @@ extern int use_PY_To_R_Typecast;
 #include <R.h>
 #include <Rinternals.h>
 #include <Rdefines.h>
+#include <R_ext/Arith.h>
 
 #ifdef DEBUG_PYTHONINR
 #include <stdio.h>
@@ -58,6 +59,8 @@ HMODULE py_hdll;
 #include "CastPyObjects.h"
 #include "CToR.h"
 
+#define PIR_INT_MIN INT_MIN // INT_MIN is NA!
+#define PIR_INT_MAX INT_MAX
 #define IS_RVECTOR(x) ( IS_LOGICAL(x) || IS_INTEGER(x) || IS_NUMERIC(x) || IS_CHARACTER(x) || isComplex(x) )
 #define R_VEC_GET(x, i) ( ( IS_LOGICAL(x) ) ? LOGICAL(x)[i] : ( ( IS_INTEGER(x) ) ? INTEGER(x)[i] : ( ( IS_NUMERIC(x) ) ? REAL(x)[i] : ( ( IS_CHARACTER(x) ) ? STRING_ELT(x, i) : ( ( isComplex(x) ) ? COMPLEX(x)[i] )))))
 
