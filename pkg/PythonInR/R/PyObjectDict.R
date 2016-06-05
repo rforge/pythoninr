@@ -117,7 +117,7 @@ PythonInR_DictNoFinalizer <-
 #' myDict['string'] <- 1
 #' myDict[3L] <- "long"
 #' myDict[5] <- "float"
-#' myDict[c("t", "u", "p", "l", "e")] <- "tuple"
+#' myDict[th.tuple(c("t", "u", "p", "l", "e"))] <- "tuple"
 #' myDict
 #' ## NOTE: Python does not make a difference between a float key 3 and a long key 3L
 #' myDict[3] <- "float"
