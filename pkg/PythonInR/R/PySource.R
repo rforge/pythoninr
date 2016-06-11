@@ -56,34 +56,35 @@ pySource <- function(file, local = FALSE, echo = verbose, print.eval = echo,
 #  -----------------------------------------------------------
 #  BEGIN.Python
 #  ============
-#' @title Execute Python interactively from within R
-#'
-#' @description The function BEGIN.Python starts an Python read-eval-print loop.
-#' @details BEGIN.Python emulates the behavior of the Python terminal
-#'          and therefore allows interactive Python code development
-#'          from within R.
-#' @return Returns the entered code as character, code lines which throw an
-#'         exception are omitted.
-#' @note This won't work with RStudio because of a known  
-#' \href{https://support.rstudio.com/hc/communities/public/questions/206744317-readLines-Bug-?page=1#answer-206647788}{RStudio issue}.
-#' @examples
-#' \dontshow{PythonInR:::pyCranConnect()}
-#' \dontrun{
-#' code <-
-#' BEGIN.Python()
-#' import os
-#' os.getcwd()
-#' dir(os)
-#' x = 3**3
-#' for i in xrange(10):
-#'     if (i > 5):
-#'         print(i)
-#'
-#' END.Python
-#' ## NOTE: BEGIN.Python returns the successfully executed code as character.
-#' cat(code, sep="\n")
-#' pyGet0("x")
-#' }
+##' @title Execute Python interactively from within R
+##'
+##' @description The function BEGIN.Python starts an Python read-eval-print loop.
+##' @details BEGIN.Python emulates the behavior of the Python terminal
+##'          and therefore allows interactive Python code development
+##'          from within R.
+##' @return Returns the entered code as character, code lines which throw an
+##'         exception are omitted.
+##' @note The function BEGIN.Python relies on reading from the stdin therefore 
+##'    this function wont work with RStudio because of a known  
+##' \href{https://support.rstudio.com/hc/communities/public/questions/206744317-readLines-Bug-?page=1#answer-206647788}{RStudio issue}.
+##' @examples
+##' \dontshow{PythonInR:::pyCranConnect()}
+##' \dontrun{
+##' code <-
+##' BEGIN.Python()
+##' import os
+##' os.getcwd()
+##' dir(os)
+##' x = 3**3
+##' for i in xrange(10):
+##'     if (i > 5):
+##'         print(i)
+##'
+##' END.Python
+##' ## NOTE: BEGIN.Python returns the successfully executed code as character.
+##' cat(code, sep="\n")
+##' pyGet0("x")
+##' }
 #  -----------------------------------------------------------
 BEGIN.Python <- function(){
     if ( pyConnectionCheck() ) return(invisible(NULL))

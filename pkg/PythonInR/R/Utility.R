@@ -11,6 +11,10 @@ pyIsCallable <- function(x){
     pyGet(sprintf('callable(%s)', x))
 }
 
+pyIsCallableFt <- function(x) {
+    pyGet(sprintf('__R__.callable_fault_tolerent(%x)', x))
+}
+
 ## if it exists it should have a type
 pyVariableExists <- function(key){
 cmd <- '
