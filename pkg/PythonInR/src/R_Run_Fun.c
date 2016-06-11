@@ -52,7 +52,7 @@ SEXP R_error(const char *message, const char *domain, const char *error_type) {
     SET_STRING_ELT(class, 1, mkChar("PythonInR"));
     
     setAttrib(r_list, R_NamesSymbol, r_names);
-    classgets(r_list, c_to_r_string(""));
+    classgets(r_list, c_to_r_string("ERROR_MESSAGE"));
     
     UNPROTECT(3);
     return r_list;

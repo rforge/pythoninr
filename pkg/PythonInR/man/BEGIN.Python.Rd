@@ -19,7 +19,8 @@ BEGIN.Python emulates the behavior of the Python terminal
          from within R.
 }
 \note{
-This won't work with RStudio because of a known  
+The function BEGIN.Python relies on reading from the stdin therefore 
+   this function wont work with RStudio because of a known  
 \href{https://support.rstudio.com/hc/communities/public/questions/206744317-readLines-Bug-?page=1#answer-206647788}{RStudio issue}.
 }
 \examples{

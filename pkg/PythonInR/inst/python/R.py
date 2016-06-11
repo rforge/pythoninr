@@ -339,7 +339,6 @@ def numpy_array(values):
 def numpy_vector_to_tlist(values):
     return tlist(values, _get_py_type_numpy(values))
 
-
 class matrix(list): 
     """A Matrix Class for Python"""
     __slots__ = ['dim', 'dimnames', 'dtype']
@@ -1087,3 +1086,11 @@ def get_container_type(x):
     if is_tuple(x):
         return 401
     return 700
+
+
+def callable_fault_tolerent(x):
+    try:
+        return callable(x)
+    except:
+        return False
+
