@@ -4,8 +4,7 @@
 \alias{pySet}
 \title{assigns R objects to Python}
 \usage{
-pySet(key, value, namespace = "__main__", useSetPoly = TRUE,
-  useNumpy = pyOptions("useNumpy"), usePandas = pyOptions("usePandas"))
+pySet(key, value, namespace = "__main__")
 }
 \arguments{
 \item{key}{a string specifying the name of the Python object.}
@@ -17,17 +16,6 @@ If the namespace is set to "__main__" the key will be
 set to the global namespace. But it is also possible to
 set attributes of objects e.g. the attribute name of
 the object 'os'.}
-
-\item{useSetPoly}{an optional logical, giving if pySetPoly should be used 
-to transform R objects into Python objects. For example if 
-useSetPoly is TRUE unnamed vectors are transformed to 
-Python objects of type PrVector else to lists.}
-
-\item{useNumpy}{an optional logical, default is FALSE, to control if numpy 
-should be used for the type conversion of matrices.}
-
-\item{usePandas}{an optional logical, default is FALSE, to control if pandas 
-should be used for the type conversion of data frames.}
 }
 \description{
 The function pySet allows to assign R objects to the Python 

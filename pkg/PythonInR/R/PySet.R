@@ -18,14 +18,6 @@
 #'                   set to the global namespace. But it is also possible to
 #'                   set attributes of objects e.g. the attribute name of
 #'                   the object 'os'.
-#' @param useSetPoly an optional logical, giving if pySetPoly should be used 
-#'                   to transform R objects into Python objects. For example if 
-#'                   useSetPoly is TRUE unnamed vectors are transformed to 
-#'                   Python objects of type PrVector else to lists.
-#' @param useNumpy an optional logical, default is FALSE, to control if numpy 
-#'                 should be used for the type conversion of matrices.
-#' @param usePandas an optional logical, default is FALSE, to control if pandas 
-#'                  should be used for the type conversion of data frames.
 #' @details More information about the type conversion can be found in the README 
 #'          file or at \url{http://pythoninr.bitbucket.org/}.
 #' @examples

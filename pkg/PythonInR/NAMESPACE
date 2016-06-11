@@ -4,7 +4,6 @@ importFrom("pack", unpack)
 import(methods)
 import(R6)
 import(slam)
-import(typehints)
 
 S3method("print", "pyFunction")
 
@@ -17,31 +16,42 @@ S3method("[<-", "PythonInR_List")
 S3method("[", "PythonInR_Dict")
 S3method("[<-", "PythonInR_Dict")
 
-## S3method("th", "int")
-## S3method("th", "long")
-## S3method("th", "float")
-## S3method("th", "complex")
-## S3method("th", "string")
-## S3method("th", "bytes")
-## S3method("th", "unicode")
-## S3method("th", "vector")
-## S3method("th", "list")
-## S3method("th", "tuple")
-## S3method("th", "numpy")
-## S3method("th", "cvxopt")
-## S3method("th", "pandas")
-
 export(th.int)
 export(th.long)
 export(th.float)
-export(th.complex)
+
 export(th.string)
-export(th.bytes)
+## export(th.bytes)
 export(th.unicode)
+
 export(th.vector)
+export(th.vector_int)
+export(th.vector_str)
+
 export(th.list)
+export(th.list_int)
+export(th.list_str)
+
 export(th.tuple)
+export(th.tuple_int)
+export(th.tuple_str)
+
+export(th.tlist)
+export(th.tlist_int)
+export(th.tlist_str)
+
 export(th.numpy)
+export(th.numpy_int)
+export(th.numpy_str)
+
+export(th.scibsr)
+export(th.scicoo)
+export(th.scicsc)
+export(th.scicsr)
+export(th.scidia)
+export(th.scidok)
+export(th.scilil)
+
 export(th.cvxopt)
 export(th.pandas)
 

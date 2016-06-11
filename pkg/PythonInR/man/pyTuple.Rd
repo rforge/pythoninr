@@ -33,7 +33,7 @@ pyExec('myPyTuple = (1, 2, 5, "Hello R!")')
 myTuple <- pyTuple("myPyTuple")
 myTuple[0]
 tryCatch({myTuple[1] <- "should give an error since tuple are not mutable"},
-         error = function(e) print(e))
+          error = function(e) print(e))
 myTuple
 # create a new Python tuple and virtual tuple
 newTuple <- pyTuple('myNewTuple', list(1:3, 'Hello Python'))

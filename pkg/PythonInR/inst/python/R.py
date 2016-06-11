@@ -5,7 +5,12 @@ TODO: just import the methods needed since all is imported into the R namespace
 
 import sys
 from collections import OrderedDict
-from sets import Set
+
+try:
+    from sets import Set ## python 2
+except:
+    Set = set ## python 3
+
 from warnings import warn
 PythonInR_FLAGS = {"useNumpy": True, "useSciPy": True, "usePandas": True, 
                    "useCvxOpt": True, "useNltkTree": True}
@@ -40,6 +45,9 @@ except:
     PythonInR_FLAGS = {"useNumpy": False, "useSciPy": False, "usePandas": False, 
                    "useCvxOpt": False, "useNltkTree": False}
     
+if (sys.version_info.major > 2):
+    long = int
+    unicode = str
 
 class PythonInR_Namespace(dict):
     def __init__(self):

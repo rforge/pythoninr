@@ -66,7 +66,7 @@ PythonInR_TupleNoFinalizer <-
 #' myTuple <- pyTuple("myPyTuple")
 #' myTuple[0]
 #' tryCatch({myTuple[1] <- "should give an error since tuple are not mutable"},
-#'          error = function(e) print(e))
+#'           error = function(e) print(e))
 #' myTuple
 #' # create a new Python tuple and virtual tuple
 #' newTuple <- pyTuple('myNewTuple', list(1:3, 'Hello Python'))
@@ -78,15 +78,14 @@ pyTuple <- function(key, value, regFinalizer = FALSE){
     check_string(key)
 
     if (!missing(value)){
-        if ( !is.vector(value) ) stop("'value' has to be a vector or list")
-        if (length(value) < 1) value <- as.list(value)
-        class(value) <- "tuple"
-        pySetSimple(key, value)       
+        if ( !(is.vector(value) | is.list(value)) ) 
+            stop("'value' has to be a vector or list")
+        comment(value) <- "tuple"
+        pySet(key, value)     
     }
     
     if (!pyVariableExists(key))
-        stop(sprintf("'%s' does not exist in the global namespace",
-             key))
+        stop(sprintf("'%s' does not exist in the global namespace", key))
     vIsTuple <- pyGet(sprintf("isinstance(%s, tuple)", key))
     if (!vIsTuple)
         stop(sprintf("'%s' is not an instance of tuple", key))

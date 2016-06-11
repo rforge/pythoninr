@@ -218,3 +218,17 @@ pyFunction <- function(key, regFinalizer = FALSE){
 }
 
 print.pyFunction <- function(x, ...) pyExecp(attr(x, "name"))
+
+length.PythonInR_Object <- function(x) {
+    pyGet(sprintf("len(%s)", x$py.variableName))
+    invisible(NULL)
+}
+
+print.PythonInR_Object <- function(x) {
+    pyExec(sprintf("print(%s)", x$py.variableName))
+    invisible(NULL)
+}
+
+as.list.PythonInR_Object <- function(x) {
+    pyGet(sprintf("list(%s)", x$py.variableName))
+}

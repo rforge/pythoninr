@@ -50,9 +50,10 @@ echo ""
 echo "Makevars:"
 echo $PYLIBS
 echo $PYCFLAGS | sed 's/Wstrict-prototypes/pedantic/' | sed 's/ -fstack-protector-strong//'
+## echo $PYCFLAGS | sed 's/Wstrict-prototypes/pedantic/' | sed -e 's/ -[OgfW][[:alnum:][:punct:]]*//g'
 echo ""
 
 # replacing Wstric-prototypes removes some unnecessary warnings
 echo $PYLIBS > src/Makevars
 echo $PYCFLAGS | sed 's/Wstrict-prototypes/pedantic/' | sed 's/ -fstack-protector-strong//' >> src/Makevars	
-
+## echo $PYCFLAGS | sed 's/Wstrict-prototypes/pedantic/' | sed -e 's/ -[OgfW][[:alnum:][:punct:]]*//g' >> src/Makevars
