@@ -1,2 +1,0 @@
-PKG_LIBS= -L/home/florian/bin/.pyenv/versions/anaconda3-2.4.1/lib -lpython3.5m -lpthread -ldl -lutil -lrt -lm -Xlinker -export-dynamic
-PKG_CFLAGS=-I/home/florian/bin/.pyenv/versions/anaconda3-2.4.1/include/python3.5m -I/home/florian/bin/.pyenv/versions/anaconda3-2.4.1/include/python3.5m -Wsign-compare -Wunreachable-code -DNDEBUG -g -fwrapv -O3 -Wall -pedantic -D PYTHONLIBXY=libpython3.5m.so -D PYTHON_IN_R_NO_EXPLICIT_LINKING
