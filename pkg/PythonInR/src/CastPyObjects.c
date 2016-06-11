@@ -596,15 +596,27 @@ SEXP py_list_to_r_list(PyObject *py_object, int simplify) {
 }
 
 SEXP py_list_to_r_list_simplify(PyObject *py_object) {
-    Rprintf("py_list_to_r_list_simplify\n");
+    // Rprintf("py_list_to_r_list_simplify\n");
     int r_type = PyList_AllSameType(py_object);
-    Rprintf("rtype: %i\n", r_type);
+    // Rprintf("rtype: %i\n", r_type);
     if ( r_type > -1 ){
         return py_list_to_r_vec(py_object, r_type);
     } else if ( r_type == -2 ) { // TODO: I should handle 0 objects based on their Python type!
         return py_list_to_r_list(py_object, 1);
     }
     return py_list_to_r_list(py_object, 1);
+}
+
+SEXP py_tuple_to_r_list_simplify(PyObject *py_object) {
+    // Rprintf("py_list_to_r_list_simplify\n");
+    int r_type = PyTuple_AllSameType(py_object);
+    // Rprintf("rtype: %i\n", r_type);
+    if ( r_type > -1 ){
+        return py_tuple_to_r_vec(py_object, r_type);
+    } else if ( r_type == -2 ) { // TODO: I should handle 0 objects based on their Python type!
+        return py_tuple_to_r_list(py_object, 1);
+    }
+    return py_tuple_to_r_list(py_object, 1);
 }
 
 /*  ----------------------------------------------------------------------------
@@ -698,12 +710,12 @@ SEXP py_numpy_matrix_to_r_matrix(PyObject *pyo) {
         Rprintf("py_numpy_matrix_to_r_matrix is NULL!\n");
         return( R_NilValue );
     }
-    Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     Py_XINCREF(pyo);
     PyObject *x = PY_NUMPY_MATRIX_TO_DICT(pyo);
-    Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     SEXP robj = matrix_from_list_byrow(PY_TO_R__DICT(x, 0));
-    Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     Py_XDECREF(x);
     return robj;
 }
@@ -713,12 +725,12 @@ SEXP py_cvxopt_matrix_to_r_matrix(PyObject *pyo) {
         Rprintf("py_numpy_matrix_to_r_matrix is NULL!\n");
         return( R_NilValue );
     }
-    Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     Py_XINCREF(pyo);
     PyObject *x = PY_CVXOPT_MATRIX_TO_DICT(pyo);
-    Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     SEXP robj = matrix_from_list_bycol(PY_TO_R__DICT(x, 0));
-    Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     Py_XDECREF(x);
     return robj;
 }
@@ -736,10 +748,10 @@ SEXP py_stm_matrix_to_r_stm_matrix(PyObject *pyo) {
 }
 
 SEXP py_cvxopt_sparse_matrix_to_r_stm_matrix(PyObject *pyo) {
-    Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     Py_XINCREF(pyo);
     PyObject *x = PY_CVXOPT_SPARSE_MATRIX_TO_DICT(pyo);
-    Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     SEXP robj = PY_TO_R__DICT(x, 0);
     Py_XDECREF(x);
     classgets(robj, c_to_r_string("simple_triplet_matrix"));
@@ -747,10 +759,10 @@ SEXP py_cvxopt_sparse_matrix_to_r_stm_matrix(PyObject *pyo) {
 }
 
 SEXP py_scipy_sparse_matrix_to_r_stm_matrix(PyObject *pyo) {
-    Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     Py_XINCREF(pyo);
     PyObject *x = PY_SCIPY_SPARSE_MATRIX_TO_DICT(pyo);
-    Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_cvxopt_sparse_matrix_to_r_stm_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     SEXP robj = PY_TO_R__DICT(x, 0);
     Py_XDECREF(x);
     classgets(robj, c_to_r_string("simple_triplet_matrix"));
@@ -773,10 +785,10 @@ SEXP py_pandas_data_frame_to_r_data_frame(PyObject *pyo) {
         Rprintf("py_data_frame_to_r_data_frame is NULL!\n");
         return( R_NilValue );
     }
-    Rprintf("py_pandas_data_frame_to_r_data_frame: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_pandas_data_frame_to_r_data_frame: refcnt(x)=%i\n", REF_CNT(pyo));
     Py_XINCREF(pyo);
     PyObject *x = PY_PANDAS_DF_TO_DICT(pyo);
-    Rprintf("py_pandas_data_frame_to_r_data_frame: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_pandas_data_frame_to_r_data_frame: refcnt(x)=%i\n", REF_CNT(pyo));
     SEXP robj = data_frame_from_list2(PY_TO_R__DICT(x, 1));
     Py_XDECREF(x);
     return robj;
@@ -784,11 +796,11 @@ SEXP py_pandas_data_frame_to_r_data_frame(PyObject *pyo) {
 
 
 SEXP py_nltk_tree_to_nlp_tree(PyObject *pyo) {
-    Rprintf("py_nltk_tree_to_nlp_tree: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_nltk_tree_to_nlp_tree: refcnt(pyo)=%i\n", REF_CNT(pyo));
     Py_XINCREF(pyo);
-    Rprintf("py_nltk_tree_to_nlp_tree: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_nltk_tree_to_nlp_tree: refcnt(pyo)=%i\n", REF_CNT(pyo));
     PyObject *x = PY_NLTK_TREE_TO_DICT(pyo);
-    Rprintf("py_nltk_tree_to_nlp_tree: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_nltk_tree_to_nlp_tree: refcnt(pyo)=%i\n", REF_CNT(pyo));
     SEXP robj = py_to_r_postprocessing(PY_TO_R__DICT(x, 0), "Tree");
     Py_XDECREF(x);
     return robj;
@@ -806,15 +818,15 @@ SEXP py_array_to_r_array(PyObject *pyo) {
 }
 
 SEXP py_numpy_array_to_r_array(PyObject *pyo) {
-	Rprintf("py_numpy_array_to_r_array: refcnt(pyo)=%i\n", REF_CNT(pyo));
+	// Rprintf("py_numpy_array_to_r_array: refcnt(pyo)=%i\n", REF_CNT(pyo));
 	Py_XINCREF(pyo);
     PyObject *x = PY_NUMPY_ARRAY_TO_DICT(pyo);
-    Rprintf("py_numpy_array_to_r_array: refcnt(pyo)=%i\n", REF_CNT(pyo));
-    Rprintf("py_numpy_array_to_r_array: refcnt(x)=%i\n", REF_CNT(x));
+    // Rprintf("py_numpy_array_to_r_array: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    // Rprintf("py_numpy_array_to_r_array: refcnt(x)=%i\n", REF_CNT(x));
     SEXP rval = py_to_r_postprocessing(py_to_r(x, 1, 1), "array");
-    Rprintf("py_numpy_array_to_r_array: refcnt(x)=%i\n", REF_CNT(x));
+    // Rprintf("py_numpy_array_to_r_array: refcnt(x)=%i\n", REF_CNT(x));
     Py_XDECREF(x);
-    Rprintf("py_numpy_array_to_r_array: refcnt(x)=%i\n", REF_CNT(x));
+    // Rprintf("py_numpy_array_to_r_array: refcnt(x)=%i\n", REF_CNT(x));
     return(rval);
 }
 
@@ -953,7 +965,7 @@ SEXP py_to_r(PyObject *pyo, int simplify, int autotype) {
     if (!autotype) PY_TO_R__OBJECT(pyo);
     int r_type = py_get_container_type(pyo);
 
-    Rprintf("py_to_r: type=%i\n", r_type);
+    // Rprintf("py_to_r: type=%i\n", r_type);
 
     switch( r_type ) {
         case 100 : return PY_TO_R__VECTOR(pyo);

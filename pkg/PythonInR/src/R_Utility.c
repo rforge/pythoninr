@@ -154,7 +154,8 @@ int r_GetR_Container(SEXP x) {
             if ( (GET_LENGTH(x) == 1) & (!HAS_TH_CONTAINER(x)) & (!R_VECTOR_TO_LIST_FLAG) ) return 110; /** Scalar **/
             if ( HAS_TH_LIST(x) | R_VECTOR_TO_LIST_FLAG ) return 150; /** Vector + th.list **/
             if ( HAS_TH_TLIST(x) ) return 120; /** Vector + th.tlist **/
-            if ( HAS_TH_TUPLE(x) ) return 130; /** Vector + th.tuple **/
+            if ( HAS_TH_TUPLE(x) ) return 160; /** Vector + th.tuple **/
+            if ( HAS_TH_TTUPLE(x) ) return 130; /** Vector + th.ttuple **/
             if ( HAS_TH_NUMPY(x) ) return 140; /** Vector + th.numpy **/
             return 100; /** Vector **/
         }

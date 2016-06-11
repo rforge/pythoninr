@@ -34,6 +34,8 @@
 #define PY_MATRIX_UNICODE(x, y, z) Py_call_3_args("__R__.matrix_unicode", x, y, z)
 #define PY_MATRIX_LIST(x, y, z)    Py_call_3_args("__R__.matrix_list", x, y, z)
 
+
+#define PY_MATRIX_TO_LIL(x)    PyObject_CallMethod(r_to_py_matrix(x), "to_list_of_list", "")
 #define PY_MATRIX_TO_NUMPY(x)  Py_call_1_arg("__R__.matrix_to_numpy", x)
 #define PY_MATRIX_TO_CVXOPT(x) Py_call_1_arg("__R__.matrix_to_cvxopt", x)
 

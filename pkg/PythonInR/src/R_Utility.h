@@ -22,6 +22,7 @@
 #define HAS_TH_LIST(x)      has_typehint(x, "list")
 #define HAS_TH_TLIST(x)     has_typehint(x, "tlist")
 #define HAS_TH_TUPLE(x)     has_typehint(x, "tuple")
+#define HAS_TH_TTUPLE(x)    has_typehint(x, "ttuple")
 #define HAS_TH_DICT(x)      has_typehint(x, "dict")
 #define HAS_TH_NUMPY(x)     has_typehint(x, "numpy")
 #define HAS_TH_CVXOPT(x)    has_typehint(x, "cvxopt")

@@ -95,7 +95,7 @@ PyObject *r_to_py_scalar(SEXP r_object){
     PyObject *py_object;
     int r_type = r_GetR_Type(r_object);
 
-    Rprintf("r_to_py_scalar\n");
+    // Rprintf("r_to_py_scalar\n");
     
     if( r_type == 10 ) return R_TO_PY_BOOLEAN(r_object);
     if( r_type == 12 ) return R_TO_PY_INT(r_object);
@@ -148,10 +148,10 @@ PyObject *r_to_py_vector(SEXP x) {
 PyObject *r_to_py_matrix(SEXP x) {
     PyObject *py_dimnames;
     if ( GET_LENGTH(GET_DIMNAMES(x)) > 0 ) {
-        Rprintf("r_to_py_matrix: len dimnames > 0!\n");
+        // Rprintf("r_to_py_matrix: len dimnames > 0!\n");
         py_dimnames = r_to_py(GET_DIMNAMES(x));
     } else {
-        Rprintf("r_to_py_matrix: len dimnames == 0!\n");
+        // Rprintf("r_to_py_matrix: len dimnames == 0!\n");
         py_dimnames = PY_NONE; 
     }
     PyObject *py_dim = r_to_py_tuple(GET_DIM(x));
@@ -223,27 +223,28 @@ PyObject *r_to_py_ttuple(SEXP x) {
 
   ----------------------------------------------------------------------------*/
 PyObject *r_to_py_data_frame(SEXP x) {
-    // int flag = R_VECTOR_TO_LIST_FLAG;
-    // R_VECTOR_TO_LIST_FLAG = 1;
+    int flag = R_VECTOR_TO_LIST_FLAG;
+    R_VECTOR_TO_LIST_FLAG = 1;
     PyObject *df = r_to_py_dict(GET_NAMES(x), x);
-    Rprintf("r_to_py_data_frame: refcnt(df)=%i\n", REF_CNT(df));
+    // Rprintf("r_to_py_data_frame: refcnt(df)=%i\n", REF_CNT(df));
     PyObject *rn = r_to_py(getAttrib(x, mkString("row.names")));
-    Rprintf("r_to_py_data_frame: refcnt(rn)=%i\n", REF_CNT(rn));
+    // Rprintf("r_to_py_data_frame: refcnt(rn)=%i\n", REF_CNT(rn));
     PyObject *cn = r_to_py(GET_NAMES(x));
-    Rprintf("r_to_py_data_frame: refcnt(cn)=%i\n", REF_CNT(cn));
+    // Rprintf("r_to_py_data_frame: refcnt(cn)=%i\n", REF_CNT(cn));
     // R_VECTOR_TO_LIST_FLAG = flag;
     PyObject *pyo = PY_DATA_FRAME(df, rn, cn, r_to_py(GET_DIM(x)));
-    Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
-    Rprintf("r_to_py_data_frame: refcnt(df)=%i, refcnt(rn)=%i, refcnt(cn)=%i\n", REF_CNT(df), REF_CNT(rn), REF_CNT(cn));
+    // Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    // Rprintf("r_to_py_data_frame: refcnt(df)=%i, refcnt(rn)=%i, refcnt(cn)=%i\n", REF_CNT(df), REF_CNT(rn), REF_CNT(cn));
+    R_VECTOR_TO_LIST_FLAG = flag;
     return pyo;
 }
 
 PyObject *r_to_py_pandas_data_frame(SEXP x) {
     PyObject *pyo = r_to_py_data_frame(x);
-    Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    // Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
     PyObject *z = PyObject_CallMethod(pyo, "to_pandas", "");
     Py_XDECREF(pyo);
-    Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
+    // Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
     return z;
 }
 
@@ -259,9 +260,9 @@ SEXP Test_r_to_py_data_frame(SEXP x) {
   ----------------------------------------------------------------------------*/
 PyObject *r_to_py_tree(SEXP r_object) {
     PyObject *pyo = PY_TREE(r_to_py_dict(GET_NAMES(r_object), r_object));
-    Rprintf("r_to_py_tree: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("r_to_py_tree: refcnt(x)=%i\n", REF_CNT(pyo));
     PyObject *x = PyObject_CallMethod(pyo, "to_nltk_tree", "");
-    Rprintf("r_to_py_tree: refcnt(x)=%i\n", REF_CNT(pyo));
+    // Rprintf("r_to_py_tree: refcnt(x)=%i\n", REF_CNT(pyo));
     return( x );
 }
 
@@ -710,9 +711,11 @@ PyObject *r_to_py(SEXP x) {
         if ( container == 130 ) return r_to_py_ttuple(x);
         if ( container == 140 ) return PY_VEC_TO_NUMPY_ARRAY(r_to_py_tlist(x));
         if ( container == 150 ) return r_vec_to_py_list(x);
+        if ( container == 160 ) return r_to_py_tuple(x);
         
         /** Matrix **/
         if ( container == 200 ) return r_to_py_matrix(x);
+        if ( container == 210 ) return PY_MATRIX_TO_LIL(x);
         if ( container == 220 ) return PY_MATRIX_TO_NUMPY(r_to_py_matrix(x));
         if ( container == 230 ) return PY_MATRIX_TO_CVXOPT(r_to_py_matrix(x));
         
@@ -745,7 +748,7 @@ PyObject *r_to_py(SEXP x) {
 
         /** nlp.Tree **/
         if ( container == 410 ) {
-            Rprintf("r_to_py: container=410\n");
+            // Rprintf("r_to_py: container=410\n");
             return r_to_py_tree(x);
         }
 

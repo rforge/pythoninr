@@ -31,7 +31,7 @@
 #define PY_TO_R__ARRAY(o) py_array_to_r_array(o)
 #define PY_TO_R__NUMPY_ARRAY(o) py_numpy_array_to_r_array(o)
 #define PY_TO_R__LIST(o, s) (s) ? py_list_to_r_list_simplify(o) : py_list_to_r_list(o, s)
-#define PY_TO_R__TUPLE(o, s) py_tuple_to_r_list(o, s)
+#define PY_TO_R__TUPLE(o, s) (s) ? py_tuple_to_r_list_simplify(o) : py_tuple_to_r_list(o, s)
 #define PY_TO_R__NLTK_TREE(o) py_nltk_tree_to_nlp_tree(o)
 #define PY_TO_R__SIMPLE_TRIPLET_MATRIX(o) py_stm_matrix_to_r_stm_matrix(o)
 #define PY_TO_R__CVXOPT_SPARSE_MATRIX(o) py_cvxopt_sparse_matrix_to_r_stm_matrix(o)
@@ -78,6 +78,7 @@ SEXP py_list_to_r_list(PyObject *py_object, int simplify);
 SEXP py_list_to_r_list_simplify(PyObject *py_object);
 
 SEXP py_tuple_to_r_list(PyObject *py_object, int simplify);
+SEXP py_tuple_to_r_list_simplify(PyObject *py_object);
 
 SEXP py_dict_to_r_list(PyObject *py_object, int simplify);
 
