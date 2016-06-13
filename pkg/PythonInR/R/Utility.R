@@ -12,7 +12,8 @@ pyIsCallable <- function(x){
 }
 
 pyIsCallableFt <- function(x) {
-    pyGet(sprintf('__R__.callable_fault_tolerent(%x)', x))
+    cmd <- sprintf('try:\n\tx = callable(%s)\nexcept:\n\tx=False', x)
+    isTRUE(pyExecg(cmd)$x)
 }
 
 ## if it exists it should have a type

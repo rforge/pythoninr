@@ -60,6 +60,29 @@ For informations about the installation see the README file.
 library("PythonInR")
 @
 
+\section{Basic Usage}
+\subsection{Create a Connection}
+
+\subsection{Execute Python Code}
+\pkg{PythonInR} offers four different functions for executing 
+\proglang{Python} code.
+\begin{enumerate}
+	\item \code{pyExec} to execute multiple lines of code.
+	\item \code{pyExecg} to execute multiple lines of code and retrieve the created variables to \proglang{R}.
+	\item \code{pyExecp} to execute a single line of code .
+	\item \code{pyGet} to execute a single line a of code and retrieve the created variables to \proglang{R}.
+\end{enumerate}
+
+\subsection{Set Python Objects}
+
+\subsection{Get Python Objects}
+
+\subsection{Create Bindings}
+
+\subsection{Other Functions}
+
+\subsection{Options}
+
 \section{Use Cases}
 This use case section is mainly based on scripts I used over the years
 for various tasks. 
@@ -81,19 +104,14 @@ ws$append(colnames(cars))
 for (i in seq(1, 10)) {
     ws$append(as.matrix(cars[i,]))
 }
-ws$append(c('=SUM(A3:A12)', '=SUM(A3:A12)'))
-## create a new sheet (NOTE: Python starts indexing at 0)
-ws_plot <- wb$create_sheet(title=plot)
-ws_plot$cell(row = 1L, column = 2L)$`_set_value`(3)
-ws_plot$cell("C2")$value
-wb$save("cars.xlsx")
+ws$append(c('=SUM(A3:A10)', '=SUM(A3:A10)'))
+wb$save(th.string("cars.xlsx"))
 @
 
 \paragraph{Import}
 <<import_spreadsheet>>=
 pyImport(import="load_workbook", from="openpyxl")
 wb <- load_workbook("cars.xlsx")
-tail(ls(wb))
 wb$get_sheet_names()
 ws <- wb$get_sheet_by_name("cars")
 pyExec("
@@ -106,7 +124,7 @@ def get_range(ws, first_row, first_col, last_row, last_col):
         x.append(row)
     return x
 ")
-do.call(rbind, pyCall("get_range", list(ws, 1L, 0L, 10L, 2L), simplify=FALSE))
+do.call(rbind, pyCall("get_range", list(ws, 1L, 1L, 10L, 3L), simplify=FALSE))
 @
 
 \subsubsection{PDF Import}

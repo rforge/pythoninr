@@ -1090,7 +1090,8 @@ def get_container_type(x):
 
 def callable_fault_tolerent(x):
     try:
-        return callable(x)
+        x <- callable(x)
+        return x
     except:
         return False
 

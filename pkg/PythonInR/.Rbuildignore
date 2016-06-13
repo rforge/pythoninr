@@ -1,3 +1,5 @@
 old
 devel
 tests
+inst/doc/Makefile
+inst/doc/*.Rnw

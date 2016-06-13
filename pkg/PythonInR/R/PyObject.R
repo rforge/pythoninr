@@ -105,7 +105,7 @@ pyObject <- function(key, regFinalizer = TRUE){
     pydir <- pyDir(key)
     for (o in pydir){
         po <- paste(c(key, o), collapse=".")
-        if (pyIsCallable(po)){
+        if (pyIsCallableFt(po)){
             cfun <- sprintf(callFun, po)
             pyMethods[[o]] <- eval(parse(text=cfun))
         }else{
