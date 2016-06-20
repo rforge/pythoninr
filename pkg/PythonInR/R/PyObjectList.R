@@ -10,38 +10,38 @@ PythonInR_List <-
             portable = TRUE,
             inherit = PythonInR_Object,
             public = list(
-                print = function() pyExecp(self$py.variableName),
+                print = function() pyExecp(self$.name),
                 append = function(x){
-                    cable <- sprintf("%s.append", self$py.variableName)
+                    cable <- sprintf("%s.append", self$.name)
                     pyCall(cable, args=list(x))},
                 extend = function(L){
-                    cable <- sprintf("%s.extend", self$py.variableName)
+                    cable <- sprintf("%s.extend", self$.name)
                     pyCall(cable, args=list(L))},
                 insert = function(i, x){
-                    cable <- sprintf("%s.insert", self$py.variableName)
+                    cable <- sprintf("%s.insert", self$.name)
                     pyCall(cable, args=list(as.integer(i), x))},
                 remove = function(x){
-                    cable <- sprintf("%s.remove", self$py.variableName)
+                    cable <- sprintf("%s.remove", self$.name)
                     pyCall(cable, args=list(x))},
                 pop = function(i){
-                    cable <- sprintf("%s.pop", self$py.variableName)
+                    cable <- sprintf("%s.pop", self$.name)
                     pyCall(cable, args=list(as.integer(i)))},
                 index = function(x){
-                    cable <- sprintf("%s.index", self$py.variableName)
+                    cable <- sprintf("%s.index", self$.name)
                     pyCall(cable, args=list(x))},
                 count = function(x){
-                    cable <- sprintf("%s.count", self$py.variableName)
+                    cable <- sprintf("%s.count", self$.name)
                     pyCall(cable, args=list(x))},
                 reverse = function(){
                     ## returns a new reference
-                    pyGet(sprintf("%s.reverse()", self$py.variableName), autoTypecast=FALSE)
+                    pyGet(sprintf("%s.reverse()", self$.name), autoTypecast=FALSE)
                 },
                 sort = function(){
                     ## returns a new reference
-                    pyGet(sprintf("%s.sort()", self$py.variableName), autoTypecast=FALSE)
+                    pyGet(sprintf("%s.sort()", self$.name), autoTypecast=FALSE)
                 },
                 setslice = function(start, stop, value){
-                    cable <- sprintf("%s.__setslice__", self$py.variableName)
+                    cable <- sprintf("%s.__setslice__", self$.name)
                     checkType(environment(), cable, start='integer', stop='integer', value='list')
                     pyCall(cable, args=list(start, stop, value))
                 }
@@ -53,15 +53,15 @@ PythonInR_ListNoFinalizer <-
             inherit = PythonInR_List,
             public = list(
                 initialize = function(variableName, objectName, type) {
-                    if (!missing(variableName)) self$py.variableName <- variableName
-                    if (!missing(objectName)) self$py.objectName <- objectName
-                    if (!missing(type)) self$py.type <- type
+                    if (!missing(variableName)) self$.name <- variableName
+                    if (!missing(objectName)) self$.objname <- objectName
+                    if (!missing(type)) self$.type <- type
                 }
             ))
 
 `[.PythonInR_List` <- function(x, i){
     slice <- if (is.character(i)) i else deparse(substitute(i))
-    pyGet(sprintf("%s[%s]", x$py.variableName, slice))
+    pyGet(sprintf("%s[%s]", x$.name, slice))
 }
 
 `[<-.PythonInR_List` <- function(x, i, value){

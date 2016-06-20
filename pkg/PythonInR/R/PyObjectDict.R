@@ -11,55 +11,55 @@ PythonInR_Dict <-
     portable = TRUE,
     inherit = PythonInR_Object,
     public = list(
-      print = function() pyExecp(self$py.variableName),
+      print = function() pyExecp(self$.name),
       clear = function(){
-          cable <- sprintf("%s.clear", self$py.variableName)
+          cable <- sprintf("%s.clear", self$.name)
           pyCall(cable)},
       copy = function(){
-          cable <- sprintf("%s.copy", self$py.variableName)
+          cable <- sprintf("%s.copy", self$.name)
           pyCall(cable)},
       fromkeys = function(seq, value){
-          cable <- sprintf("%s.fromkeys", self$py.variableName)
+          cable <- sprintf("%s.fromkeys", self$.name)
           if (missing(value)) pyCall(cable, list(seq))
           else pyCall(cable, list(seq, value))},
       get = function(key, default){
-          cable <- sprintf("%s.get", self$py.variableName)
+          cable <- sprintf("%s.get", self$.name)
           if (missing(value)) pyCall(cable, list(key))
           else pyCall(cable, list(key, default))},
       has_key = function(key){
-          cable <- sprintf("%s.has_key", self$py.variableName)
+          cable <- sprintf("%s.has_key", self$.name)
           pyCall(cable, list(key))},
       items = function(){
-          cable <- sprintf("%s.items", self$py.variableName)
+          cable <- sprintf("%s.items", self$.name)
           pyCall(cable)},
       keys = function(key){
-          cable <- sprintf("%s.keys", self$py.variableName)
+          cable <- sprintf("%s.keys", self$.name)
           pyCall(cable)},
       pop = function(key, default){
-          cable <- sprintf("%s.pop", self$py.variableName)
+          cable <- sprintf("%s.pop", self$.name)
           if (missing(value)) pyCall(cable, list(key))
           else pyCall(cable, list(key, default))},
       popitem = function(){
-          cable <- sprintf("%s.popitem", self$py.variableName)
+          cable <- sprintf("%s.popitem", self$.name)
           pyCall(cable)},
       setdefault = function(key, default){
-          cable <- sprintf("%s.setdefault", self$py.variableName)
+          cable <- sprintf("%s.setdefault", self$.name)
           if (missing(value)) pyCall(cable, list(key))
           else pyCall(cable, list(key, default))},
       update = function(dict){
-          cable <- sprintf("%s.update", self$py.variableName)
+          cable <- sprintf("%s.update", self$.name)
           pyCall(cable, list(dict))},
       values = function(){
-          cable <- sprintf("%s.values", self$py.variableName)
+          cable <- sprintf("%s.values", self$.name)
           pyCall(cable)},
       viewitems = function(){
-          cable <- sprintf("%s.viewitems", self$py.variableName)
+          cable <- sprintf("%s.viewitems", self$.name)
           pyCall(cable)},
       viewkeys = function(){
-          cable <- sprintf("%s.viewkeys", self$py.variableName)
+          cable <- sprintf("%s.viewkeys", self$.name)
           pyCall(cable)},
       viewvalues = function(){
-          cable <- sprintf("%s.viewvalues", self$py.variableName)
+          cable <- sprintf("%s.viewvalues", self$.name)
           pyCall(cable)}
     ))
 
@@ -69,20 +69,20 @@ PythonInR_DictNoFinalizer <-
             inherit = PythonInR_Dict,
             public = list(
                 initialize = function(variableName, objectName, type) {
-                    if (!missing(variableName)) self$py.variableName <- variableName
-                    if (!missing(objectName)) self$py.objectName <- objectName
-                    if (!missing(type)) self$py.type <- type
+                    if (!missing(variableName)) self$.name <- variableName
+                    if (!missing(objectName)) self$.objname <- objectName
+                    if (!missing(type)) self$.type <- type
                 }
             ))
 
 `[.PythonInR_Dict` <- function(x, i){
     slice <- deparse(i)
-    pyGet(sprintf("%s[%s]", x$py.variableName, slice))
+    pyGet(sprintf("%s[%s]", x$.name, slice))
 }
 
 `[<-.PythonInR_Dict` <- function(x, i, value){
     if (length(i) > 1) class(i) <- "tuple"
-    success <- .Call("r_set_py_dict", x$py.variableName, i, value)
+    success <- .Call("r_set_py_dict", x$.name, i, value)
     x
 }
 

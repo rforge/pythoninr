@@ -19,11 +19,12 @@ The function pyObject creates a virtual Python object
 \details{
 Every PythonInR_Object has the following members:
 \itemize{
-  \item \strong{py.variableName} the variable name used in Python.
-  \item \strong{py.objectName} the name of the Python object (obtained by x.__name__) 
-         or NULL.
-  \item \strong{py.type} the type of the Python object.
-  \item \strong{py.del} a function to delete the Python object.
+  \item \strong{.name} the variable name used in Python.
+  \item \strong{.objname} the name of the Python object 
+        (obtained by \code{x.__name__}) or NULL.
+  \item \strong{.type} the type of the Python object 
+        (obtained by \code{type(x).__name__)}.
+  \item \strong{.del} a function to delete the Python object.
   \item \strong{print} for more information see R6 classes.
   \item \strong{initialize} for more information see R6 classes.
 }
@@ -41,9 +42,9 @@ ls(os)
 ## To show again the difference between pyGet and pyGet0.
 os1 <- pyGet0("os") ## has no finalizer
 os2 <- pyGet("os")  ## has a finalizer
-os$py.variableName
-os1$py.variableName
-os2$py.variableName
+os$.name
+os1$.name
+os2$.name
 }
 }
 

@@ -20,5 +20,5 @@ clean:
 	rm -f .Rhistory
 	rm -f $(file).aux $(file).log $(file).bbl $(file).blg $(file).out
 	rm -f Rplots.ps code.tex $(file)-*
-	rm -r *.xlsx *.pdf *.tex
+	rm -r *.xlsx
 

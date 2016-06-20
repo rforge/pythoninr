@@ -51,11 +51,11 @@ class(x)
 ## this example also shows the differnces between pyGet and pyGet0
 pyExec("import datetime")
 ## pyGet creates a new Python variable where the return value of pyGet is
-## stored the name of the new reference is stored in x$py.variableName.
+## stored the name of the new reference is stored in x$.name.
 x <- pyGet("datetime.datetime.now().time()")
 x
 class(x)
-x$py.variableName
+x$.name
 ## pyGet0 never creates a new Python object, objects which can be transformed 
 ## to R objects are transformed. For all other objects an PythonInR_Object is created.
 y <- pyGet0("datetime.datetime.now().time()")

@@ -623,7 +623,7 @@ const char *r_get_py_object_location(SEXP x) {
     len = GET_LENGTH(x);
     
     for(i = 0; i < len; i++) {
-        if ( strcmp(R_TO_C_STRING_V(names, i), "py.variableName") == 0 ){
+        if ( strcmp(R_TO_C_STRING_V(names, i), ".name") == 0 ){
             cx = nthcdr(x, (int) i);
             x = CAR(cx);
             return R_TO_C_STRING(x);

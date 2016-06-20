@@ -1,5 +1,5 @@
 old
 devel
 tests
-inst/doc/Makefile
-inst/doc/*.Rnw
+inst/doc
+vignettes/build/PythonInR.pdf

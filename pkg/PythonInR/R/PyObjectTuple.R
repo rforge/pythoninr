@@ -11,12 +11,12 @@ PythonInR_Tuple <-
             portable = TRUE,
             inherit = PythonInR_Object,
             public = list(
-                print = function() pyExecp(self$py.variableName),
+                print = function() pyExecp(self$.name),
                 index = function(x){
-                    cable <- sprintf("%s.index", self$py.variableName)
+                    cable <- sprintf("%s.index", self$.name)
                     pyCall(cable, args=list(x))},
                 count = function(x){
-                    cable <- sprintf("%s.count", self$py.variableName)
+                    cable <- sprintf("%s.count", self$.name)
                     pyCall(cable, args=list(x))}
                 ))
 
@@ -26,16 +26,16 @@ PythonInR_TupleNoFinalizer <-
             inherit = PythonInR_Tuple,
             public = list(
                 initialize = function(variableName, objectName, type) {
-                    if (!missing(variableName)) self$py.variableName <- variableName
-                    if (!missing(objectName)) self$py.objectName <- objectName
-                    if (!missing(type)) self$py.type <- type
+                    if (!missing(variableName)) self$.name <- variableName
+                    if (!missing(objectName)) self$.objname <- objectName
+                    if (!missing(type)) self$.type <- type
                 }
             ))
 
     
 
 `[.PythonInR_Tuple` <- function(x, i){
-    pyGet(sprintf("%s[%s]", x$py.variableName, deparse(i)))
+    pyGet(sprintf("%s[%s]", x$.name, deparse(i)))
 }
 
 `[<-.PythonInR_Tuple` <- function(x, i, value){

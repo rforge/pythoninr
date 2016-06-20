@@ -36,12 +36,14 @@
 \title{\pkg{PythonInR}}
 
 \begin{document}
+%\VignetteIndexEntry{PythonInR}
+%\VignetteKeywords{Python, R}
+%\VignettePackage{PythonInR}
 
 <<echo=FALSE, results = hide>>=
 options(width = 75)
 set.seed(1)
 @
-
 
 \maketitle
 \sloppy
@@ -73,9 +75,13 @@ library("PythonInR")
 	\item \code{pyGet} to execute a single line a of code and retrieve the created variables to \proglang{R}.
 \end{enumerate}
 
+\subsection{Typehints}
+
 \subsection{Set Python Objects}
 
 \subsection{Get Python Objects}
+
+\subsection{Call Python Methods}
 
 \subsection{Create Bindings}
 
