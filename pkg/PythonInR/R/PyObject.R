@@ -153,6 +153,11 @@ pyObject <- function(key, regFinalizer = TRUE){
     pyobject$new(key, objectName, type)
 }
 
+## TODO: check the types else try to type cast
+pyObjectToR <- function(name) {
+    pyGet(name)
+}
+
 PythonInR_Object <- R6Class(
     "PythonInR_Object",
     public=list(
@@ -160,9 +165,8 @@ PythonInR_Object <- R6Class(
         .name=NA, ## variable name
         .objname="", ## object name
         .type="",
-        .del = function(){
-            pyExec(sprintf("del(%s)", self$.name))
-        },
+        .del = function() pyObjectFinalize(self),
+        toR = function() pyObjectToR(self$.name),
         initialize = function(variableName, objectName, type) {
             if (!missing(variableName)) self$.name <- variableName
             if (!missing(objectName)) self$.objname <- objectName
@@ -209,7 +213,7 @@ pyFunction <- function(key, regFinalizer = FALSE){
     if ( pyConnectionCheck() ) return(invisible(NULL))
     cfun <- sprintf(callFun, key)
     fun <- eval(parse(text=cfun))
-    class(fun) <- "pyFunction"
+    class(fun) <- c("pyFunction", "PythonInR_Object")
     attr(fun, "name") <- key
     if ( regFinalizer ) {
         funenv <- new.env(parent = emptyenv())
@@ -217,6 +221,8 @@ pyFunction <- function(key, regFinalizer = FALSE){
     }
     fun
 }
+
+is.pyFunction <- function(x) inherits(x, "pyFunction")
 
 print.pyFunction <- function(x, ...) pyExecp(attr(x, "name"))
 
@@ -233,3 +239,5 @@ print.PythonInR_Object <- function(x) {
 as.list.PythonInR_Object <- function(x) {
     pyGet(sprintf("list(%s)", x$.name))
 }
+
+is.PythonInR_Object <- function(x) inherits(x, "PythonInR_Object")

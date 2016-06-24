@@ -309,7 +309,7 @@ def is_numpy_array(x):
 
 def is_numpy_vector(x):
     if is_numpy_array(x):
-        return ( len(x.shape) == 1 )
+        return ( len(x.shape) <= 1 )
     return False
 
 def vec_bool(values, names=None):
@@ -342,7 +342,7 @@ def numpy_vector_to_tlist(values):
 class matrix(list): 
     """A Matrix Class for Python"""
     __slots__ = ['dim', 'dimnames', 'dtype']
-    def __init__(self, matrix, dim, dimnames, dtype=None):
+    def __init__(self, matrix, dim, dimnames=None, dtype=None):
         list.__init__(self, matrix)
         self.dimnames = dimnames
         self.dim = (0,0) if (dim is None) else tuple(dim)

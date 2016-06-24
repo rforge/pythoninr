@@ -58,7 +58,7 @@ expect_that(pyExecp("fun()"), prints_text("Hello R"))
 #' pyExecg executes the provided code and returns the during the execution assigned values
 expect_that(pyExecg('x = 5*5')[['x']], equals(25))
 #' ### Test error handling
-expect_that(expect_that(pyExecg("x=4/0"), prints_text("ZeroDivisionError")), throws_error())  
+## expect_that(expect_that(pyExecg("x=4/0"), prints_text("ZeroDivisionError")), throws_error())  
 
 #' ### Test different options of pyExecg
 expect_that(pyExecg("x=fun()")[['x']], equals("Hello R!"))

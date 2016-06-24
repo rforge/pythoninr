@@ -44,18 +44,16 @@ pyGet0 <- function(key){
 
     if ( pyClass %in% c("NoneType", "bool", "int", "long", "float", "str", "bytes", "unicode")){
         return(pyGet(key))
-    }else if (pyIsCallableFt(key)){
+    } else if (pyIsCallableFt(key)){
         return(pyFunction(key, regFinalizer = FALSE))
-    }else if ( pyClass == "tuple" ){
+    } else if ( pyClass == "tuple" ){
         return(pyTuple(key, regFinalizer = FALSE))
-    }else if ( pyClass == "list" ){
+    } else if ( pyClass == "list" ){
         return(pyList(key, regFinalizer = FALSE))
-    }else if ( pyClass == "dict" ){
+    } else if ( pyClass == "dict" ){
         return(pyDict(key, regFinalizer = FALSE))
-    }else{
-        return(pyObject(key, regFinalizer = FALSE))
     }
-
+    return(pyObject(key, regFinalizer = FALSE))
 }
 
 #  -----------------------------------------------------------
@@ -113,6 +111,19 @@ pyGet <- function(key, autoTypecast=TRUE, simplify=TRUE){
     check_string(key)
 
     x <- .Call("PythonInR_Run_String", key, 258L, autoTypecast, FALSE, FALSE, 1L, simplify)
+
+    if ( isTRUE(class(x)[1] == "PythonObject") ) {
+    	variableName <- sprintf("__R__.namespace[%i]", x$id)
+    	if (x$isCallable){
+        	return(pyFunction(variableName))
+    	} else if ( x$type == "list" ){
+        	return(pyList(variableName, regFinalizer = TRUE))
+    	} else if ( x$type == "dict" ){
+        	return(pyDict(variableName, regFinalizer = TRUE))
+    	} else {
+        	return(pyObject(variableName, regFinalizer = TRUE))
+    	}
+    }
     return(x)
 }
 

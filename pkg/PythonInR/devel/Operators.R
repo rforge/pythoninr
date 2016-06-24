@@ -24,3 +24,12 @@ e
 class()
 capture.output(tryCatch(z <- pyGet("z"), error=function(e) NULL))
 z
+
+
+x <- 3
+y <- x
+comment(y) <- "list"
+identical(th.list(x), x)
+identical(th.list(x), y)
+
+(comment(()) <- "list")

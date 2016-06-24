@@ -37,6 +37,15 @@
 pyCall <- function(callableObj, args=NULL, kwargs=NULL, autoTypecast=TRUE, simplify=TRUE){
     if ( pyConnectionCheck() ) return(invisible(NULL))
     check_string(callableObj)
+
+    if ( !isTRUE(is.list(args) | is.null(args)) ) {
+        stop("args has to be a list of arguments or NULL")
+    }
+    if ( !isTRUE(is.list(kwargs) | is.null(kwargs)) ) {
+        stop("kwargs has to be a list of arguments or NULL")
+    } else {
+        if ( any(nchar(names(kwargs)) < 1) ) stop("all kwargs need to have a name")
+    }
     
     if (pyOptions("winPython364")){
         returnValue <- try(.Call("py_call_obj", callableObj, args, kwargs, simplify, autoTypecast), 

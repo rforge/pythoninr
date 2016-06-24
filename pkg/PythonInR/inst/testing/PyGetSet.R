@@ -66,6 +66,7 @@ x <- list(logical(), numeric(), integer(), character(), list(), data.frame(), ma
 y <- list(NULL, NULL, NULL, NULL, NULL, data.frame(), matrix())
 z <- list()
 for (i in 1:length(x)){
+    print(i)
     pySet(sprintf("r%i", i), x[[i]])
     z[[i]] <- pyGet(sprintf("r%i", i))
 }
@@ -144,4 +145,6 @@ expect_that(pyGet("rmatrix"), is_identical_to(M))
 rownames(cars) <- buildAscii(dim(cars)[1], 5)
 expect_that(pySet("r", cars) , equals(0L))
 # NOTE: since Python dict changes the order of the columns I can't translate it 1:1
+pyExecp("r")
+pyGet("r")
 expect_that(pyGet("r")[,colnames(cars)], is_identical_to(cars))
