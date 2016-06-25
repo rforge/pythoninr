@@ -34,7 +34,9 @@
 #' ')
 #' pyCall("fun", kwargs=list(a=1, f=2, x=4))
 #  -----------------------------------------------------------
-pyCall <- function(callableObj, args=NULL, kwargs=NULL, autoTypecast=TRUE, simplify=TRUE){
+pyCall <- function(callableObj, args=NULL, kwargs=NULL, 
+                   autoTypecast=pyOptions("autoTypecast"), 
+                   simplify=pyOptions("simplify")) {
     if ( pyConnectionCheck() ) return(invisible(NULL))
     check_string(callableObj)
 

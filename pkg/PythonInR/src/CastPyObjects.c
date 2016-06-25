@@ -953,6 +953,8 @@ SEXP py_to_r_postprocessing(SEXP x, const char *cls) {
   ----------------------------------------------------------------------------*/
 SEXP py_to_r(PyObject *pyo, int simplify, int autotype) {
   
+    if ( !autotype ) return PY_TO_R__OBJECT(pyo);
+
     if ( PyNone_Check(pyo) ) return R_NilValue;
     else if ( PyBool_Check(pyo) & autotype )    return PY_TO_R__BOOL(pyo);
     else if ( PyInt_Check(pyo) & autotype )     return PY_TO_R__INT(pyo);
@@ -962,7 +964,6 @@ SEXP py_to_r(PyObject *pyo, int simplify, int autotype) {
     else if ( PyUnicode_Check(pyo) & autotype ) return PY_TO_R__UNICODE(pyo);
     else if ( Py_Error_Check(pyo) )             return PY_TO_R__ERROR(pyo);
     
-    if (!autotype) PY_TO_R__OBJECT(pyo);
     int r_type = py_get_container_type(pyo);
 
     // Rprintf("py_to_r: type=%i\n", r_type);
@@ -1094,7 +1095,7 @@ SEXP py_to_r__(PyObject *py_object, int simplify, int autotype) {
         r_val = py_error_to_r_error(py_object);
     
     } else {
-        Rprintf("NO type found!\n");
+        // Rprintf("NO type found!\n");
         py_object = py_to_r_typecast(py_object, autotype);
         r_val = py_to_r(py_object, simplify, autotype);
     }

@@ -34,7 +34,7 @@ pyOptions <-
 local({
     options <- list(numpyAlias="numpy", useNumpy=FALSE, pandasAlias="pandas",
                     usePandas=FALSE, winPython364=FALSE, intToLong=TRUE, charToUnicode=TRUE,
-                    vecToList=FALSE)
+                    vecToList=FALSE, autoTypecast=TRUE, simplify=TRUE)
     function(option, value) {
         if (missing(option)) return(options)
         if (missing(value)){

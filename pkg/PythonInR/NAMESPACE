@@ -16,6 +16,11 @@ S3method("[<-", "PythonInR_List")
 S3method("[", "PythonInR_Dict")
 S3method("[<-", "PythonInR_Dict")
 
+S3method("+", "PythonInR_Object")
+S3method("*", "PythonInR_Object")
+S3method("-", "PythonInR_Object")
+S3method("/", "PythonInR_Object")
+
 export(th.int)
 export(th.long)
 export(th.float)
@@ -54,6 +59,9 @@ export(th.scilil)
 
 export(th.cvxopt)
 export(th.pandas)
+
+export(is.PythonInR_Object)
+export(pyRef)
 
 export(autodetectPython,
        pyAttach,

@@ -14,12 +14,13 @@ pyTry <- function(x) {
 }
 
 callFun <- '
-function(...){
+function(..., autoTypecast=FALSE, simplify=pyOptions("simplify")) {
   x <- list(...)
   i <- if ( !is.null(names(x)) ) (nchar(names(x)) > 0) else rep(FALSE, length(x))
   xargs <- if ( sum(!i) > 0 ) x[!i] else NULL
   xkwargs <- if ( sum(i) > 0 ) x[i] else NULL
-  pyCall("%s", args=xargs, kwargs=xkwargs)
+  return( pyCall("%s", args=xargs, kwargs=xkwargs, 
+          autoTypecast=autoTypecast, simplify=simplify) )
 }
 '
 
@@ -51,6 +52,13 @@ try:
 except:
     x = None
 ', x))[['x']]
+}
+
+getTypeInfo <- function(key) {
+    x <- pyGet(sprintf("str(type(%s))", key))
+    if ( (!is.character(x) | isTRUE(nchar(x) == 0)) ) return(NULL)
+    x <- sub("'.*", "", sub(".+?'", "", x))
+    return( rev(unlist(strsplit(x, ".", fixed=TRUE))) )
 }
 
 ##  ---------------------------------------------------------
@@ -93,7 +101,7 @@ except:
 ##' os2$.name
 ##' }
 ##  ---------------------------------------------------------
-pyObject <- function(key, regFinalizer = TRUE){
+pyObject <- function(key, regFinalizer = TRUE) {
     if ( pyConnectionCheck() ) return(invisible(NULL))
     check_string(key)
 
@@ -125,7 +133,10 @@ pyObject <- function(key, regFinalizer = TRUE){
         names(pyActive)[names(pyActive) == n] <- sprintf(".%s", n)
     }
 
-    if ( (!is.null(objectName)) & (!is.null(type)) ){
+    pyTypeInfo <- getTypeInfo(key)
+    if ( !is.null(pyTypeInfo) ) {
+        className <- pyTypeInfo
+    } else if ( (!is.null(objectName)) & (!is.null(type)) ){
         className <- sprintf("%s.%s", type, objectName)
     }else if (is.null(objectName)){
         className <- type
@@ -147,10 +158,10 @@ pyObject <- function(key, regFinalizer = TRUE){
                     inherit = PythonInR_ObjectNoFinalizer,
                     public = pyMethods,
                     active = pyActive)
-        class(pyobject) <- class(pyobject)[-2]
     }
-
-    pyobject$new(key, objectName, type)
+    obj <- pyobject$new(key, objectName, type)
+    class(obj) <- class(obj)[!duplicated(class(obj))]
+    return(obj)
 }
 
 ## TODO: check the types else try to type cast

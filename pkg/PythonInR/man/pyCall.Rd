@@ -4,8 +4,9 @@
 \alias{pyCall}
 \title{Call a callable Python object from within R}
 \usage{
-pyCall(callableObj, args = NULL, kwargs = NULL, autoTypecast = TRUE,
-  simplify = TRUE)
+pyCall(callableObj, args = NULL, kwargs = NULL,
+  autoTypecast = pyOptions("autoTypecast"),
+  simplify = pyOptions("simplify"))
 }
 \arguments{
 \item{callableObj}{a character string giving the name of the desired callable 
