@@ -14,7 +14,7 @@ pyTry <- function(x) {
 }
 
 callFun <- '
-function(..., autoTypecast=FALSE, simplify=pyOptions("simplify")) {
+function(..., autoTypecast=pyOptions("autoTypecast"), simplify=pyOptions("simplify")) {
   x <- list(...)
   i <- if ( !is.null(names(x)) ) (nchar(names(x)) > 0) else rep(FALSE, length(x))
   xargs <- if ( sum(!i) > 0 ) x[!i] else NULL
