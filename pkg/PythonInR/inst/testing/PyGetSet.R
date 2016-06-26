@@ -70,6 +70,7 @@ for (i in 1:length(x)){
     pySet(sprintf("r%i", i), x[[i]])
     z[[i]] <- pyGet(sprintf("r%i", i))
 }
+3
 expect_that(z, equals(y))
 
 #' ## One dimensional elements

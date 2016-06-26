@@ -154,3 +154,31 @@ pyDict <- function(key, value, regFinalizer = TRUE){
     }
     return(py_dict)
 }
+
+
+#  ---------------------------------------------------------
+#  pyDictZip
+#  =========
+#' @title Create a dictionary
+#'
+#' @description The function pyDictZip creates a dictionary based on a
+#'              list of keys and a list of values.
+#' @param keys a list giving the keys of the Python object.
+#' @param value a list giving the values of the Python object.
+#' @param regFinalizer a logical indicating if a finalizer should be
+#'                     be registered, the default value is TRUE.
+#' @details If no value is provided a virtual Python dict for an existing
+#'          Python object is created. If the value is NULL, an empty 
+#'          virtual Python object for an empty dict is created.
+#'          If the value is a named vector or named list, a new Python
+#'          object based on the vector or list is created.
+#' @examples
+#' \dontshow{PythonInR:::pyCranConnect()}
+#' if ( pyIsConnected() ) {
+#' pyDictZip(th.string(LETTERS[1:3]), 1:3)
+#' }
+pyDictZip <- function(keys, values, regFinalizer=TRUE) {
+    x <- pyCall('__R__.pyDictZip', list(keys, values), autoTypecast = FALSE)
+    return(pyDict(pyRef(x)))
+}
+

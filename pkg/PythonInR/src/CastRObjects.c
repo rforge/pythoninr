@@ -231,7 +231,7 @@ PyObject *r_to_py_data_frame(SEXP x) {
     // Rprintf("r_to_py_data_frame: refcnt(rn)=%i\n", REF_CNT(rn));
     PyObject *cn = r_to_py(GET_NAMES(x));
     // Rprintf("r_to_py_data_frame: refcnt(cn)=%i\n", REF_CNT(cn));
-    // R_VECTOR_TO_LIST_FLAG = flag;
+    R_VECTOR_TO_LIST_FLAG = flag;
     PyObject *pyo = PY_DATA_FRAME(df, rn, cn, r_to_py(GET_DIM(x)));
     // Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
     // Rprintf("r_to_py_data_frame: refcnt(df)=%i, refcnt(rn)=%i, refcnt(cn)=%i\n", REF_CNT(df), REF_CNT(rn), REF_CNT(cn));

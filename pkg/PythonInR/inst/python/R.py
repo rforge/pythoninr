@@ -336,8 +336,16 @@ def numpy_array(values):
     return values
     
 
+## NOTE: changed 
+## tlist(values, _get_py_type_numpy(values))
+## to
+## tlist(values, _get_py_type_numpy(values))
+## since for scalars list(np.array) doesn't work!
 def numpy_vector_to_tlist(values):
-    return tlist(values, _get_py_type_numpy(values))
+    if ( len(values.shape) > 0 ):
+        return tlist(values, _get_py_type_numpy(values))
+    else:
+        return tlist([values.tolist()], _get_py_type_numpy(values))
 
 class matrix(list): 
     """A Matrix Class for Python"""
@@ -758,23 +766,28 @@ class data_frame(dict):
     __slots__ = ['dim', 'rownames', 'colnames']
     def __init__(self, df, rownames=None, colnames=None, dim=None):
         dict.__init__(self, df)
-        if (dim is None):
-            ncol = len(self)
-            row_lens = set([len(col) for col in self.values()])
-            if (len(row_lens) != 1):
-                raise IndexError("All columns need to have the same number of rows!")
-            nrow = list(row_lens)[0]
-            self.dim = (nrow, ncol)
+        if ( len(self) > 0 ):
+            if (dim is None):
+                ncol = len(self)
+                row_lens = set([len(col) for col in self.values()])
+                if (len(row_lens) != 1):
+                    raise IndexError("All columns need to have the same number of rows!")
+                nrow = list(row_lens)[0]
+                self.dim = (nrow, ncol)
+            else:
+                self.dim = tuple(dim)
+            if (rownames is None):
+                self.rownames = [str(i+1) for i in range(self.dim[0])]
+            else:
+                self.rownames = rownames
+            if (colnames is None):
+                self.colnames = self.keys()
+            else:
+                self.colnames = colnames
         else:
-            self.dim = tuple(dim)
-        if (rownames is None):
-            self.rownames = [str(i+1) for i in range(self.dim[0])]
-        else:
-            self.rownames = rownames
-        if (colnames is None):
-            self.colnames = self.keys()
-        else:
-            self.colnames = colnames
+            self.dim = (0, 0)
+            self.rownames = None
+            self.colnames = None
 
         self.__class__.__name__ = "PythonInR.data_frame"
 
@@ -782,7 +795,7 @@ class data_frame(dict):
         try:
             s = "'data_frame': %i rows %i columns\n" % tuple(self.dim)
         except:
-            pass
+            s = ""
         return( s )
     
     __str__ = __repr__
@@ -1094,4 +1107,8 @@ def callable_fault_tolerent(x):
         return x
     except:
         return False
+
+
+def pyDictZip(keys, values):
+    return dict(zip(keys, values))
 

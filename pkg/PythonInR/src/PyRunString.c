@@ -121,7 +121,7 @@ SEXP PythonInR_Run_String(SEXP code, SEXP start_symbol, SEXP auto_typecast,
 				               "PyRunString.c;PythonInR_Run_String", 
 				               "SyntaxError");
 			return r_object;
-		}else{
+		} else {
 			if ( ret_to_r == 0 ){
 				r_object = R_NilValue;
 			}else{ // ret_to_r == 1
@@ -130,7 +130,8 @@ SEXP PythonInR_Run_String(SEXP code, SEXP start_symbol, SEXP auto_typecast,
 				r_object = py_to_r(py_object, c_simplify, autotype);
 			}
 			PyRun_SimpleString("\n");
-			Py_XDECREF(py_object);
+			if ( !autotype )
+                Py_XDECREF(py_object);
 			return r_object;
 		}
     }

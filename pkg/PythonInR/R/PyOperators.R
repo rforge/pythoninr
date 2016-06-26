@@ -19,6 +19,29 @@ pyOperator <- function(operator, a, b) {
 `-.PythonInR_Object` <- function(a, b) pyOperator("-", a, b)
 `/.PythonInR_Object` <- function(a, b) pyOperator("/", a, b)
 
+## TODO:
+## in
+## //
+## &
+## ^
+## |
+## **
+## is
+## is not
+## []
+## <<
+## %
+## not
+## >>
+## :
+## <
+## <=
+## ==
+## !=
+## >=
+## >
+
+
 pyRef <- function(x) {
     if ( inherits(x, "pyFunction") ) return(attr(x, "name"))
     if ( inherits(x, "PythonInR_Object") ) return(x$.name)
