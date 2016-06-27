@@ -251,4 +251,10 @@ as.list.PythonInR_Object <- function(x) {
     pyGet(sprintf("list(%s)", x$.name))
 }
 
+##  ---------------------------------------------------------
+##  is.PythonInR_Object
+##  ===================
+##' @rdname pyObject
+##' @param x an R object.
+##  ---------------------------------------------------------
 is.PythonInR_Object <- function(x) inherits(x, "PythonInR_Object")

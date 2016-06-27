@@ -9,10 +9,10 @@ pyDictZip(keys, values, regFinalizer = TRUE)
 \arguments{
 \item{keys}{a list giving the keys of the Python object.}
 
+\item{values}{a list giving the values of the Python object.}
+
 \item{regFinalizer}{a logical indicating if a finalizer should be
 be registered, the default value is TRUE.}
-
-\item{value}{a list giving the values of the Python object.}
 }
 \description{
 The function pyDictZip creates a dictionary based on a

@@ -1,5 +1,5 @@
 
-is.PythonInR_Object <- function(x) inherits(x, "PythonInR_Object")
+##is.PythonInR_Object <- function(x) inherits(x, "PythonInR_Object")
 
 pyOperator <- function(operator, a, b) {
     tmp_name <- "__R__.namespace['__temp__']"
@@ -42,6 +42,22 @@ pyOperator <- function(operator, a, b) {
 ## >
 
 
+##  ---------------------------------------------------------
+##  pyRef
+##  ==========
+##' @title get the location (reference) of an \code{PythonInR_Object}
+##'
+##' @description The function \code{pyRef} return the variable name
+##'              of an virtual Python object.
+##' @param x an PythonInR_Object
+##' @examples
+##' \dontshow{PythonInR:::pyCranConnect()}
+##' if ( pyIsConnected() ){
+##' x <- pyObject("sys")
+##' pyRef(x)
+##' ## [1] "sys"
+##' }
+##  ---------------------------------------------------------
 pyRef <- function(x) {
     if ( inherits(x, "pyFunction") ) return(attr(x, "name"))
     if ( inherits(x, "PythonInR_Object") ) return(x$.name)

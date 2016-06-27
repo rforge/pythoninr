@@ -88,4 +88,5 @@ export(autodetectPython,
        pyList,
        pyTuple,
        pyOptions,
+       pyDictZip,
        BEGIN.Python)

@@ -164,7 +164,7 @@ pyDict <- function(key, value, regFinalizer = TRUE){
 #' @description The function pyDictZip creates a dictionary based on a
 #'              list of keys and a list of values.
 #' @param keys a list giving the keys of the Python object.
-#' @param value a list giving the values of the Python object.
+#' @param values a list giving the values of the Python object.
 #' @param regFinalizer a logical indicating if a finalizer should be
 #'                     be registered, the default value is TRUE.
 #' @details If no value is provided a virtual Python dict for an existing
