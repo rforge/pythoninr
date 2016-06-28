@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>PythonInR</title>
+  <meta name="description" content="Interact with Python from within R.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://pythoninr.r-forge.r-project.org//examples/cvxopt.html">
+  <link rel="alternate" type="application/rss+xml" title="PythonInR" href="http://pythoninr.r-forge.r-project.org//feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">PythonInR</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/installation/">Installation</a>
+          
+        
+          
+        
+          
+          <a class="page-link" href="/examples/">Examples</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <h1 id="use-cvxopt-from-r">Use CVXOPT from R</h1>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">PythonInR</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 
+## Initialize Python Version 2.7.9 (default, Mar  1 2015, 13:01:26) 
+## [GCC 4.9.2]
+</code></pre>
+</div>
+
+<p><a href="http://cvxopt.org/">CVXOPT</a> (Andersen et al., 2016) is a popular <em>Python</em>
+package for optimization, which is distributed under GPL-3.
+The following example shows how to solve an linear programming
+problem based on the example provided in the
+<a href="https://cran.r-project.org/web/packages/Rglpk/index.html">Rglpk</a>
+(Theussl and Hornik, 2015) package.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">## Simple linear program.
+## maximize:   2 x_1 + 4 x_2 + 3 x_3
+## subject to: 3 x_1 + 4 x_2 + 2 x_3 &lt;= 60
+##             2 x_1 +   x_2 + 2 x_3 &lt;= 40
+##               x_1 + 3 x_2 + 2 x_3 &lt;= 80
+##               x_1, x_2, x_3 are non-negative real numbers
+</span><span class="n">obj</span> <span class="o">&lt;-</span> <span class="n">matrix</span><span class="p">(</span><span class="o">-</span><span class="n">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">3</span><span class="p">))</span>
+<span class="n">mat</span> <span class="o">&lt;-</span> <span class="n">rbind</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">),</span> <span class="n">nrow</span> <span class="o">=</span> <span class="m">3</span><span class="p">),</span> <span class="o">-</span><span class="n">diag</span><span class="p">(</span><span class="m">3</span><span class="p">))</span>
+<span class="n">rhs</span> <span class="o">&lt;-</span> <span class="n">matrix</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="m">60</span><span class="p">,</span> <span class="m">40</span><span class="p">,</span> <span class="m">80</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<p>There are various options how to solve this problem with <em>PythonInR</em>,
+the following will show two of them.</p>
+
+<h3 id="import-all-the-solvers-from-cvxopt">1. Import all the solvers from cvxopt</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">pyImport</span><span class="p">(</span><span class="n">import</span><span class="o">=</span><span class="s2">"solvers"</span><span class="p">,</span> <span class="n">from</span><span class="o">=</span><span class="s2">"cvxopt"</span><span class="p">)</span>
+<span class="n">sol</span> <span class="o">&lt;-</span> <span class="n">solvers</span><span class="o">$</span><span class="n">lp</span><span class="p">(</span><span class="n">th.cvxopt</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">th.cvxopt</span><span class="p">(</span><span class="n">mat</span><span class="p">),</span> <span class="n">th.cvxopt</span><span class="p">(</span><span class="n">rhs</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##      pcost       dcost       gap    pres   dres   k/t
+##  0: -9.0519e+01 -3.2896e+02  1e+02  2e-01  2e+00  1e+00
+##  1: -7.3854e+01 -1.3575e+02  3e+01  6e-02  7e-01  2e+00
+##  2: -7.6566e+01 -7.8776e+01  8e-01  2e-03  2e-02  2e-01
+##  3: -7.6666e+01 -7.6688e+01  8e-03  2e-05  3e-04  2e-03
+##  4: -7.6667e+01 -7.6667e+01  8e-05  2e-07  3e-06  2e-05
+##  5: -7.6667e+01 -7.6667e+01  8e-07  2e-09  3e-08  2e-07
+## Optimal solution found.
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">sol</span><span class="o">$</span><span class="n">x</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##              [,1]
+## [1,] 3.984107e-08
+## [2,] 6.666667e+00
+## [3,] 1.666667e+01
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">class</span><span class="p">(</span><span class="n">sol</span><span class="o">$</span><span class="n">x</span><span class="p">)</span> <span class="c1">## an R matrix!
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "matrix"
+</code></pre>
+</div>
+
+<h3 id="use-pycall-directly">2. Use pyCall directly</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">pyExec</span><span class="p">(</span><span class="s2">"from cvxopt import solvers"</span><span class="p">)</span>
+<span class="n">sol</span> <span class="o">&lt;-</span> <span class="n">pyCall</span><span class="p">(</span><span class="s2">"solvers.lp"</span><span class="p">,</span> <span class="n">list</span><span class="p">(</span><span class="n">th.cvxopt</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">th.cvxopt</span><span class="p">(</span><span class="n">mat</span><span class="p">),</span> <span class="n">th.cvxopt</span><span class="p">(</span><span class="n">rhs</span><span class="p">)))</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##      pcost       dcost       gap    pres   dres   k/t
+##  0: -9.0519e+01 -3.2896e+02  1e+02  2e-01  2e+00  1e+00
+##  1: -7.3854e+01 -1.3575e+02  3e+01  6e-02  7e-01  2e+00
+##  2: -7.6566e+01 -7.8776e+01  8e-01  2e-03  2e-02  2e-01
+##  3: -7.6666e+01 -7.6688e+01  8e-03  2e-05  3e-04  2e-03
+##  4: -7.6667e+01 -7.6667e+01  8e-05  2e-07  3e-06  2e-05
+##  5: -7.6667e+01 -7.6667e+01  8e-07  2e-09  3e-08  2e-07
+## Optimal solution found.
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">sol</span><span class="o">$</span><span class="n">x</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##              [,1]
+## [1,] 3.984107e-08
+## [2,] 6.666667e+00
+## [3,] 1.666667e+01
+</code></pre>
+</div>
+
+<h2 id="references">References</h2>
+<p>Martin S Andersen, Joachim Dahl, and Lieven Vandenberghe. Cvxopt: A python package for
+convex optimization, version 1.1.8. Available at cvxopt. org, 2016. <code class="highlighter-rouge">URL http://cvxopt.org/.</code></p>
+
+<p>Stefan Theussl and Kurt Hornik. Rglpk: R/GNU Linear Programming Kit Interface, 2015. URL
+<code class="highlighter-rouge">https://CRAN.R-project.org/package=Rglpk. R package version 0.6-1</code>.</p>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">PythonInR</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>PythonInR</li>
+          <li><a href="mailto:"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Interact with Python from within R.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
