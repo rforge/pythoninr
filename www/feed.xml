@@ -4,10 +4,10 @@
     <title>PythonInR</title>
     <description>Interact with Python from within R.
 </description>
-    <link>http://yourdomain.com/</link>
-    <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 27 Jun 2016 07:35:01 -0700</pubDate>
-    <lastBuildDate>Mon, 27 Jun 2016 07:35:01 -0700</lastBuildDate>
+    <link>http://pythoninr.r-forge.r-project.org//</link>
+    <atom:link href="http://pythoninr.r-forge.r-project.org//feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 28 Jun 2016 07:08:46 -0700</pubDate>
+    <lastBuildDate>Tue, 28 Jun 2016 07:08:46 -0700</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -1049,8 +1049,8 @@ PythonInR gets the name of a Python object then it iterates over all members of 
 &lt;/table&gt;
 </description>
         <pubDate>Sat, 25 Jun 2016 01:18:01 -0700</pubDate>
-        <link>http://yourdomain.com/jekyll/update/2016/06/25/Changes.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/jekyll/update/2016/06/25/Changes.html</guid>
+        <link>http://pythoninr.r-forge.r-project.org//jekyll/update/2016/06/25/Changes.html</link>
+        <guid isPermaLink="true">http://pythoninr.r-forge.r-project.org//jekyll/update/2016/06/25/Changes.html</guid>
         
         
         <category>jekyll</category>
