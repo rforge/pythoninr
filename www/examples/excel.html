@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>PythonInR</title>
+  <meta name="description" content="Interact with Python from within R.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://pythoninr.r-forge.r-project.org//examples/excel.html">
+  <link rel="alternate" type="application/rss+xml" title="PythonInR" href="http://pythoninr.r-forge.r-project.org//feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">PythonInR</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/installation/">Installation</a>
+          
+        
+          
+        
+          
+          <a class="page-link" href="/examples/">Examples</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <h1 id="use-excel-with-pythoninr">Use Excel with PythonInR</h1>
+
+<p>There are several other options to read and write to excel from R.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">PythonInR</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 
+## Initialize Python Version 2.7.9 (default, Mar  1 2015, 13:01:26) 
+## [GCC 4.9.2]
+</code></pre>
+</div>
+
+<h2 id="version">Version</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">pyExec</span><span class="p">(</span><span class="s2">"import openpyxl"</span><span class="p">)</span>
+<span class="n">pyExecp</span><span class="p">(</span><span class="s2">"openpyxl.__version__"</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## u'2.3.3'
+</code></pre>
+</div>
+
+<h2 id="export-data-to-xlsx">Export data to “.xlsx”</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">pyImport</span><span class="p">(</span><span class="n">import</span><span class="o">=</span><span class="s2">"Workbook"</span><span class="p">,</span> <span class="n">from</span><span class="o">=</span><span class="s2">"openpyxl"</span><span class="p">)</span>
+
+<span class="n">wb</span> <span class="o">&lt;-</span> <span class="n">Workbook</span><span class="p">()</span>
+<span class="n">ws</span> <span class="o">&lt;-</span> <span class="n">wb</span><span class="o">$</span><span class="n">active</span>
+<span class="c1">## ws &lt;- wb$get_active_sheet() ## for older version!
+</span><span class="n">ws</span><span class="o">$</span><span class="n">title</span> <span class="o">&lt;-</span> <span class="s2">"cars"</span>
+<span class="c1">## write append the first 10 rows to the workbook
+</span><span class="n">ws</span><span class="o">$</span><span class="n">append</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">cars</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## NULL
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="k">in</span> <span class="n">seq</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">ws</span><span class="o">$</span><span class="n">append</span><span class="p">(</span><span class="n">as.matrix</span><span class="p">(</span><span class="n">cars</span><span class="p">[</span><span class="n">i</span><span class="p">,]))</span>
+<span class="p">}</span>
+<span class="n">ws</span><span class="o">$</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="s1">'=SUM(A3:A10)'</span><span class="p">,</span> <span class="s1">'=SUM(A3:A10)'</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## NULL
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">wb</span><span class="o">$</span><span class="n">save</span><span class="p">(</span><span class="n">th.string</span><span class="p">(</span><span class="s2">"cars.xlsx"</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## NULL
+</code></pre>
+</div>
+
+<h2 id="import-data-from-xlsx">Import data from “.xlsx”</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">pyImport</span><span class="p">(</span><span class="n">import</span><span class="o">=</span><span class="s2">"load_workbook"</span><span class="p">,</span> <span class="n">from</span><span class="o">=</span><span class="s2">"openpyxl"</span><span class="p">)</span>
+<span class="n">wb</span> <span class="o">&lt;-</span> <span class="n">load_workbook</span><span class="p">(</span><span class="s2">"cars.xlsx"</span><span class="p">)</span>
+<span class="n">wb</span><span class="o">$</span><span class="n">get_sheet_names</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "cars"
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">ws</span> <span class="o">&lt;-</span> <span class="n">wb</span><span class="o">$</span><span class="n">get_sheet_by_name</span><span class="p">(</span><span class="s2">"cars"</span><span class="p">)</span>
+<span class="n">pyExec</span><span class="p">(</span><span class="s2">"
+def get_range(ws, first_row, first_col, last_row, last_col):
+    x = []
+    for m in range(first_row, last_row):
+        row = []
+        for n in range(first_col, last_col):
+            row.append(ws.cell(row = m, column = n).value)
+        x.append(row)
+    return x
+"</span><span class="p">)</span>
+<span class="n">do.call</span><span class="p">(</span><span class="n">rbind</span><span class="p">,</span> <span class="n">pyCall</span><span class="p">(</span><span class="s2">"get_range"</span><span class="p">,</span> <span class="n">list</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="m">1L</span><span class="p">,</span> <span class="m">1L</span><span class="p">,</span> <span class="m">10L</span><span class="p">,</span> <span class="m">3L</span><span class="p">),</span> <span class="n">simplify</span><span class="o">=</span><span class="n">FALSE</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##       [,1]    [,2]  
+##  [1,] "speed" "dist"
+##  [2,] 4       2     
+##  [3,] 4       10    
+##  [4,] 7       4     
+##  [5,] 7       22    
+##  [6,] 8       16    
+##  [7,] 9       10    
+##  [8,] 10      18    
+##  [9,] 10      26
+</code></pre>
+</div>
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">PythonInR</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>PythonInR</li>
+          <li><a href="mailto:"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Interact with Python from within R.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
