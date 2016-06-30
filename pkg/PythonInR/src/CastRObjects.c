@@ -606,30 +606,38 @@ int isPyInR_PyObject(SEXP x) {
     if ( isS4(x) ) return(is_py_in_r_obj);
     SEXP cls = getAttrib(x, R_ClassSymbol);
     if (IS_CHARACTER(cls)){
-        int i = GET_LENGTH(cls) - 2; // -2 da letztes element R6 und von 0 weg
-        if (i >= 0){
-            is_py_in_r_obj = (strncmp(R_TO_C_STRING_V(cls, i), "PythonInR_Object", 8) == 0);
+    	for (int i = 0; i < GET_LENGTH(cls); i++) {
+        	if ( strncmp(R_TO_C_STRING_V(cls, i), "PythonInR_Object", 16) == 0 )
+        		return 1;
         }
     }
     return is_py_in_r_obj;
 }
 
-const char *r_get_py_object_location(SEXP x) {
-    SEXP cx, names;
+const char *r_get_py_object_location(SEXP y) {
+    SEXP x, cx, names;
     int i, len;
     
-    x = CAR(x);
+    x = CAR(y);
     names = GET_NAMES(x);
     len = GET_LENGTH(x);
     
     for(i = 0; i < len; i++) {
-        if ( strcmp(R_TO_C_STRING_V(names, i), ".name") == 0 ){
+        if ( strcmp(R_TO_C_STRING_V(names, i), ".name") == 0 ) {
             cx = nthcdr(x, (int) i);
             x = CAR(cx);
             return R_TO_C_STRING(x);
         }
     }
+    // in case it is a funciton
+    SEXP nam = getAttrib(y, c_to_r_string("name"));
+    if ( !isNull(y) ) return R_TO_C_STRING(nam);
     return NULL;
+}
+
+SEXP test_r_get_py_object_location(SEXP x) {
+	const char *y = r_get_py_object_location(x);
+	return c_to_r_string(y);
 }
 
 SEXP r_to_py_preprocessing(SEXP x) {
