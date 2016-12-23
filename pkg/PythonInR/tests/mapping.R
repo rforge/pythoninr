@@ -1,5 +1,7 @@
-if (FALSE)
+if (FALSE) {
     q("no")
+    Rdevel
+}
 
 library(PythonInR)
 library(testthat)
@@ -49,8 +51,6 @@ pySet("x", x)
 cty(pyGet("type(x).__name__"), "str")
 cty(pyGet("x"), x)
 
-## TODO: Test Python 3 bytes!
-
 context("unicode")
 x <- "R"
 pySet("x", x)
@@ -63,6 +63,5 @@ x <- logical()
 pySet("x", x)
 
 ## Vectors of length > 1
-
 pyExecp("x")
 
