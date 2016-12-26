@@ -56,6 +56,7 @@
 #define PY_NLTK_TREE_TO_DICT(x) Py_call_1_arg("__R__.nltk_tree_to_dict", x)
 
 #define PY_PANDAS_DF_TO_DICT(x) Py_call_1_arg("__R__.pandas_data_frame_to_dict", x)
+#define PY_PANDAS_DF_TO_LIST(x) Py_call_1_arg("__R__.pandas_data_frame_to_list", x)
 #define PY_NUMPY_ARRAY_TO_DICT(x) Py_call_1_arg("__R__.numpy_array_to_tlist", x)
 
 SEXP py_class(PyObject *py_object);

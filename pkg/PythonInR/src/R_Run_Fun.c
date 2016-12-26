@@ -79,7 +79,7 @@ SEXP matrix_from_list_bycol(SEXP x) {
 }
 
 SEXP data_frame_from_list(SEXP x) {
-    return R_eval_1_arg("function(x){colnames(x$data) <- x$colnames; base::as.data.frame(x$data, x$rownames, stringsAsFactors=FALSE)}", x);
+    return R_eval_1_arg("function(x){y <- base::as.data.frame(x$data, x$rownames, stringsAsFactors=FALSE); colnames(y) <- x$colnames; return(y)}", x);
 }
 
 SEXP data_frame_from_list2(SEXP x) {

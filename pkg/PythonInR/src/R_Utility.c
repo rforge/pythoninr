@@ -32,6 +32,7 @@ SEXP r_get_type_name(SEXP x) {
     if ( IS_NUMERIC(x)   ) klass = c_to_r_string("numeric");
     if ( IS_STRING(x)    ) klass = c_to_r_string("string");
     if ( IS_UNICODE(x)   ) klass = c_to_r_string("unicode");
+    if ( isFactor(x)     ) klass = c_to_r_string("factor");
     if ( isComplex(x)    ) klass = c_to_r_string("complex");
     return( klass );
 }
@@ -43,6 +44,7 @@ SEXP r_get_class_name(SEXP x) {
         if ( IS_INTEGER(x)   ) klass = c_to_r_string("integer");
         if ( IS_NUMERIC(x)   ) klass = c_to_r_string("numeric");
         if ( IS_CHARACTER(x) ) klass = c_to_r_string("character");
+        if ( isFactor(x) ) klass = c_to_r_string("factor");
         if ( isComplex(x)    ) klass = c_to_r_string("complex");
     } 
     if ( isArray(x) & !isMatrix(x) ) {
@@ -73,7 +75,7 @@ int r_GetR_Type(SEXP r_object) {
         return 10; /** LGLSXP **/
         
     } else if ( IS_INTEGER(r_object) ) {
-        if ( has_typehint(r_object, "int") | !r_int_to_py_long_flag ) {
+        if ( has_typehint(r_object, "int") | !GLOPT_INT_TO_LONG ) {
             return 12;
         } else {
             return 13; /** INTSXP; **/
@@ -83,12 +85,14 @@ int r_GetR_Type(SEXP r_object) {
         return 14;  /** REALSXP; **/
     
     } else if ( IS_CHARACTER(r_object) ) {
-        if ( has_typehint(r_object, "string") | !r_character_to_py_unicode_flag ) {
+        if ( has_typehint(r_object, "string") | !GLOPT_CHARACTER_TO_UNICODE ) {
             return 16; /** STRSXP; **/
         } else {
             return 17; /** Unicode **/
         }
         
+    } else if ( isFactor(r_object) ) {
+        return 11;
     } else if ( isComplex(r_object) ) {
         error("ValueError: the transformation of objects of type complex is not implemented yet!");
         return 15;
@@ -151,9 +155,9 @@ int r_GetR_Container(SEXP x) {
             return 400; /** List **/
             
         } else if ( isVector(x) ) {
-            if ( (GET_LENGTH(x) == 1) & (!HAS_TH_CONTAINER(x)) & (!R_VECTOR_TO_LIST_FLAG) ) return 110; /** Scalar **/
-            if ( HAS_TH_LIST(x) | R_VECTOR_TO_LIST_FLAG ) return 150; /** Vector + th.list **/
-            if ( HAS_TH_TLIST(x) ) return 120; /** Vector + th.tlist **/
+            if ( (GET_LENGTH(x) == 1) & (!HAS_TH_CONTAINER(x)) & (!GLOPT_VECTOR_TO_LIST) ) return 110; /** Scalar **/
+            if ( HAS_TH_LIST(x)  | GLOPT_VECTOR_TO_LIST ) return 150; /** Vector + th.list **/
+            if ( HAS_TH_TLIST(x) | GLOPT_VECTOR_TO_TLIST ) return 120; /** Vector + th.tlist **/
             if ( HAS_TH_TUPLE(x) ) return 160; /** Vector + th.tuple **/
             if ( HAS_TH_TTUPLE(x) ) return 130; /** Vector + th.ttuple **/
             if ( HAS_TH_NUMPY(x) ) return 140; /** Vector + th.numpy **/

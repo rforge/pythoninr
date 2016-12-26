@@ -10,11 +10,15 @@
 long pyrNamespaceCounter = 0;
 // #TODO: ReThink if it would make sense to add Python like options!
 // const char *unicode_errors = "replace"; 
-int r_int_to_py_long_flag = 1;
-int R_VECTOR_TO_LIST_FLAG = 0;
-int r_character_to_py_unicode_flag = 1;
+int GLOPT_INT_TO_LONG = 1;
+int GLOPT_CHARACTER_TO_UNICODE = 1;
+int GLOPT_VECTOR_TO_LIST = 0;
+int GLOPT_VECTOR_TO_TLIST = 0;
 int use_PY_To_R_Typecast = 0;
 PyObject* PY_To_R_Typecast = NULL;
+PyObject* py_numpy_type = NULL;
+PyObject* py_scipy_type = NULL;
+PyObject* py_nltk_tree_type = NULL;
 
 #ifdef DEBUG_PYTHONINR
 static FILE * log_file=NULL;
@@ -346,34 +350,69 @@ SEXP py_get_info(void){
 }
 
 SEXP get_int_long_flag(void) {
-    return c_to_r_integer(r_int_to_py_long_flag);
+    return c_to_r_integer(GLOPT_INT_TO_LONG);
 }
 
 SEXP set_int_long_flag(SEXP flag){
-	r_int_to_py_long_flag = R_TO_C_INT(flag);
+	GLOPT_INT_TO_LONG = R_TO_C_INT(flag);
 	return R_NilValue;
 }
 
 SEXP get_vec_to_list_flag(void) {
-    return c_to_r_integer(R_VECTOR_TO_LIST_FLAG);
+    return c_to_r_integer(GLOPT_VECTOR_TO_LIST);
 }
 
 SEXP set_vec_to_list_flag(SEXP flag){
-	R_VECTOR_TO_LIST_FLAG = R_TO_C_INT(flag);
+	GLOPT_VECTOR_TO_LIST = R_TO_C_INT(flag);
 	return R_NilValue;
 }
 
 SEXP get_character_to_py_unicode_flag(void) {
-    return c_to_r_integer(r_character_to_py_unicode_flag);
+    return c_to_r_integer(GLOPT_CHARACTER_TO_UNICODE);
 }
 
 SEXP set_character_to_py_unicode_flag(SEXP flag){
-	r_character_to_py_unicode_flag = R_TO_C_INT(flag);
+	GLOPT_CHARACTER_TO_UNICODE = R_TO_C_INT(flag);
 	return R_NilValue;
+}
+
+int init_py_numpy_type(void) {
+	PyObject *np_module = PyImport_ImportModule("numpy");
+	if (np_module == NULL) return -1;
+	PyObject *numpy_type = PyTuple_New(2);
+	PyObject *np_ndarray = PyObject_GetAttrString(np_module, "ndarray");
+	PyObject *np_generic = PyObject_GetAttrString(np_module, "generic");
+	if ( (np_ndarray == NULL) | (np_generic == NULL) ) return -2;
+	PyTuple_SET_ITEM(numpy_type, 0, np_ndarray);
+	PyTuple_SET_ITEM(numpy_type, 1, np_generic);
+	py_numpy_type = numpy_type;
+	Py_XDECREF(np_module);
+	return 0;
+}
+
+int init_py_scipy_type(void) {
+	PyObject *sp_module = PyImport_ImportModule("scipy.sparse");
+	if (sp_module == NULL) return -1;
+	PyObject *scipy_type = PyObject_GetAttrString(sp_module, "spmatrix");
+	py_scipy_type = scipy_type;
+	Py_XDECREF(sp_module);
+	return 0;
+}
+
+int init_py_nltk_tree_type(void) {
+	PyObject *nltk_module = PyImport_ImportModule("nltk.tree");
+	if (nltk_module == NULL) return -1;
+	PyObject *nltk_tree_type = PyObject_GetAttrString(nltk_module, "Tree");
+	py_nltk_tree_type = nltk_tree_type;
+	Py_XDECREF(nltk_module);
+	return 0;
 }
 
 SEXP init_PythonInR_External_References(void) {
 	PY_To_R_Typecast = py_get_py_obj("__R__.to_r");
+	init_py_numpy_type();
+	init_py_scipy_type();
+	init_py_nltk_tree_type();
 	// R_TO_PY_PREPROCESSING = r_eval_py_string("PythonInR:::r_to_py_preprocessing");
 	// PY_TO_R_POSTPROCESSING = r_eval_py_string("PythonInR:::r_to_py_postprocessing");
 	use_PY_To_R_Typecast = 1;

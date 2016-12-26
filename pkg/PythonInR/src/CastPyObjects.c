@@ -713,6 +713,10 @@ SEXP py_numpy_matrix_to_r_matrix(PyObject *pyo) {
     // Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     Py_XINCREF(pyo);
     PyObject *x = PY_NUMPY_MATRIX_TO_DICT(pyo);
+    if ( !PyDict_Check(x) ) {
+		Rprintf("py_numpy_matrix_to_r_matrix couldn't transform to dict!\n");
+        return( R_NilValue );
+	}
     // Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
     SEXP robj = matrix_from_list_byrow(PY_TO_R__DICT(x, 0));
     // Rprintf("py_numpy_matrix_to_r_matrix: refcnt(x)=%i\n", REF_CNT(pyo));
@@ -787,9 +791,9 @@ SEXP py_pandas_data_frame_to_r_data_frame(PyObject *pyo) {
     }
     // Rprintf("py_pandas_data_frame_to_r_data_frame: refcnt(x)=%i\n", REF_CNT(pyo));
     Py_XINCREF(pyo);
-    PyObject *x = PY_PANDAS_DF_TO_DICT(pyo);
+    PyObject *x = PY_PANDAS_DF_TO_LIST(pyo);
     // Rprintf("py_pandas_data_frame_to_r_data_frame: refcnt(x)=%i\n", REF_CNT(pyo));
-    SEXP robj = data_frame_from_list2(PY_TO_R__DICT(x, 1));
+    SEXP robj = data_frame_from_list(PY_TO_R__DICT(x, 1));
     Py_XDECREF(x);
     return robj;
 }
@@ -881,7 +885,7 @@ int py_to_c_integer(PyObject *py_object) {
         }
         return (int)c_long;
     } else {
-        error("in py_to_r_integer!\n");
+        error("in py_to_r_integer the provided object is of type '%s'!\n", Py_TYPE(py_object)->tp_name);
     }
     if ( INT_OVERFLOW(c_long) ) {
         warning("NAs introduced by coercion to integer range");
@@ -945,6 +949,11 @@ SEXP py_to_r_postprocessing(SEXP x, const char *cls) {
     return(r_obj);
 }
 
+SEXP py_type_code(PyObject *pyo) {
+    int r_type = py_get_container_type(pyo);
+    return c_to_r_integer(r_type);
+}
+
 /*  ----------------------------------------------------------------------------
 
     py_to_r 
@@ -974,8 +983,8 @@ SEXP py_to_r(PyObject *pyo, int simplify, int autotype) {
         case 130 : return PY_TO_R__TTUPLE(pyo);
         case 140 : return PY_TO_R__NUMPY_VECTOR(pyo);
         case 200 : return PY_TO_R__MATRIX(pyo);
-        case 210 : return PY_TO_R__NUMPY_MATRIX(pyo);
-        case 220 : return PY_TO_R__CVXOPT_MATRIX(pyo);
+        case 220 : return PY_TO_R__NUMPY_MATRIX(pyo);
+        case 230 : return PY_TO_R__CVXOPT_MATRIX(pyo);
         case 300 : return PY_TO_R__ARRAY(pyo);
         case 310 : return PY_TO_R__NUMPY_ARRAY(pyo);
         case 400 : return PY_TO_R__LIST(pyo, simplify);

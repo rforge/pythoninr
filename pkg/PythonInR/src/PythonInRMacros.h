@@ -18,10 +18,13 @@
 
 #define PY_NONE Py_BuildValue("")
 
-#define IS_INT(o)     ( IS_INTEGER(o) &  (has_typehint(o, "int") | !r_int_to_py_long_flag ) )
-#define IS_LONG(o)    ( IS_INTEGER(o) & !(has_typehint(o, "int") | !r_int_to_py_long_flag ) )
-#define IS_STRING(o)  ( IS_CHARACTER(o) &  (has_typehint(o, "string") | !r_character_to_py_unicode_flag ) )
-#define IS_UNICODE(o) ( IS_CHARACTER(o) & !(has_typehint(o, "string") | !r_character_to_py_unicode_flag ) )
+#define IS_INT(o)     ( IS_INTEGER(o) &  (has_typehint(o, "int") | !GLOPT_INT_TO_LONG ) )
+#define IS_LONG(o)    ( IS_INTEGER(o) & !(has_typehint(o, "int") | !GLOPT_INT_TO_LONG ) )
+#define IS_STRING(o)  ( IS_CHARACTER(o) &  (has_typehint(o, "string") | !GLOPT_CHARACTER_TO_UNICODE ) )
+#define IS_UNICODE(o) ( IS_CHARACTER(o) & !(has_typehint(o, "string") | !GLOPT_CHARACTER_TO_UNICODE ) )
+#define IS_FACTOR(o)  isFactor(o)
+
+#define AS_UNICODE(o) R_eval_1_arg("as.character", o)
 
 #define HAS_ROWNAMES(o) ( GET_LENGTH(GET_ROWNAMES(GET_DIMNAMES(o))) > 0 )
 #define HAS_COLNAMES(o) ( GET_LENGTH(GET_COLNAMES(GET_DIMNAMES(o))) > 0 )
@@ -67,14 +70,15 @@
 	#define R_TO_PY_INT_V(n,i) R_TO_PY_LONG_V(n,i)
 #else
     #define R_TO_PY_STRING(s)   PyString_FromString(R_TO_C_STRING(s))
-	#define R_TO_PY_LONG(n)     ( R_TO_C_INT(n)      == NA_INTEGER ) ? PY_NONE : ( (r_int_to_py_long_flag) ? PyLong_FromLong(R_TO_C_LONG(n))     : PyInt_FromLong(R_TO_C_LONG(n)) )
-	#define R_TO_PY_LONG_V(n,i) ( R_TO_C_LONG_V(n,i) == NA_INTEGER ) ? PY_NONE : ( (r_int_to_py_long_flag) ? PyLong_FromLong(R_TO_C_LONG_V(n,i)) : PyInt_FromLong(R_TO_C_LONG_V(n,i)) )
+	#define R_TO_PY_LONG(n)     ( R_TO_C_INT(n)      == NA_INTEGER ) ? PY_NONE : ( (GLOPT_INT_TO_LONG) ? PyLong_FromLong(R_TO_C_LONG(n))     : PyInt_FromLong(R_TO_C_LONG(n)) )
+	#define R_TO_PY_LONG_V(n,i) ( R_TO_C_LONG_V(n,i) == NA_INTEGER ) ? PY_NONE : ( (GLOPT_INT_TO_LONG) ? PyLong_FromLong(R_TO_C_LONG_V(n,i)) : PyInt_FromLong(R_TO_C_LONG_V(n,i)) )
 	#define R_TO_PY_INT(n)      ( R_TO_C_INT(n)      == NA_INTEGER ) ? PY_NONE : ( PyInt_FromLong( R_TO_C_LONG(n) ) )
 	#define R_TO_PY_INT_V(n,i)  ( R_TO_C_LONG_V(n,i) == NA_INTEGER ) ? PY_NONE : ( PyInt_FromLong( R_TO_C_LONG_V(n, i) ) )
 #endif
 
 // TODO: remove this flag from here!
-#define R_TO_PY_UNICODE(s) ( (r_character_to_py_unicode_flag) ? PyUnicode_FromString(R_TO_C_STRING(s)) : R_TO_PY_STRING(s) )
+#define R_TO_PY_UNICODE(s) ( (GLOPT_CHARACTER_TO_UNICODE) ? PyUnicode_FromString(R_TO_C_STRING(s)) : R_TO_PY_STRING(s) )
+#define R_TO_PY_FACTOR(s)  R_TO_PY_UNICODE(AS_UNICODE(s)) 
 
 #define R_TO_PY_BOOLEAN_V(b,i) ( R_TO_C_BOOLEAN_V(b, i) == NA_LOGICAL ) ? PY_NONE : PyBool_FromLong((long)R_TO_C_BOOLEAN_V(b,i))
 #define R_TO_PY_DOUBLE_V(n,i)  PyFloat_FromDouble(R_TO_C_DOUBLE_V(n,i))
@@ -82,7 +86,8 @@
 // NOTE: PyBytes_FromString is defined in python 2.7.10 (source) as, #define PyBytes_FromString PyString_FromString
 #define R_TO_PY_STRING_V(s,i)  PyBytes_FromString(R_TO_C_STRING_V(s,i))
 #define C_TO_PY_STRING_V(s,i)  PyBytes_FromString(s,i)
-#define R_TO_PY_UNICODE_V(s,i) ( (r_character_to_py_unicode_flag) ? PyUnicode_FromString(R_TO_C_STRING_V(s,i)) : R_TO_PY_STRING_V(s,i) )
+#define R_TO_PY_UNICODE_V(s,i) ( (GLOPT_CHARACTER_TO_UNICODE) ? PyUnicode_FromString(R_TO_C_STRING_V(s,i)) : R_TO_PY_STRING_V(s,i) )
+#define R_TO_PY_FACTOR_V(s,i)  R_TO_PY_UNICODE_V(AS_UNICODE(s), i)
 
 ////////////////////////////////////////////////////////////////////////
 // Define some makros to convert Python primitives to C

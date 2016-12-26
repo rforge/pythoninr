@@ -104,6 +104,7 @@ PyObject *r_to_py_scalar(SEXP r_object){
     // (COMPLEX) if( r_type == 15 ) return R_TO_PY_INT(r_object);
     if( r_type == 16 ) return R_TO_PY_STRING(r_object);
     if( r_type == 17 ) return R_TO_PY_UNICODE(r_object);
+    if( r_type == 11 ) return R_TO_PY_FACTOR(r_object);
     
     error("TypeError: r_to_py_scalar unkown data type!");
     return py_object;   
@@ -128,6 +129,9 @@ PyObject *r_to_py_vector(SEXP x) {
     int r_type = r_GetR_Type(x);
     if ( r_type < 0 ) {
         error("ValueError: in r_to_py_vector expected vector got something else!");
+    }
+    if ( r_type == 11 ) {
+        r_type = 17; // Since I transform factor to unicode
     }
     PyObject *pyo = Py_Vec(py_list, py_names, r_type);
     // TODO: Check Reference Counts! Should I decref py_list and py_names?
@@ -189,10 +193,10 @@ PyObject *r_to_py_array(SEXP r_object) {
 PyObject *r_to_py_simple_triplet_matrix(SEXP r_object) {
     // SEXP len = GET_LENGTH(r_object);
     SEXP names = GET_NAMES(r_object);
-    int tmp = r_int_to_py_long_flag;
-    r_int_to_py_long_flag = 0;
+    int tmp = GLOPT_INT_TO_LONG;
+    GLOPT_INT_TO_LONG = 0;
     PyObject *py_object = r_to_py_dict(names, r_object);
-    r_int_to_py_long_flag = tmp;
+    GLOPT_INT_TO_LONG = tmp;
     return PY_STM_FROM_DICT(py_object);
 }
 
@@ -200,6 +204,9 @@ PyObject *r_to_py_tlist(SEXP x) {
     int r_type = r_GetR_Type(x);
     if ( r_type < 0 ) {
         error("ValueError: in r_to_py_tlist expected vector got something else!");
+    }
+    if ( r_type == 11) {
+        r_type = 17;
     }
     PyObject *pyo = Py_Tlist(r_vec_to_py_list(x), r_type);
     // TODO: Check Reference Counts! Should I decref py_list and py_names?  
@@ -210,6 +217,9 @@ PyObject *r_to_py_ttuple(SEXP x) {
     int r_type = r_GetR_Type(x);
     if ( r_type < 0 ) {
         error("ValueError: in r_to_py_ttuple expected vector got something else!");
+    }
+    if ( r_type == 11 ) {
+        r_type = 17;
     }
     PyObject *pyo = Py_Ttuple(r_vec_to_py_list(x), r_type);
     // TODO: Check Reference Counts! Should I decref py_list and py_names?  
@@ -223,19 +233,21 @@ PyObject *r_to_py_ttuple(SEXP x) {
 
   ----------------------------------------------------------------------------*/
 PyObject *r_to_py_data_frame(SEXP x) {
-    int flag = R_VECTOR_TO_LIST_FLAG;
-    R_VECTOR_TO_LIST_FLAG = 1;
+    int list_flag = GLOPT_VECTOR_TO_LIST;
+    int tlist_flag = GLOPT_VECTOR_TO_TLIST;
+    GLOPT_VECTOR_TO_LIST = 0;
+    GLOPT_VECTOR_TO_TLIST = 1;
     PyObject *df = r_to_py_dict(GET_NAMES(x), x);
     // Rprintf("r_to_py_data_frame: refcnt(df)=%i\n", REF_CNT(df));
     PyObject *rn = r_to_py(getAttrib(x, mkString("row.names")));
     // Rprintf("r_to_py_data_frame: refcnt(rn)=%i\n", REF_CNT(rn));
     PyObject *cn = r_to_py(GET_NAMES(x));
     // Rprintf("r_to_py_data_frame: refcnt(cn)=%i\n", REF_CNT(cn));
-    R_VECTOR_TO_LIST_FLAG = flag;
+    GLOPT_VECTOR_TO_LIST = list_flag;
+    GLOPT_VECTOR_TO_TLIST = tlist_flag;
     PyObject *pyo = PY_DATA_FRAME(df, rn, cn, r_to_py(GET_DIM(x)));
     // Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
     // Rprintf("r_to_py_data_frame: refcnt(df)=%i, refcnt(rn)=%i, refcnt(cn)=%i\n", REF_CNT(df), REF_CNT(rn), REF_CNT(cn));
-    R_VECTOR_TO_LIST_FLAG = flag;
     return pyo;
 }
 
@@ -244,6 +256,9 @@ PyObject *r_to_py_pandas_data_frame(SEXP x) {
     // Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
     PyObject *z = PyObject_CallMethod(pyo, "to_pandas", "");
     Py_XDECREF(pyo);
+    if ( PyNone_Check(z) ) {
+        error("counldn't find 'pandas' please make sure 'pandas' is installed!");
+    }
     // Rprintf("r_to_py_data_frame: refcnt(pyo)=%i\n", REF_CNT(pyo));
     return z;
 }
@@ -286,14 +301,14 @@ PyObject *r_to_py_tuple(SEXP r_object){
             PyTuple_SET_ITEM(py_object, i, item);
         }
     }else if ( IS_INTEGER(r_object) ){
-        int tmp = r_int_to_py_long_flag;
+        int tmp = GLOPT_INT_TO_LONG;
         if ( has_typehint(r_object, "int") ) {
-            r_int_to_py_long_flag = 0;
+            GLOPT_INT_TO_LONG = 0;
             for(i = 0; i < len; i++) {
                 item = R_TO_PY_LONG_V(r_object,i);
                 PyTuple_SET_ITEM(py_object, i, item);
             }
-            r_int_to_py_long_flag = tmp;
+            GLOPT_INT_TO_LONG = tmp;
         } else {
             for(i = 0; i < len; i++) {
                 item = R_TO_PY_LONG_V(r_object,i);
@@ -306,10 +321,17 @@ PyObject *r_to_py_tuple(SEXP r_object){
             PyTuple_SET_ITEM(py_object, i, item);
         }
     }else if ( IS_CHARACTER(r_object) ){
-       for(i = 0; i < len; i++) {
-            item = R_TO_PY_UNICODE_V(r_object,i);
-            PyTuple_SET_ITEM(py_object, i, item);
-       }
+        if ( has_typehint(r_object, "string") ) {
+            for(i = 0; i < len; i++) {
+                item = R_TO_PY_STRING_V(r_object,i);
+                PyTuple_SET_ITEM(py_object, i, item);
+            }
+        } else {
+            for(i = 0; i < len; i++) {
+                item = R_TO_PY_UNICODE_V(r_object,i);
+                PyTuple_SET_ITEM(py_object, i, item);
+            }
+        }
     }else if ( isComplex(r_object) ){
         Py_XDECREF(py_object);
         error("in r_to_py_tuple\n     conversion of type complex isn't supported jet!");
@@ -344,6 +366,7 @@ PyObject *r_vec_to_py_list(SEXP ro) {
     } else if ( r_type == 14 ) { R_TO_PY_ITER(ro, R_TO_PY_DOUBLE_V,  pyo, PyList_SET_ITEM);
     } else if ( r_type == 16 ) { R_TO_PY_ITER(ro, R_TO_PY_STRING_V,  pyo, PyList_SET_ITEM);
     } else if ( r_type == 17 ) { R_TO_PY_ITER(ro, R_TO_PY_UNICODE_V, pyo, PyList_SET_ITEM);
+    } else if ( r_type == 11 ) { R_TO_PY_ITER(ro, R_TO_PY_FACTOR_V,  pyo, PyList_SET_ITEM);    
     }
     return pyo;
 }
@@ -388,8 +411,14 @@ PyObject *r_matrix_to_py_list(SEXP r_object) {
     int ncol = INTEGER(GET_DIM(r_object))[1];
        
     py_object = PyList_New(nrow);
-        
-    SEXP col = PROTECT(allocVector(r_GetR_Type(r_object), ncol));
+    
+    int r_type = r_GetR_Type(r_object);
+    if ( r_type == 11 ) {
+        r_object = AS_CHARACTER(r_object);
+        r_type = (GLOPT_CHARACTER_TO_UNICODE) ? 17 : 16;
+    }
+
+    SEXP col = PROTECT(allocVector(r_type, ncol));
     for (i = 0; i < nrow; i++) {        
         if( IS_LOGICAL(r_object) ) {
             for(j = 0; j < ncol; j++) {
@@ -397,14 +426,14 @@ PyObject *r_matrix_to_py_list(SEXP r_object) {
                 LOGICAL(col)[j] = LOGICAL(r_object)[k];
             }
         }else if ( IS_INTEGER(r_object) ) {
-            int tmp = r_int_to_py_long_flag;
+            int tmp = GLOPT_INT_TO_LONG;
             if ( has_typehint(r_object, "int") ) {
-                r_int_to_py_long_flag = 0;
+                GLOPT_INT_TO_LONG = 0;
                 for(j = 0; j < ncol; j++) {
                     k = (j * nrow) + i;
                     INTEGER(col)[j] = INTEGER(r_object)[k];
                 }
-                r_int_to_py_long_flag = tmp;
+                GLOPT_INT_TO_LONG = tmp;
             } else {
                 for(j = 0; j < ncol; j++) {
                     k = (j * nrow) + i;
@@ -455,15 +484,15 @@ PyObject *r_to_py_dict(SEXP r_keys, SEXP r_values){
             PyDict_SetItem(py_object, key, value);
         }
     }else if ( IS_INTEGER(r_values) ){
-        int tmp = r_int_to_py_long_flag;
+        int tmp = GLOPT_INT_TO_LONG;
         if ( has_typehint(r_values, "int") ) {
-            r_int_to_py_long_flag = 0;
+            GLOPT_INT_TO_LONG = 0;
             for(i = 0; i < len; i++) {
                 key = R_TO_PY_UNICODE_V(r_keys,i);
                 value = R_TO_PY_LONG_V(r_values,i);
                 PyDict_SetItem(py_object, key, value);
             }
-            r_int_to_py_long_flag = tmp;
+            GLOPT_INT_TO_LONG = tmp;
         } else {
             for(i = 0; i < len; i++) {
                 key = R_TO_PY_UNICODE_V(r_keys,i);
@@ -696,6 +725,13 @@ SEXP r_to_py_preprocessing_class(SEXP x, const char *cls) {
     }
     UNPROTECT(1);
     return(r_obj);
+}
+
+SEXP r_container_type(SEXP x) {
+    if ( isNull(x) ) return R_NilValue;
+    
+    int container = r_GetR_Container(x);
+    return c_to_r_integer(container);
 }
 
 /*  ----------------------------------------------------------------------------

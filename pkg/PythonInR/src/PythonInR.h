@@ -12,10 +12,12 @@
 #define MAXELTSIZE 8192
 #endif
 
-extern long pyrNamespaceCounter; // TODO: I del this!
-extern int r_int_to_py_long_flag;          // FLAG_INT_TO_LONG          (Default is: TRUE)
-extern int r_character_to_py_unicode_flag; // FLAG_CHARACTER_2_UNICODE  (Default is: TRUE)
-extern int R_VECTOR_TO_LIST_FLAG;             // FLAG_VECTOR_2_LIST        (Default is: FALSE)
+// Some global options (GLOPT)
+extern long pyrNamespaceCounter;       // TODO: I del this!
+extern int GLOPT_INT_TO_LONG;      // FLAG_INT_TO_LONG          (Default is: TRUE)
+extern int GLOPT_CHARACTER_TO_UNICODE; // FLAG_CHARACTER_2_UNICODE  (Default is: TRUE)
+extern int GLOPT_VECTOR_TO_LIST;       // FLAG_VECTOR_2_LIST        (Default is: FALSE)
+extern int GLOPT_VECTOR_TO_TLIST;
 extern int use_PY_To_R_Typecast;
 
 #ifdef PYTHON_IN_R_NO_EXPLICIT_LINKING
@@ -67,8 +69,18 @@ HMODULE py_hdll;
 PyObject* log_write(PyObject*, PyObject*);
 PyObject* log_flush(PyObject*, PyObject*);
 extern PyObject* PY_To_R_Typecast;
+
+extern PyObject* py_numpy_type;
+extern PyObject* py_scipy_type;
+extern PyObject* py_nltk_tree_type;
+
 extern SEXP PY_TO_R_POSTPROCESSING;
 extern SEXP R_TO_PY_PREPROCESSING;
+
+// NOTE: IS_NUMPY_ARRAY always returns FALSE if numpy is not installed
+#define IS_NUMPY_ARRAY(x) (py_numpy_type == NULL) ? 0 : PyObject_IsInstance(x, py_numpy_type)
+#define IS_SCIPY_MATRIX(x) (py_scipy_type == NULL) ? 0 : PyObject_IsInstance(x, py_scipy_type)
+#define IS_NLTK_TREE(x) (py_nltk_tree_type == NULL) ? 0 : PyObject_IsInstance(x, py_nltk_tree_type)
 
 #ifdef PYTHON_IN_R_NO_EXPLICIT_LINKING
 SEXP py_connect(SEXP);
