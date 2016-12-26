@@ -169,11 +169,11 @@ th.tlist     <- function(x) tyhi(x, "tlist")
 
 ##' @name th.tlist_str
 ##' @rdname typehint
-th.tlist_str <- function(x) tyhi(x, c("tlist", "int"))
+th.tlist_str <- function(x) tyhi(x, c("tlist", "string"))
 
 ##' @name th.tlist_int
 ##' @rdname typehint
-th.tlist_int <- function(x) tyhi(x, c("tlist", "string"))
+th.tlist_int <- function(x) tyhi(x, c("tlist", "int"))
 
 ##' @name th.numpy
 ##' @rdname typehint

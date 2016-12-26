@@ -185,3 +185,15 @@ askPythonForPythonExePath <- function(){
     NULL
 }
 
+pyWhichType <- function(x) {
+    stopifnot(is.character("x"))
+    .Call("test_get_container_type", x)
+}
+
+is.error_msg <- function(x) {
+    all(class(x) == "ERROR_MESSAGE")
+}
+
+str.strip <- function(x) {
+    gsub("(^\\s+|\\s+$)", "", x)
+}

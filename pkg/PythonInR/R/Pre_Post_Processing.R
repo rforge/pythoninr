@@ -31,8 +31,8 @@ py_to_r_postprocessing[["data.frame"]] <- function(x) {
     xcolnames <- x$colnames
     xrownames <- x$rownames
     x <- as.data.frame(x$data.frame)
-    if ( ncol(x) == length(xcolnames) ) colnames(M) <- xcolnames 
-    if ( nrow(x) == length(xrownames) ) rownames(M) <- xrownames
+    if ( ncol(x) == length(xcolnames) ) colnames(x) <- xcolnames 
+    if ( nrow(x) == length(xrownames) ) rownames(x) <- xrownames
     x
 }
 

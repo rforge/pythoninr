@@ -224,6 +224,26 @@ pyVersion <- function(){
 }
 
 #  -----------------------------------------------------------------------------
+#  pyVersionInfo
+#  =============
+#' @title is a convenience function to get sys.version_info from Python
+#'
+#' @description A convenience function to get \code{sys.version}.
+#' @return Returns a list containing the Python version information.
+#' @examples
+#' \dontshow{PythonInR:::pyCranConnect()}
+#' is.Python3 <- function() pyVersionInfo()[[1]] == 3L
+#  -----------------------------------------------------------------------------
+pyVersionInfo <- function() {
+    if ( pyConnectionCheck() ) return(invisible(NULL))
+    pyGet("sys.version_info")[[1]]
+}
+
+is.Python3 <- function() { 
+    pyVersionInfo()[[1]] == 3L
+}
+
+#  -----------------------------------------------------------------------------
 #  pyExit
 #  ======
 #' @title closes the connection to Python

@@ -209,6 +209,9 @@ except:
     }else{
         ret_val <- .Call("PythonInR_Run_String", code, 257L, autoTypecast,
                          mergeNamespaces, override, returnToR, simplify)
+        if ( is.error_msg(ret_val) ) {
+            stop("in pyExecg \n", str.strip(ret_val$message))
+        }
     }
     # NOTE: the flag returnToR makes also a difference at the c level
     #       if it is FALSE only NULL get's returned!

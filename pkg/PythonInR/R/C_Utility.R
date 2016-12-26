@@ -1,6 +1,4 @@
 
-
-
 list_to_tree <- function(x) {
     treeify <- function(x) {
         if ( (length(names(x)) == 2) & all(c("value", "children") %in% names(x)) ) {
