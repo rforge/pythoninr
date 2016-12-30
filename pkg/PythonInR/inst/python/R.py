@@ -129,6 +129,7 @@ class tlist(list):
             raise(ValueError(" ".join("'dtype' allowed values are", base_types_str)))
         list.__init__(self, itr)
         self.dtype = dtype
+        self.__class__.__name__ = "PythonInR.tlist"
 
     def _r_type(self):
         return _get_r_type(self.dtype)
@@ -334,7 +335,6 @@ def numpy_array(values):
     if ( PythonInR_FLAGS['useNumpy'] ):
         return np.array(values)
     return values
-    
 
 ## NOTE: changed 
 ## tlist(values, _get_py_type_numpy(values))
@@ -343,7 +343,7 @@ def numpy_array(values):
 ## since for scalars list(np.array) doesn't work!
 def numpy_vector_to_tlist(values):
     if ( len(values.shape) > 0 ):
-        return tlist(values, _get_py_type_numpy(values))
+        return tlist(values.tolist(), _get_py_type_numpy(values))
     else:
         return tlist([values.tolist()], _get_py_type_numpy(values))
 
@@ -549,9 +549,15 @@ def is_cvxopt_sparse_matrix(x):
         return False
 
 def numpy_matrix_to_dict(x):
-    dim = x.shape
-    return {'data': tlist(x.flatten(), _get_py_type_numpy(x)), 'nrow': dim[0], 
-            'ncol': dim[1], 'dimnames': None}
+    try:
+        if isinstance(x, np.matrix):
+            x = np.asarray(x)
+        dim = x.shape
+        ty = _get_py_type_numpy(x)
+        data = tlist(x.flatten().tolist(), ty)
+        return {'data': data, 'nrow': dim[0], 'ncol': dim[1], 'dimnames': None}
+    except:
+        return None
 
 def cvxopt_matrix_to_dict(x):
     dim = x.size
@@ -612,8 +618,9 @@ def numpy_array_to_tlist(x):
     d['dim'] = x.shape
     return(d)
 
-
-class simple_triplet_matrix(object):
+class simple_triplet_matrix(dict):
+    """A simple_triplet_matrix class"""
+    __slots__ = ['i', 'j', 'v', 'nrow', 'ncol', 'dimnames', 'dtype']
     def __init__(self, i, j, v, nrow=None, ncol=None, dimnames=None, dtype=None): 
         self.i = i
         self.j = j
@@ -786,8 +793,8 @@ class data_frame(dict):
                 self.colnames = colnames
         else:
             self.dim = (0, 0)
-            self.rownames = None
-            self.colnames = None
+            self.rownames = []
+            self.colnames = []
 
         self.__class__.__name__ = "PythonInR.data_frame"
 
@@ -797,7 +804,7 @@ class data_frame(dict):
         except:
             s = ""
         return( s )
-    
+
     __str__ = __repr__
 
     def to_r(self):
@@ -807,8 +814,12 @@ class data_frame(dict):
             return( {'data': data, 'rownames': self.rownames, 'colnames': self.colnames} )
         except:
         """
+        if ( self.dim[1] == 0 ):
+            return {'data': [], 'rownames': None, 'colnames': None}
+
         data = dict(self)
-        return( {'data': data, 'rownames': self.rownames, 'colnames': self.keys} )
+        data = [data[cn] for cn in self.colnames]
+        return( {'data': data, 'rownames': self.rownames, 'colnames': self.colnames} )
 
     def to_dict(self):
         return( dict(self) )
@@ -818,12 +829,14 @@ class data_frame(dict):
             x = self.copy()
             for k in x.keys():
                 x[k] = list(x[k])
-            if ( len(self.rownames) == self.dim[0] ):
+            if ( (len(self.rownames) == self.dim[0]) and (len(self.colnames) == self.dim[1]) ):
+                return( pd.DataFrame(data=x, index=list(self.rownames), columns = self.colnames) )
+            elif ( len(self.rownames) == self.dim[0] ):
                 return( pd.DataFrame(data=x, index=list(self.rownames)) )
             else:
                 return( pd.DataFrame(data=x) )
         else:
-            raise NameError("PANDAS was not found")
+            return None
 
 
 def new_data_frame(df, rownames, colnames, dim):
@@ -841,6 +854,24 @@ def pandas_data_frame_to_dict(x):
         return {'data': data, 'rownames': list(x.index), 'colnames': data.keys()}
     except:
         return x.to_dict()
+
+def pandas_column_to_r(x):
+    try:
+        return numpy_vector_to_tlist(x.values)
+    except:
+        return list(x.values)
+
+def pandas_data_frame_to_list(x):
+    if ( (len(x.columns) > 0) ):
+        cn = [unicode(k) for k in x.columns]
+    else:
+        cn = None
+    if ( (len(x.index) > 0) ):
+        rn = pandas_column_to_r(x.index)
+    else:
+        rn = None
+    data = [pandas_column_to_r(x[k]) for k in x.columns]
+    return {'data': data, 'rownames': rn, 'colnames': cn}
 
 def is_nlp_tree(x):
     if isinstance(x, dict):
@@ -877,9 +908,6 @@ class PythonInR_Error(object):
     def to_r(self):
         return( {'message': self.message, 'domain': self.domain, 'error_type': self.error_type} )
 
-
-
-
 class tree(dict):
     """A tree class"""
     def __init__(self, tree):
@@ -898,7 +926,7 @@ class tree(dict):
         try:
             return( nlp_tree_to_nltk_tree(dict(self)) )
         except:
-            warn("nltk package coulnd't be loaded", ImportWarning)
+            warn("nltk package couldn't be loaded", ImportWarning)
             return( self )
 
 def new_tree(x):
@@ -1027,7 +1055,7 @@ def is_tuple(x):
     130  ttuple
     140  numpy
 200  matrix
-    210  list                 #TODO! (sollte ich wegnehmen da matrix jetzt eh liste!)
+    210  list    #TODO! (sollte ich wegnehmen da matrix jetzt eh liste!)
     220  numpy
     230  cvxopt
 300  array
