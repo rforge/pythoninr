@@ -92,7 +92,7 @@ expect_equal(pyGet("x"), 0L)
 ## long
 pySet("x", th.vector(0L))
 expect_equal(pyType("x"), "PythonInR.vector")
-expect_true(pyGet("x.dtype is int if (sys.version_info[0] == 3) else long"))
+expect_true(pyGet("x.dtype is (int if (sys.version_info[0] == 3) else long)"))
 expect_equal(pyGet("x"), 0L)
 
 ## double
@@ -104,13 +104,13 @@ expect_equal(pyGet("x"), 0)
 ## string ## FIXME:
 pySet("x", th.vector_str(""))
 expect_equal(pyType("x"), "PythonInR.vector")
-expect_true(pyGet("x.dtype is bytes if (sys.version_info[0] == 3) else str"))
+expect_true(pyGet("x.dtype is (bytes if (sys.version_info[0] == 3) else str)"))
 expect_equal(pyGet("x"), "")
 
 ## unicode
 pySet("x", th.vector(""))
 expect_equal(pyType("x"), "PythonInR.vector")
-expect_true(pyGet("x.dtype is str if (sys.version_info[0] == 3) else unicode"))
+expect_true(pyGet("x.dtype is (str if (sys.version_info[0] == 3) else unicode)"))
 expect_equal(pyGet("x"), "")
 
 ## ---------------------------
@@ -131,7 +131,7 @@ expect_equal(pyGet("x"), -3:3)
 ## long
 pySet("x", -3:3)
 expect_equal(pyType("x"), "PythonInR.vector")
-expect_true(pyGet("x.dtype is int if (sys.version_info[0] == 3) else long"))
+expect_true(pyGet("x.dtype is (int if (sys.version_info[0] == 3) else long)"))
 expect_equal(pyGet("x"), -3:3)
 
 ## double
@@ -143,19 +143,19 @@ expect_equal(pyGet("x"), as.double(-300:300))
 ## string (empty)
 pySet("x", th.string(rep("", 100)))
 expect_equal(pyType("x"), "PythonInR.vector")
-expect_true(pyGet("x.dtype is bytes if (sys.version_info[0] == 3) else str"))
+expect_true(pyGet("x.dtype is (bytes if (sys.version_info[0] == 3) else str)"))
 expect_equal(pyGet("x"), rep("", 100))
 
 ## string (latin1)
 pySet("x", th.string(rep("Hällö Wörld!", 100)))
 expect_equal(pyType("x"), "PythonInR.vector")
-expect_true(pyGet("x.dtype is bytes if (sys.version_info[0] == 3) else str"))
+expect_true(pyGet("x.dtype is (bytes if (sys.version_info[0] == 3) else str)"))
 expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
 
 ## unicode
 pySet("x", rep("Hällö Wörld!", 100))
 expect_equal(pyType("x"), "PythonInR.vector")
-expect_true(pyGet("x.dtype is str if (sys.version_info[0] == 3) else unicode"))
+expect_true(pyGet("x.dtype is (str if (sys.version_info[0] == 3) else unicode)"))
 expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
 
 ## ---------------------------
@@ -176,7 +176,7 @@ expect_equal(pyGet("x"), 0L)
 ## long
 pySet("x", th.tlist(0L))
 expect_equal(pyType("x"), "PythonInR.tlist")
-expect_true(pyGet("x.dtype is int if (sys.version_info[0] == 3) else long"))
+expect_true(pyGet("x.dtype is (int if (sys.version_info[0] == 3) else long)"))
 expect_equal(pyGet("x"), 0L)
 
 ## double
@@ -188,13 +188,13 @@ expect_equal(pyGet("x"), 0)
 ## string
 pySet("x", th.tlist_str(""))
 expect_equal(pyType("x"), "PythonInR.tlist")
-expect_true(pyGet("x.dtype is bytes if (sys.version_info[0] == 3) else str"))
+expect_true(pyGet("x.dtype is (bytes if (sys.version_info[0] == 3) else str)"))
 expect_equal(pyGet("x"), "")
 
 ## unicode
 pySet("x", th.tlist("äöü"))
 expect_equal(pyType("x"), "PythonInR.tlist")
-expect_true(pyGet("x.dtype is str if (sys.version_info[0] == 3) else unicode"))
+expect_true(pyGet("x.dtype is (str if (sys.version_info[0] == 3) else unicode)"))
 expect_equal(pyGet("x"), "äöü")
 
 ## ---------------------------
@@ -261,7 +261,7 @@ expect_equal(pyGet("x"), 0L)
 ## long
 pySet("x", th.list(0L))
 expect_equal(pyType("x"), "list")
-expect_true(pyGet("type(x[0]) is int if (sys.version_info[0] == 3) else long"))
+expect_true(pyGet("type(x[0]) is (int if (sys.version_info[0] == 3) else long)"))
 expect_equal(pyGet("x"), 0L)
 
 ## double
@@ -273,13 +273,13 @@ expect_equal(pyGet("x"), 0)
 ## string
 pySet("x", th.list_str(""))
 expect_equal(pyType("x"), "list")
-expect_true(pyGet("type(x[0]) is bytes if (sys.version_info[0] == 3) else str"))
+expect_true(pyGet("type(x[0]) is (bytes if (sys.version_info[0] == 3) else str)"))
 expect_equal(pyGet("x"), "")
 
 ## unicode
 pySet("x", th.list("äöü"))
 expect_equal(pyType("x"), "list")
-expect_true(pyGet("type(x[0]) is str if (sys.version_info[0] == 3) else unicode"))
+expect_true(pyGet("type(x[0]) is (str if (sys.version_info[0] == 3) else unicode)"))
 expect_equal(pyGet("x"), "äöü")
 
 ## ---------------------------
@@ -300,7 +300,7 @@ expect_equal(pyGet("x"), -3:3)
 ## long
 pySet("x", th.list(-3:3))
 expect_equal(pyType("x"), "list")
-expect_true(pyGet("type(x[0]) is int if (sys.version_info[0] == 3) else long"))
+expect_true(pyGet("type(x[0]) is (int if (sys.version_info[0] == 3) else long)"))
 expect_equal(pyGet("x"), -3:3)
 
 ## double
@@ -312,19 +312,19 @@ expect_equal(pyGet("x"), as.double(-3:3))
 ## string (empty)
 pySet("x", th.list_str(rep("", 30)))
 expect_equal(pyType("x"), "list")
-expect_true(pyGet("type(x[0]) is bytes if (sys.version_info[0] == 3) else str"))
+expect_true(pyGet("type(x[0]) is (bytes if (sys.version_info[0] == 3) else str)"))
 expect_equal(pyGet("x"), rep("", 30))
 
 ## string (latin1)
 pySet("x", th.list_str(rep("Hällö Wörld!", 100)))
 expect_equal(pyType("x"), "list")
-expect_true(pyGet("type(x[0]) is bytes if (sys.version_info[0] == 3) else str"))
+expect_true(pyGet("type(x[0]) is (bytes if (sys.version_info[0] == 3) else str)"))
 expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
 
 ## unicode
 pySet("x", th.list(rep("Hällö Wörld!", 100)))
 expect_equal(pyType("x"), "list")
-expect_true(pyGet("type(x[0]) is str if (sys.version_info[0] == 3) else unicode"))
+expect_true(pyGet("type(x[0]) is (str if (sys.version_info[0] == 3) else unicode)"))
 expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
 
 ## ---------------------------
@@ -345,7 +345,7 @@ expect_equal(pyGet("x"), 0L)
 ## long
 pySet("x", th.tuple(0L))
 expect_equal(pyType("x"), "tuple")
-expect_true(pyGet("type(x[0]) is int if (sys.version_info[0] == 3) else long"))
+expect_true(pyGet("type(x[0]) is (int if (sys.version_info[0] == 3) else long)"))
 expect_equal(pyGet("x"), 0L)
 
 ## double
@@ -357,13 +357,13 @@ expect_equal(pyGet("x"), 0)
 ## string
 pySet("x", th.tuple_str(""))
 expect_equal(pyType("x"), "tuple")
-expect_true(pyGet("type(x[0]) is bytes if (sys.version_info[0] == 3) else str"))
+expect_true(pyGet("type(x[0]) is (bytes if (sys.version_info[0] == 3) else str)"))
 expect_equal(pyGet("x"), "")
 
 ## unicode
 pySet("x", th.tuple("äöü"))
 expect_equal(pyType("x"), "tuple")
-expect_true(pyGet("type(x[0]) is str if (sys.version_info[0] == 3) else unicode"))
+expect_true(pyGet("type(x[0]) is (str if (sys.version_info[0] == 3) else unicode)"))
 expect_equal(pyGet("x"), "äöü")
 
 ## ---------------------------
@@ -384,7 +384,7 @@ expect_equal(pyGet("x"), -3:3)
 ## long
 pySet("x", th.tuple(-3:3))
 expect_equal(pyType("x"), "tuple")
-expect_true(pyGet("type(x[0]) is int if (sys.version_info[0] == 3) else long"))
+expect_true(pyGet("type(x[0]) is (int if (sys.version_info[0] == 3) else long)"))
 expect_equal(pyGet("x"), -3:3)
 
 ## double
@@ -396,19 +396,19 @@ expect_equal(pyGet("x"), as.double(-3:3))
 ## string (empty)
 pySet("x", th.tuple_str(rep("", 30)))
 expect_equal(pyType("x"), "tuple")
-expect_true(pyGet("type(x[0]) is bytes if (sys.version_info[0] == 3) else str")) ## FIXME
+expect_true(pyGet("type(x[0]) is (bytes if (sys.version_info[0] == 3) else str)")) ## FIXME
 expect_equal(pyGet("x"), rep("", 30))
 
 ## string (latin1)
 pySet("x", th.tuple_str(rep("Hällö Wörld!", 100)))
 expect_equal(pyType("x"), "tuple")
-expect_true(pyGet("type(x[0]) is bytes if (sys.version_info[0] == 3) else str")) ## FIXME
+expect_true(pyGet("type(x[0]) is (bytes if (sys.version_info[0] == 3) else str)")) ## FIXME
 expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
 
 ## unicode
 pySet("x", th.tuple(rep("Hällö Wörld!", 100)))
 expect_equal(pyType("x"), "tuple")
-expect_true(pyGet("type(x[0]) is str if (sys.version_info[0] == 3) else unicode"))
+expect_true(pyGet("type(x[0]) is (str if (sys.version_info[0] == 3) else unicode)"))
 expect_equal(pyGet("x"), rep("Hällö Wörld!", 100))
 
 ## ---------------------------
