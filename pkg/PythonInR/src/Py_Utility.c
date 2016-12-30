@@ -106,9 +106,9 @@ int py_get_container_type(PyObject *o) {
 	
 	if ( Py_Type_Check(o, "DataFrame") ) return 510;
 		
-	Rprintf("type: %i\n", type);
-	Rprintf("type_name: %s\n", Py_TYPE(o)->tp_name);
-	//Rprintf("module_name: %s\n", Py_TYPE(o)->m_name);
+	// Rprintf("type: %i\n", type);
+	// Rprintf("type_name: %s\n", Py_TYPE(o)->tp_name);
+	// Rprintf("module_name: %s\n", Py_TYPE(o)->m_name);
     return type;
 }
 
