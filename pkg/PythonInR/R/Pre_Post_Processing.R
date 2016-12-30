@@ -57,7 +57,5 @@ py_to_r_postprocessing[["error"]] <- function(x) {
     structure(x, class=c("error", "PythonInR") )
 }
 
-
-
 ##        return( {"values": self.values, "rownames": self.rownames, 
 ##                "colnames": self.colnames, "dim": self.dim, "dtype": self.dtype} )
