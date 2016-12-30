@@ -63,6 +63,15 @@ export(th.pandas)
 export(is.PythonInR_Object)
 export(pyRef)
 
+export(equal)
+S3method(equal,"NULL")
+S3method(equal,character)
+S3method(equal,integer)
+S3method(equal,list)
+S3method(equal,logical)
+S3method(equal,numeric)
+S3method(equal,simple_triplet_matrix)
+
 export(autodetectPython,
        pyAttach,
        pyConnect,
@@ -78,6 +87,7 @@ export(autodetectPython,
        pyGet0,
        pyGet,
        pySet,
+       pySource,
        pyType,
        pyImport,
        pyHelp,
