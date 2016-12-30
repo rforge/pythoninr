@@ -14,12 +14,17 @@ G <- cbind(c( 16.,  7.,  24.,  -8.,   8.,  -1.,  0.,  -1.,  0.,  0.,
                9.,  6.,  -6.,   6.,  -7.,  -7., -6.,  -7., -11.))
 
 h <- c( -3., 5., 12., -2., -14., -13., 10., 0., 0., 0.,
-       68., -30., -19., -30., 99., 23., -19., 23., 10. )
-dims <- list('l'= 2, 'q'= list(4, 4), 's'= list(3))
+        68., -30., -19., -30., 99., 23., -19., 23., 10. ))
+dims <- list('l'= th.int(2L), 'q'= list(th.int(4L), th.int(4L)), 's'= list(th.int(3L)))
+obj <- t(t(obj))
+h <- t(t(h))
 sol <- cvxopt$solvers$conelp(th.cvxopt(obj), th.cvxopt(G), th.cvxopt(h), dims)
-
+sol
 G
 h
 dims
 
+
+pySet("dims", dims)
+pyExecp("type(dims)")
 
