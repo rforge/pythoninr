@@ -5,5 +5,5 @@ invisible(capture.output(pyConnect()))
 
 expect_that(pyExec("import os"), equals(0))
 fun <- pyFunction("os.getcwd")
-expect_that(class(fun), equals("pyFunction"))
-expect_that(fun(), equals(getwd()))
+expect_true( inherits(fun, "PythonInR_Object") )
+expect_equal(fun(), getwd())

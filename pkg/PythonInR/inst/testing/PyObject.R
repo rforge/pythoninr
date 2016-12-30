@@ -5,8 +5,8 @@ invisible(capture.output(pyConnect()))
 
 ## Object
 expect_that(pyExec("import os"), equals(0))
-expect_that(class(pyObject("os", regFinalizer = FALSE))[1], equals("module.os"))
-expect_that(class(pyObject("os", regFinalizer = TRUE))[1], equals("module.os"))
+expect_that(class(pyObject("os", regFinalizer = FALSE))[1], equals("module"))
+expect_that(class(pyObject("os", regFinalizer = TRUE))[1], equals("module"))
 
 ## Tuple
 expect_that(pyExec('myPyTuple = (1, 2, 5, "Hello R!")'), equals(0))
