@@ -1,8 +1,10 @@
-q("no")
-Rdevel
+if (FALSE) {
+    q("no")
+    Rdevel  
+}
+
 library(PythonInR)
 library(testthat)
-library(typehints)
 
 Ai <- array(seq_len(2*3*4), dim=c(2,3,4))
 Ad <- array(as.numeric(seq_len(2*3*4)), dim=c(2,3,4))
@@ -44,15 +46,11 @@ expect_equal(pyGet("x"), Ac)
 ## ---------------------------
 ## Numpy Array
 ## ---------------------------
-th.int_numpy <- function(x) tyhi(x, c("numpy", "int"))
-th.str_numpy <- function(x) tyhi(x, c("numpy", "string"))
-
-pySet("x", th.int_numpy(Ai))
+pySet("x", th.numpy_int(Ai))
 expect_equal(pyType("x"), "ndarray")
 expect_equal(pyGet("x.dtype.kind"), "i")
 expect_equal(typeof(pyGet("x")), typeof(Ai))
 expect_equal(pyGet("x"), Ai)
-for (i in 1:10000) pyGet("x")
 
 pySet("x", th.numpy(Ai))
 expect_equal(pyType("x"), "ndarray")
@@ -66,13 +64,13 @@ expect_equal(pyGet("x.dtype.kind"), "f")
 expect_equal(typeof(pyGet("x")), typeof(Ad))
 expect_equal(pyGet("x"), Ad)
 
-pySet("x", th.str_numpy(Ac)) ## FIXME! By the conversion I delete the typehint!
+pySet("x", th.numpy_str(Ac)) ## FIXME! By the conversion I delete the typehint!
 expect_equal(pyType("x"), "ndarray")
 expect_equal(pyGet("x.dtype.kind"), "U")
 expect_equal(typeof(pyGet("x")), typeof(Ac))
 expect_equal(pyGet("x"), Ac)
 
-pySet("x", Ac)
+pySet("x", th.numpy(Ac))
 expect_equal(pyType("x"), "ndarray")
 expect_equal(pyGet("x.dtype.kind"), "U")
 expect_equal(typeof(pyGet("x")), typeof(Ac))
@@ -83,9 +81,9 @@ expect_equal(pyGet("x"), Ac)
 ## ---------------------------
 pySet("x", th.numpy(Ai))
 for (i in seq_len(2)) {
-	for (j in seq_len(3)) {
-		for (k in seq_len(4)) {
-			expect_true(A[i, j, k] == pyGet(sprintf("x[%i, %i, %i]", i-1, j-1, k-1)))
-		}
-	}
+    for (j in seq_len(3)) {
+        for (k in seq_len(4)) {
+            expect_true(Ai[i, j, k] == pyGet(sprintf("x[%i, %i, %i]", i-1, j-1, k-1)))
+        }
+    }
 }

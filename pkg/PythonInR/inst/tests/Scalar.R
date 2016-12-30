@@ -2,36 +2,40 @@ if (FALSE) {
     q("no")
     Rdevel  
 }
+
 library(PythonInR)
 library(testthat)
-library(typehints)
 
 buildAscii <- function(len, clen=100){
     fun <- function(x) paste(rawToChar(as.raw(sample(33:126, clen, replace=TRUE)), multiple=TRUE), collapse="")
     sapply(1:len, fun)
 }
 
-
 for (i in 1:1000) {
     pySet("x", NULL)
     pyGet("x")
 }
+
 for (i in 1:1000) {
     pySet("x", TRUE)
     pyGet("x")
 }
+
 for (i in 1:1000) {
     pySet("x", 1L)
     pyGet("x")
 }
+
 for (i in 1:1000) {
     pySet("x", 1)
     pyGet("x")
 }
+
 for (i in 1:10000) {
     pySet("x", "Hällö Wörld")
     pyGet("x")
 }
+
 for (i in 1:10000) {
     pySet("x", "Hällö Wörld")
     pyGet("x")

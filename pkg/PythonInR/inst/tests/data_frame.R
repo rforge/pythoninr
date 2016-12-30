@@ -1,19 +1,19 @@
-##if (FALSE) {
+if (FALSE) {
     q("no")
     Rdevel
-##}
+}
+
 library(PythonInR)
 library(testthat)
-library(typehints)
 
 ## ---------------------------
 ## Data Frame (TODO: columns order changes)
 ## ---------------------------
+cars <- head(cars)
 pySet("x", cars)
 expect_equal(pyType("x"), "PythonInR.data_frame")
-head(pyGet("x"))
 expect_equal(c(typeof(pyGet("x")), class(pyGet("x"))), c(typeof(cars), class(cars)))
-expect_equal(pyGet("x")[,colnames(cars)], cars)
+expect_equal(pyGet("x"), cars)
 
 pySet("x", th.pandas(cars))
 expect_equal(pyType("x"), "DataFrame")

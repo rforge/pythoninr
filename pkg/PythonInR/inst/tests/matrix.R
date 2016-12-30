@@ -1,8 +1,10 @@
-q("no")
-Rdevel
+if (FALSE) {
+    q("no")
+    Rdevel
+}
+
 library(PythonInR)
 library(testthat)
-library(typehints)
 
 Mi <- matrix(1:12, 3)
 colnames(Mi) <- LETTERS[1:4]
@@ -253,10 +255,10 @@ matrix
 pyExec('
 mat = list()
 for m in xrange(x.nrow()):
-	col = list()
-	for n in xrange(x.ncol()):
-		col.append(x[(n * x.nrow()) + m])
-	mat.append(col)
+    col = list()
+    for n in xrange(x.ncol()):
+        col.append(x[(n * x.nrow()) + m])
+    mat.append(col)
 ')
 pyExecp('mat')
 
@@ -331,9 +333,9 @@ y <- fun(x)
 
 z <- 3
 tyhii <- function(x, value) {
-	name <- as.character((x))
-	print(name)
-	attr(get(name, parent.frame()), value)
+    name <- as.character((x))
+    print(name)
+    attr(get(name, parent.frame()), value)
 }
 tyhii(z, "abd")
 
