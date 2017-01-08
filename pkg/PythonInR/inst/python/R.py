@@ -1140,3 +1140,8 @@ def callable_fault_tolerent(x):
 def pyDictZip(keys, values):
     return dict(zip(keys, values))
 
+
+def as_integer(x):
+    if is_dict(x):
+        return vector(x.values(), int, x.keys())
+
