@@ -376,43 +376,49 @@ SEXP set_character_to_py_unicode_flag(SEXP flag){
 	return R_NilValue;
 }
 
-int init_py_numpy_type(void) {
-	PyObject *np_module = PyImport_ImportModule("numpy");
-	if (np_module == NULL) return -1;
-	PyObject *numpy_type = PyTuple_New(2);
-	PyObject *np_ndarray = PyObject_GetAttrString(np_module, "ndarray");
-	PyObject *np_generic = PyObject_GetAttrString(np_module, "generic");
-	if ( (np_ndarray == NULL) | (np_generic == NULL) ) return -2;
-	PyTuple_SET_ITEM(numpy_type, 0, np_ndarray);
-	PyTuple_SET_ITEM(numpy_type, 1, np_generic);
-	py_numpy_type = numpy_type;
-	Py_XDECREF(np_module);
+int init_py_numpy_type(int init_numpy) {
+    if ( init_numpy != 0 ) {
+    	PyObject *np_module = PyImport_ImportModule("numpy");
+    	if (np_module == NULL) return -1;
+    	PyObject *numpy_type = PyTuple_New(2);
+    	PyObject *np_ndarray = PyObject_GetAttrString(np_module, "ndarray");
+    	PyObject *np_generic = PyObject_GetAttrString(np_module, "generic");
+    	if ( (np_ndarray == NULL) | (np_generic == NULL) ) return -2;
+    	PyTuple_SET_ITEM(numpy_type, 0, np_ndarray);
+    	PyTuple_SET_ITEM(numpy_type, 1, np_generic);
+    	py_numpy_type = numpy_type;
+    	Py_XDECREF(np_module);
+    }
 	return 0;
 }
 
-int init_py_scipy_type(void) {
-	PyObject *sp_module = PyImport_ImportModule("scipy.sparse");
-	if (sp_module == NULL) return -1;
-	PyObject *scipy_type = PyObject_GetAttrString(sp_module, "spmatrix");
-	py_scipy_type = scipy_type;
-	Py_XDECREF(sp_module);
+int init_py_scipy_type(int init_scipy) {
+    if ( init_scipy != 0 ) {
+        PyObject *sp_module = PyImport_ImportModule("scipy.sparse");
+        if (sp_module == NULL) return -1;
+        PyObject *scipy_type = PyObject_GetAttrString(sp_module, "spmatrix");
+        py_scipy_type = scipy_type;
+        Py_XDECREF(sp_module);    
+    }
 	return 0;
 }
 
-int init_py_nltk_tree_type(void) {
-	PyObject *nltk_module = PyImport_ImportModule("nltk.tree");
-	if (nltk_module == NULL) return -1;
-	PyObject *nltk_tree_type = PyObject_GetAttrString(nltk_module, "Tree");
-	py_nltk_tree_type = nltk_tree_type;
-	Py_XDECREF(nltk_module);
+int init_py_nltk_tree_type(int init_nltk) {
+    if ( init_nltk != 0 ) {
+        PyObject *nltk_module = PyImport_ImportModule("nltk.tree");
+        if (nltk_module == NULL) return -1;
+        PyObject *nltk_tree_type = PyObject_GetAttrString(nltk_module, "Tree");
+        py_nltk_tree_type = nltk_tree_type;
+        Py_XDECREF(nltk_module);    
+    }
 	return 0;
 }
 
-SEXP init_PythonInR_External_References(void) {
+SEXP init_PythonInR_External_References(SEXP init_numpy, SEXP init_scipy, SEXP init_nltk) {
 	PY_To_R_Typecast = py_get_py_obj("__R__.to_r");
-	init_py_numpy_type();
-	init_py_scipy_type();
-	init_py_nltk_tree_type();
+	init_py_numpy_type( R_TO_C_INT(init_numpy) );
+	init_py_scipy_type( R_TO_C_INT(init_scipy) );
+	init_py_nltk_tree_type( R_TO_C_INT(init_nltk) );
 	// R_TO_PY_PREPROCESSING = r_eval_py_string("PythonInR:::r_to_py_preprocessing");
 	// PY_TO_R_POSTPROCESSING = r_eval_py_string("PythonInR:::r_to_py_postprocessing");
 	use_PY_To_R_Typecast = 1;
