@@ -33,6 +33,7 @@
 #define PY_TO_R__LIST(o, s) (s) ? py_list_to_r_list_simplify(o) : py_list_to_r_list(o, s)
 #define PY_TO_R__TUPLE(o, s) (s) ? py_tuple_to_r_list_simplify(o) : py_tuple_to_r_list(o, s)
 #define PY_TO_R__NLTK_TREE(o) py_nltk_tree_to_nlp_tree(o)
+#define PY_TO_R__TREE(o) py_tree_to_nlp_tree(o)
 #define PY_TO_R__SIMPLE_TRIPLET_MATRIX(o) py_stm_matrix_to_r_stm_matrix(o)
 #define PY_TO_R__CVXOPT_SPARSE_MATRIX(o) py_cvxopt_sparse_matrix_to_r_stm_matrix(o)
 #define PY_TO_R__BSR(o) py_scipy_sparse_matrix_to_r_stm_matrix(o)

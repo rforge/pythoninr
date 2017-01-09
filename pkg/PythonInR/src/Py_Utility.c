@@ -91,7 +91,7 @@ int py_get_container_type(PyObject *o) {
 	if ( PyDict_Check(o) ) {
 		if ( Py_Type_Check(o, "PythonInR.simple_triplet_matrix" ) ) return 420;
 		if ( Py_Type_Check(o, "PythonInR.data_frame" ) ) return 500;
-		// TODO: Tree
+        if ( Py_Type_Check(o, "PythonInR.Tree" ) ) return 411;
 		return 430; // TODO: let simple_triple_matrix inherit from dict.
 	} 
 	

@@ -38,7 +38,7 @@ try:
             PythonInR_FLAGS['useCvxOpt'] = False
     if PythonInR_FLAGS['useNltkTree']:
         try:
-            from nltk.tree import Tree as nltkTree
+            from nltk.treex import Tree as nltkTree
         except:
             PythonInR_FLAGS['useNltkTree'] = False
 except:

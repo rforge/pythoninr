@@ -810,6 +810,12 @@ SEXP py_nltk_tree_to_nlp_tree(PyObject *pyo) {
     return robj;
 }
 
+SEXP py_tree_to_nlp_tree(PyObject *pyo) {
+    SEXP robj = PY_TO_R__DICT(pyo, 0);
+    classgets(robj, c_to_r_string("Tree"));
+    return robj;
+}
+
 SEXP py_array_to_r_array(PyObject *pyo) {
     PyObject *x = PyObject_CallMethod(pyo, "to_r", "");
     if ( x == NULL ) {
@@ -990,6 +996,7 @@ SEXP py_to_r(PyObject *pyo, int simplify, int autotype) {
         case 400 : return PY_TO_R__LIST(pyo, simplify);
         case 401 : return PY_TO_R__TUPLE(pyo, simplify);
         case 410 : return PY_TO_R__NLTK_TREE(pyo);
+        case 411 : return PY_TO_R__TREE(pyo);
         case 420 : return PY_TO_R__SIMPLE_TRIPLET_MATRIX(pyo);
         case 421 : return PY_TO_R__CVXOPT_SPARSE_MATRIX(pyo);
         case 422 : return PY_TO_R__BSR(pyo);
