@@ -66,5 +66,10 @@ int add_typehint(SEXP x, const char *type);
 
 SEXP Test_add_typehint(SEXP x, SEXP th);
 
+SEXP get_attributes(SEXP x);
+SEXP get_dimension(SEXP x);
+SEXP get_names(SEXP x);
+SEXP get_type(SEXP x);
+
 #endif
 

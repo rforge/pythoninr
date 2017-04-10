@@ -207,3 +207,20 @@ SEXP Test_add_typehint(SEXP x, SEXP th) {
     return x;
 }
 
+SEXP get_attributes(SEXP x) {
+    SEXP attrs = ATTRIB(x);
+    // int nvalues = length(attrs);
+    // return c_to_r_integer(nvalues);
+    return attrs;
+}
+
+SEXP get_dimension(SEXP x) {
+    SEXP dim = getAttrib(x, install("dim"));
+    return dim;
+}
+
+SEXP get_names(SEXP x) {
+    SEXP names = getAttrib(x, install("names"));
+    return names;
+}
+

@@ -3,3 +3,4 @@ devel
 inst/doc
 vignettes/build/PythonInR.pdf
 TODO.org
+tests

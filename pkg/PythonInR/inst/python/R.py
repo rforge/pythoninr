@@ -38,7 +38,7 @@ try:
             PythonInR_FLAGS['useCvxOpt'] = False
     if PythonInR_FLAGS['useNltkTree']:
         try:
-            from nltk.treex import Tree as nltkTree
+            from nltk.tree import Tree as nltkTree
         except:
             PythonInR_FLAGS['useNltkTree'] = False
 except:
@@ -216,6 +216,14 @@ def _int_to_dtype(i):
         return unicode
     return None
 
+"""
+define a more general data structure
+"""
+class alist(list):
+    __slots__ = ['attributes']
+    def __init__(self, values, attributes):
+        list.__init__(self, values)
+        self.attributes = attributes
 
 class nlist(list):
     """A Named List Class"""
@@ -922,12 +930,15 @@ class tree(dict):
     def to_dict(self):
         return(dict(self))
 
+    def to_r(self):
+        return(self)
+
     def to_nltk_tree(self):
         try:
             return( nlp_tree_to_nltk_tree(dict(self)) )
         except:
             warn("nltk package couldn't be loaded", ImportWarning)
-            return( self )
+            return( self )    
 
 def new_tree(x):
     return tree(x)
